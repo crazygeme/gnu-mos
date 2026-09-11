@@ -1,0 +1,9 @@
+{
+  "name": "lua",
+  "version": "5.4.8",
+  "order": 58,
+  "source": "archive",
+  "url": "https://www.lua.org/ftp/lua-{version}.tar.gz",
+  "archive": "lua-5.4.8.tar.gz",
+  "artifact": "artifacts/lua.done"
+}

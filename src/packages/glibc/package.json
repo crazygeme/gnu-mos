@@ -1,0 +1,9 @@
+{
+    "name": "glibc",
+    "version": "2.42",
+    "order": 20,
+    "source": "archive",
+    "url": "https://ftp.gnu.org/gnu/glibc/glibc-{version}.tar.xz",
+    "archive": "glibc-2.42.tar.xz",
+    "artifact": "artifacts/glibc.done"
+}

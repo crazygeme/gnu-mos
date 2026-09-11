@@ -1,0 +1,9 @@
+{
+    "name": "gtk",
+    "version": "4.20.1",
+    "order": 130,
+    "source": "archive",
+    "url": "https://download.gnome.org/sources/gtk/4.20/gtk-{version}.tar.xz",
+    "archive": "gtk-4.20.1.tar.xz",
+    "artifact": "artifacts/gtk.done"
+}

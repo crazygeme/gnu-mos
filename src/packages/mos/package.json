@@ -1,0 +1,8 @@
+{
+  "name": "mos",
+  "version": "main",
+  "order": 90,
+  "source": "git",
+  "git": "https://github.com/crazygeme/mos.git",
+  "artifact": "artifacts/mos.done"
+}

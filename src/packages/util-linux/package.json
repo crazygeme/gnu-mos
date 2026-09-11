@@ -1,0 +1,9 @@
+{
+    "name": "util-linux",
+    "version": "2.41.1",
+    "order": 65,
+    "source": "archive",
+    "url": "https://www.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-{version}.tar.xz",
+    "archive": "util-linux-2.41.1.tar.xz",
+    "artifact": "artifacts/util-linux.done"
+}

@@ -1,0 +1,9 @@
+{
+    "name": "dbus",
+    "version": "1.16.2",
+    "order": 110,
+    "source": "archive",
+    "url": "https://dbus.freedesktop.org/releases/dbus/dbus-{version}.tar.xz",
+    "archive": "dbus-1.16.2.tar.xz",
+    "artifact": "artifacts/dbus.done"
+}

@@ -1,0 +1,1 @@
+{"name":"grub","version":"2.14","order":95,"source":"archive","url":"https://ftp.gnu.org/gnu/grub/grub-{version}.tar.xz","archive":"grub-2.14.tar.xz","artifact":"artifacts/grub.done"}

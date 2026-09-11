@@ -1,0 +1,9 @@
+{
+    "name": "perl",
+    "version": "5.42.0",
+    "order": 50,
+    "source": "archive",
+    "url": "https://www.cpan.org/src/5.0/perl-{version}.tar.xz",
+    "archive": "perl-5.42.0.tar.xz",
+    "artifact": "artifacts/perl.done"
+}

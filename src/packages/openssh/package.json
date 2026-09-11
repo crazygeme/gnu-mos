@@ -1,0 +1,9 @@
+{
+    "name": "openssh",
+    "version": "10.0p1",
+    "order": 85,
+    "source": "archive",
+    "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-{version}.tar.gz",
+    "archive": "openssh-10.0p1.tar.gz",
+    "artifact": "artifacts/openssh.done"
+}

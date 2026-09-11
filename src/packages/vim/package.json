@@ -1,0 +1,9 @@
+{
+    "name": "vim",
+    "version": "9.1.1590",
+    "order": 80,
+    "source": "archive",
+    "url": "https://github.com/vim/vim/archive/refs/tags/v{version}.tar.gz",
+    "archive": "vim-9.1.1590.tar.gz",
+    "artifact": "artifacts/vim.done"
+}

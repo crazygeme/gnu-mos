@@ -1,0 +1,9 @@
+{
+    "name": "mutter",
+    "version": "48.4",
+    "order": 160,
+    "source": "archive",
+    "url": "https://download.gnome.org/sources/mutter/48/mutter-{version}.tar.xz",
+    "archive": "mutter-48.4.tar.xz",
+    "artifact": "artifacts/mutter.done"
+}

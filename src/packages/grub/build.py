@@ -1,0 +1,8 @@
+import os, subprocess, sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parents[2]))
+from package_lib import archive_source
+src=archive_source("grub","grub-2.14.tar.xz","grub-2.14"); b=Path(os.environ["LFS_WORKSPACE"])/"build/grub-build"; b.mkdir(parents=True,exist_ok=True)
+subprocess.run([str(src/"configure"),"--prefix=/usr","--target=i386","--with-platform=pc","--disable-werror"],cwd=b,check=True)
+subprocess.run(["make","-j"+str(os.cpu_count() or 1)],cwd=b,check=True)
+subprocess.run(["make","DESTDIR="+os.environ["LFS_SYSROOT"],"install"],cwd=b,check=True)
