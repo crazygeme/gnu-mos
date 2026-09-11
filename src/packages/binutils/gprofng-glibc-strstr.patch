@@ -1,0 +1,17 @@
+--- a/gprofng/common/hwcdrv.h
++++ b/gprofng/common/hwcdrv.h
+@@ -68,1 +68,3 @@
++#ifdef strstr
++#undef strstr
++#endif
+-#define strstr          CALL_UTIL(strstr)
+--- a/gprofng/libcollector/collector.h
++++ b/gprofng/libcollector/collector.h
+@@ -29,3 +29,7 @@
+ #include "collector_module.h"
+ 
++#ifdef strstr
++#undef strstr
++#endif
++
+ #define GETRELTIME()    (__collector_gethrtime() - __collector_start_time)

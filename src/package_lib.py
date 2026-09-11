@@ -10,8 +10,10 @@ def environment():
 def archive_source(name, archive, directory):
     sources = Path(os.environ["LFS_SOURCES"]); build = Path(os.environ["LFS_WORKSPACE"]) / "build"
     target = build / directory
-    if not target.exists():
-        with tarfile.open(sources / archive) as package: package.extractall(build, filter="data")
+    if target.exists():
+        import shutil
+        shutil.rmtree(target)
+    with tarfile.open(sources / archive) as package: package.extractall(build, filter="data")
     return target
 
 def configure_make_install(source, prefix="/usr", options=()):

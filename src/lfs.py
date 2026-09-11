@@ -4,9 +4,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tarfile
 import urllib.request
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,9 +18,42 @@ WORK = ROOT / ".workspace"
 SOURCES = WORK / "sources"
 SYSROOT = WORK / "sysroot"
 IMAGE = WORK / "qemu-hd/lfs.img"
+TTY = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
+RESET = "\033[0m" if TTY else ""
+CYAN = "\033[36m" if TTY else ""
+GREEN = "\033[32m" if TTY else ""
+YELLOW = "\033[33m" if TTY else ""
+RED = "\033[31m" if TTY else ""
+BLUE = "\033[34m" if TTY else ""
+DIM = "\033[2m" if TTY else ""
 
-def run(*cmd: str, cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
-    print("+", " ".join(cmd)); subprocess.run(cmd, cwd=cwd, env=env, check=True)
+def progress(label: str, current: int, total: int, width: int = 28, newline: bool = False) -> None:
+    ratio = current / total if total else 0
+    filled = min(width, int(width * ratio))
+    print(f"\r{label:24} [{('#' * filled) + ('.' * (width - filled))}] {ratio * 100:6.2f}%", end="", flush=True)
+    if newline or (total and current >= total): print()
+
+def download_progress(name: str):
+    def report(blocks: int, block_size: int, total: int) -> None:
+        progress(f"download {name}", min(blocks * block_size, total), total)
+    return report
+
+def run(*cmd: str, cwd: Path | None = None, env: dict[str, str] | None = None, log_path: Path | None = None) -> None:
+    print(f"{BLUE}→{RESET} " + " ".join(cmd))
+    if log_path is None:
+        subprocess.run(cmd, cwd=cwd, env=env, check=True)
+        return
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("a", encoding="utf-8", errors="replace") as log:
+        process = subprocess.Popen(cmd, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+        assert process.stdout is not None
+        for line in process.stdout:
+            print(line, end="")
+            log.write(line)
+            log.flush()
+        result = process.wait()
+    if result:
+        raise subprocess.CalledProcessError(result, cmd)
 
 def sudo_run(*cmd: str) -> None:
     run(*(cmd if os.geteuid() == 0 else ("sudo", *cmd)))
@@ -34,7 +70,9 @@ def setup_workspace() -> None:
         init.write_text("#!/bin/sh\nmount -a || true\nexec /bin/sh\n")
         init.chmod(0o755)
     shell = SYSROOT / "usr/bin/sh"
-    if not shell.exists():
+    if shell.is_symlink() and shell.readlink() != Path("bash"):
+        shell.unlink()
+    if not shell.exists() and not shell.is_symlink():
         shell.symlink_to("bash")
 
 def package_dirs() -> list[Path]:
@@ -85,17 +123,45 @@ def fetch_package(info: dict) -> None:
             temporary = archive.with_suffix(archive.suffix + ".part")
             print(f"download {info['name']} {info['version']}")
             try:
-                urllib.request.urlretrieve(info["url"].format(version=info["version"]), temporary)
+                urllib.request.urlretrieve(info["url"].format(version=info["version"]), temporary, reporthook=download_progress(info["name"]))
                 temporary.replace(archive)
             finally:
                 temporary.unlink(missing_ok=True)
     elif info.get("source") != "meta":
         raise SystemExit(f"invalid source type for {info['name']}")
 
-def build_package(directory: Path, continue_mode: bool) -> None:
-    info = metadata(directory); done = artifact(directory, info)
-    if continue_mode and done.exists(): print(f"skip {info['name']} (artifact exists)"); return
+def ensure_archive(info: dict) -> None:
+    if info.get("source") != "archive":
+        return
+    archive = SOURCES / info["archive"]
     fetch_package(info)
+    try:
+        with tarfile.open(archive):
+            pass
+    except (OSError, tarfile.TarError) as error:
+        print(f"{YELLOW}warning{RESET}: invalid archive for {info['name']}: {error}")
+        archive.unlink(missing_ok=True)
+        fetch_package(info)
+
+def reset_archive_sources(info: dict) -> None:
+    if info.get("source") != "archive":
+        return
+    archive = SOURCES / info["archive"]
+    with tarfile.open(archive) as package:
+        roots = {Path(member.name).parts[0] for member in package.getmembers() if member.name}
+    for root in roots:
+        extracted = WORK / "build" / root
+        if extracted.is_symlink():
+            extracted.unlink()
+        elif extracted.exists():
+            shutil.rmtree(extracted)
+
+def build_package(directory: Path) -> None:
+    info = metadata(directory); done = artifact(directory, info)
+    ensure_archive(info)
+    if info.get("source") != "archive":
+        fetch_package(info)
+    reset_archive_sources(info)
     script = directory / "build.py"
     if not script.exists(): raise SystemExit(f"package {info['name']} has no build.py")
     if info.get("source") == "archive" and not (SOURCES / info["archive"]).exists():
@@ -111,17 +177,38 @@ def build_package(directory: Path, continue_mode: bool) -> None:
         "PATH": f"{WORK / 'tools/bin'}:{SYSROOT / 'usr/bin'}:{env['PATH']}",
         "PYTHONDONTWRITEBYTECODE": "1",
     })
-    run(sys.executable, "-B", str(script), cwd=directory, env=env)
+    print(f"{CYAN}build{RESET} {info['name']} {DIM}({info['version']}){RESET}")
+    log_path = WORK / "logs" / f"{info['name']}.log"
+    entry = ROOT / "src/package_entry.py"
+    log_path.write_text(f"$ {sys.executable} -B {entry} {script}\n", encoding="utf-8")
+    run(sys.executable, "-B", str(entry), str(script), cwd=directory, env=env, log_path=log_path)
     done.parent.mkdir(parents=True, exist_ok=True)
     done.write_text(json.dumps({"name": info["name"], "version": info["version"]}) + "\n")
 
-def build(continue_mode: bool, all_mode: bool) -> None:
+def reset_build_state() -> None:
+    print(f"{YELLOW}warning{RESET}: --rebuild removes built package state and compiled files.")
+    print(f"{DIM}downloaded archives and Git checkouts in {SOURCES} are preserved.{RESET}")
+    answer = input("Continue? [y/N] ").strip().lower()
+    if answer not in ("y", "yes"):
+        print("rebuild cancelled")
+        return False
+    shutil.rmtree(WORK / "build", ignore_errors=True)
+    shutil.rmtree(WORK / "artifacts", ignore_errors=True)
+    shutil.rmtree(SYSROOT, ignore_errors=True)
+    setup_workspace()
+    return True
+
+def build(all_mode: bool, rebuild_mode: bool = False) -> None:
+    if rebuild_mode and not reset_build_state():
+        return
     setup_workspace(); directories = sorted(package_dirs(), key=lambda p: metadata(p).get("order", 9999))
-    for directory in directories:
+    pending = [directory for directory in directories if package_state(directory, metadata(directory)) != "built"]
+    total = len(pending)
+    for index, directory in enumerate(pending, 1):
         info = metadata(directory)
-        if continue_mode and package_state(directory, info) == "built":
-            continue
-        build_package(directory, continue_mode)
+        print(f"{YELLOW}package {index}/{total}{RESET} {info['name']}")
+        build_package(directory)
+        progress("build packages", index, total, newline=True)
         if not all_mode:
             return
 
@@ -165,15 +252,27 @@ def main(argv: list[str]) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("setup", help="copy built artifacts into lfs.img")
     build_parser = commands.add_parser("build", help="fetch and build packages in order")
-    build_parser.add_argument("--continue", action="store_true", dest="continue_mode", help="start at the first package not built")
     build_parser.add_argument("--all", action="store_true", dest="all_mode", help="process all selected packages")
+    build_parser.add_argument("--rebuild", "-r", action="store_true", dest="rebuild_mode", help="clear built state but preserve downloaded sources")
     run_parser = commands.add_parser("run", help="boot MOS and lfs.img with QEMU")
     run_parser.add_argument("args", nargs=argparse.REMAINDER)
     commands.add_parser("status", help="show package and image state")
     ns = parser.parse_args(argv)
     if ns.command == "setup": setup()
-    elif ns.command == "build": build(ns.continue_mode, ns.all_mode)
+    elif ns.command == "build": build(ns.all_mode, ns.rebuild_mode)
     elif ns.command == "run": qemu(ns.args)
     elif ns.command == "status": status()
     return 0
-if __name__ == "__main__": raise SystemExit(main(sys.argv[1:]))
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main(sys.argv[1:]))
+    except KeyboardInterrupt:
+        print(f"\n{YELLOW}interrupted{RESET}", file=sys.stderr)
+        raise SystemExit(130)
+    except subprocess.CalledProcessError as error:
+        command = " ".join(str(part) for part in error.cmd)
+        print(f"{RED}error{RESET}: command failed ({error.returncode}): {command}", file=sys.stderr)
+        raise SystemExit(error.returncode or 1)
+    except Exception as error:
+        print(f"{RED}error{RESET}: {error}", file=sys.stderr)
+        raise SystemExit(1)
