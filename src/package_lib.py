@@ -13,7 +13,7 @@ def environment():
     env["RANLIB"] = target + "-ranlib"
     env["STRIP"] = target + "-strip"
     env["NM"] = target + "-nm"
-    env["CFLAGS"] = "-m32"
+    env["CFLAGS"] = "-O2 -m32"
     env["PKG_CONFIG_SYSROOT_DIR"] = str(sysroot)
     env["PKG_CONFIG_LIBDIR"] = ":".join((
         str(sysroot / "usr/lib/pkgconfig"),
@@ -32,7 +32,15 @@ def archive_source(name, archive, directory):
     return target
 
 def configure_make_install(source, prefix="/usr", options=()):
-    env = environment(); subprocess.run([str(source / "configure"), "--prefix=" + prefix, *options], cwd=source, env=env, check=True)
+    env = environment()
+    target = env.get("LFS_TARGET", "i686-lfs-linux-gnu")
+    subprocess.run([
+        str(source / "configure"),
+        "--build=x86_64-pc-linux-gnu",
+        "--host=" + target,
+        "--prefix=" + prefix,
+        *options,
+    ], cwd=source, env=env, check=True)
     subprocess.run(["make", "-j" + str(os.cpu_count() or 1)], cwd=source, env=env, check=True)
     subprocess.run(["make", "DESTDIR=" + os.environ["LFS_SYSROOT"], "install"], cwd=source, env=env, check=True)
 

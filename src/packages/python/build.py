@@ -18,7 +18,7 @@ env.update({
     "CXX": "i686-lfs-linux-gnu-g++",
     "AR": "i686-lfs-linux-gnu-ar",
     "RANLIB": "i686-lfs-linux-gnu-ranlib",
-    "CFLAGS": "-m32",
+    "CFLAGS": "-O2 -m32",
     "LDFLAGS": "--sysroot=" + sysroot,
     "CONFIG_SITE": str(config_site),
 })

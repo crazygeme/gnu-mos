@@ -8,7 +8,7 @@ env.update({
     "CC":"i686-lfs-linux-gnu-gcc",
     "AR":"i686-lfs-linux-gnu-ar",
     "RANLIB":"i686-lfs-linux-gnu-ranlib",
-    "CFLAGS":"-m32",
+    "CFLAGS":"-O2 -m32",
     "PERL":"/usr/bin/perl",
     "PATH":"/usr/bin:/bin:" + env.get("PATH", ""),
 })

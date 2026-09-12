@@ -17,7 +17,7 @@ environment.update({
     "CC": "i686-lfs-linux-gnu-gcc",
     "AR": "i686-lfs-linux-gnu-ar",
     "RANLIB": "i686-lfs-linux-gnu-ranlib",
-    "MYCFLAGS": "-m32 -fPIC",
+    "MYCFLAGS": "-O2 -m32 -fPIC",
     "MYLDFLAGS": "-m32",
 })
 
