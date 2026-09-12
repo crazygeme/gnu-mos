@@ -3,8 +3,23 @@ from pathlib import Path
 
 def environment():
     env = os.environ.copy()
-    env["CC"] = env.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc"
+    target = env.get("LFS_TARGET", "i686-lfs-linux-gnu")
+    sysroot = Path(env["LFS_SYSROOT"])
+    env["CC"] = target + "-gcc"
+    env["CXX"] = target + "-g++"
+    env["AR"] = target + "-ar"
+    env["AS"] = target + "-as"
+    env["LD"] = target + "-ld"
+    env["RANLIB"] = target + "-ranlib"
+    env["STRIP"] = target + "-strip"
+    env["NM"] = target + "-nm"
     env["CFLAGS"] = "-m32"
+    env["PKG_CONFIG_SYSROOT_DIR"] = str(sysroot)
+    env["PKG_CONFIG_LIBDIR"] = ":".join((
+        str(sysroot / "usr/lib/pkgconfig"),
+        str(sysroot / "usr/share/pkgconfig"),
+    ))
+    env.pop("PKG_CONFIG_PATH", None)
     return env
 
 def archive_source(name, archive, directory):

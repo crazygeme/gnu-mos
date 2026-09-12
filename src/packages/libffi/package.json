@@ -1,0 +1,9 @@
+{
+    "name": "libffi",
+    "version": "3.4.8",
+    "order": 33,
+    "source": "archive",
+    "url": "https://github.com/libffi/libffi/releases/download/v{version}/libffi-{version}.tar.gz",
+    "archive": "libffi-3.4.8.tar.gz",
+    "artifact": "artifacts/libffi.done"
+}

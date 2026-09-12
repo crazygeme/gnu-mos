@@ -1,0 +1,1 @@
+{"name":"xorg-server","version":"21.1.18","order":120,"source":"archive","url":"https://www.x.org/releases/individual/xserver/xorg-server-{version}.tar.xz","archive":"xorg-server-21.1.18.tar.xz","artifact":"artifacts/xorg-server.done"}

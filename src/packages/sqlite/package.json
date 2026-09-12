@@ -1,0 +1,9 @@
+{
+    "name": "sqlite",
+    "version": "3.46.1",
+    "order": 64,
+    "source": "archive",
+    "url": "https://www.sqlite.org/2024/sqlite-autoconf-3460100.tar.gz",
+    "archive": "sqlite-autoconf-3460100.tar.gz",
+    "artifact": "artifacts/sqlite.done"
+}

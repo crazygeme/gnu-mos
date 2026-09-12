@@ -1,9 +1,9 @@
 {
-    "name": "gcc",
+    "name": "gcc-bootstrap",
     "version": "15.2.0",
-    "order": 25,
+    "order": 15,
     "source": "archive",
     "url": "https://ftp.gnu.org/gnu/gcc/gcc-{version}/gcc-{version}.tar.xz",
     "archive": "gcc-15.2.0.tar.xz",
-    "artifact": "artifacts/gcc.done"
+    "artifact": "artifacts/gcc-bootstrap.done"
 }

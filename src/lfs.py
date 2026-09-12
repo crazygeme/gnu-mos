@@ -158,6 +158,10 @@ def reset_archive_sources(info: dict) -> None:
 
 def build_package(directory: Path) -> None:
     info = metadata(directory); done = artifact(directory, info)
+    # Package builds always start from an empty build tree. Downloaded source
+    # archives, installed tools, the sysroot, and package artifacts are kept.
+    shutil.rmtree(WORK / "build", ignore_errors=True)
+    (WORK / "build").mkdir(parents=True, exist_ok=True)
     ensure_archive(info)
     if info.get("source") != "archive":
         fetch_package(info)

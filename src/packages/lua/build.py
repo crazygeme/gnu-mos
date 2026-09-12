@@ -15,6 +15,8 @@ if not source.exists():
 environment = os.environ.copy()
 environment.update({
     "CC": "i686-lfs-linux-gnu-gcc",
+    "AR": "i686-lfs-linux-gnu-ar",
+    "RANLIB": "i686-lfs-linux-gnu-ranlib",
     "MYCFLAGS": "-m32 -fPIC",
     "MYLDFLAGS": "-m32",
 })

@@ -11,3 +11,4 @@
 - When a failure is caused by a missing library or development dependency, add and build the required package, headers, library paths, and build-order dependency. Do not disable the affected component to avoid the dependency.
 - If build parameters cannot resolve a source compatibility error, add a separate patch file in the package directory beside `build.py` and apply it before compilation. Upstream archives and checkouts must remain unmodified.
 - Every package patch must be validated with `patch --dry-run` against a fresh extraction of the exact configured source archive before it is used by `build.py`.
+- After modifying files, do not start or run compilation automatically. Compilation may be run only when explicitly requested.
