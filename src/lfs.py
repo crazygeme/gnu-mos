@@ -178,7 +178,10 @@ def build_package(directory: Path) -> None:
         "LFS_SYSROOT": str(SYSROOT),
         "LFS_SOURCES": str(SOURCES),
         "LFS_TARGET": "i686-lfs-linux-gnu",
-        "PATH": f"{WORK / 'tools/bin'}:{SYSROOT / 'usr/bin'}:{env['PATH']}",
+        # Host utilities must precede target binaries.  Target programs in the
+        # sysroot are not runnable on the build host and must never satisfy
+        # commands such as sh, install, or sed during package builds.
+        "PATH": f"{WORK / 'tools/bin'}:/usr/bin:/bin:{SYSROOT / 'usr/bin'}:{env['PATH']}",
         "PYTHONDONTWRITEBYTECODE": "1",
     })
     print(f"{CYAN}build{RESET} {info['name']} {DIM}({info['version']}){RESET}")
