@@ -1,0 +1,9 @@
+{
+  "name": "procps-ng",
+  "version": "4.0.4",
+  "order": 66,
+  "source": "archive",
+  "url": "https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-{version}.tar.xz/download",
+  "archive": "procps-ng-4.0.4.tar.xz",
+  "artifact": "artifacts/procps-ng.done"
+}

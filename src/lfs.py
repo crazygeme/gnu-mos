@@ -326,6 +326,30 @@ def build_package(directory: Path) -> None:
     )
 
 
+def run_postscripts() -> None:
+    scripts = []
+    for directory in sorted(
+        package_dirs(), key=lambda path: (metadata(path).get("order", 9999), path.name)
+    ):
+        info = metadata(directory)
+        script = directory / "postscript.py"
+        if package_state(directory, info) == "built" and script.is_file():
+            scripts.append(script)
+    env = os.environ.copy()
+    env.update(
+        {
+            "LFS_WORKSPACE": str(WORK),
+            "LFS_SYSROOT": str(SYSROOT),
+            "LFS_SOURCES": str(SOURCES),
+            "LFS_TARGET": "i686-lfs-linux-gnu",
+        }
+    )
+    entry = ROOT / "src/package_entry.py"
+    for script in scripts:
+        print(f"{CYAN}postscript{RESET} {script.name}")
+        run(sys.executable, "-B", str(entry), str(script), env=env)
+
+
 def reset_build_state() -> None:
     print(
         f"{YELLOW}warning{RESET}: --rebuild removes built package state and compiled files."
@@ -380,6 +404,7 @@ def setup(no_gui: bool = False) -> None:
     ]
     if missing:
         raise SystemExit("setup requires built packages: " + ", ".join(missing))
+    run_postscripts()
     for path in (SYSROOT / "boot/kernel", SYSROOT / "usr/sbin/init"):
         if not path.is_file():
             raise SystemExit(f"setup requires an i386 executable: {path}")
@@ -488,7 +513,7 @@ def create_image() -> None:
             "    boot\n"
             "}\n"
             "menuentry 'LFS on MOS (debug)' {\n"
-            "    multiboot /boot/kernel logtofile verbose=2\n"
+            "    multiboot /boot/kernel verbose=2\n"
             "    boot\n"
             "}\n"
         )
@@ -513,17 +538,11 @@ def create_image() -> None:
         subprocess.run(["sudo", "losetup", "-d", loop], check=False)
 
 
-def qemu(extra: list[str], debug: bool = False) -> None:
+def qemu(extra: list[str]) -> None:
     if not IMAGE.exists():
         raise SystemExit("run requires ./lfs setup")
-    serial = None
+    serial = "file:" + str(WORK / "krn.log")
     qemu_extra = list(extra)
-    if debug or "--debug" in qemu_extra:
-        if "--debug" in qemu_extra:
-            qemu_extra.remove("--debug")
-        log_path = WORK / "krn.log"
-        serial = "file:" + str(log_path)
-        print(f"serial log: {log_path}")
     command = [
         "qemu-system-i386",
         "-enable-kvm",
@@ -534,8 +553,7 @@ def qemu(extra: list[str], debug: bool = False) -> None:
         "-drive",
         f"file={IMAGE},format=raw,if=ide,index=0,media=disk",
     ]
-    if serial is not None:
-        command.extend(["-serial", serial])
+    command.extend(["-serial", serial])
     command.extend(qemu_extra)
     run(*command)
 
@@ -575,12 +593,9 @@ def main(argv: list[str]) -> int:
         "--no-gui", action="store_true", help="boot the console system image"
     )
     run_parser.add_argument(
-        "--debug", action="store_true", help="enable kernel logtofile and verbose=2"
-    )
-    run_parser.add_argument(
         "args",
         nargs=argparse.REMAINDER,
-        help="enable kernel logtofile and verbose=2; write .workspace/krn.log",
+        help="additional QEMU arguments",
     )
     status_parser = commands.add_parser("status", help="show package and image state")
     status_parser.add_argument(
@@ -593,7 +608,7 @@ def main(argv: list[str]) -> int:
     elif ns.command == "build":
         build(ns.all_mode, ns.rebuild_mode, ns.no_gui)
     elif ns.command == "run":
-        qemu(ns.args, ns.debug)
+        qemu(ns.args)
     elif ns.command == "status":
         status(ns.no_gui)
     return 0
