@@ -1,9 +1,9 @@
 {
-    "name": "ncurses",
-    "version": "6.5",
-    "order": 30,
-    "source": "archive",
-    "url": "https://invisible-island.net/archives/ncurses/ncurses-{version}.tar.gz",
-    "archive": "ncurses-6.5.tar.gz",
-    "artifact": "artifacts/ncurses.done"
+  "name": "ncurses",
+  "version": "6.5",
+  "order": 30,
+  "source": "archive",
+  "url": "https://invisible-island.net/archives/ncurses/ncurses-{version}.tar.gz",
+  "archive": "ncurses-6.5.tar.gz",
+  "artifact": "artifacts/ncurses.done"
 }

@@ -1,16 +1,16 @@
 {
-    "name": "shared-mime-info",
-    "version": "2.4",
-    "order": 139.5,
-    "build-tools": [
-        "meson",
-        "ninja"
-    ],
-    "source": "archive",
-    "url": "https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/{version}/shared-mime-info-{version}.tar.gz",
-    "archive": "shared-mime-info-2.4.tar.gz",
-    "artifact": "artifacts/shared-mime-info.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "shared-mime-info",
+  "version": "2.4",
+  "order": 139.5,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/{version}/shared-mime-info-{version}.tar.gz",
+  "archive": "shared-mime-info-2.4.tar.gz",
+  "artifact": "artifacts/shared-mime-info.done",
+  "profiles": [
+    "gui"
+  ]
 }

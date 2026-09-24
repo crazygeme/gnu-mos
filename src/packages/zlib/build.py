@@ -1,5 +1,6 @@
 import os, sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parents[2]))
 import subprocess
 from package_lib import archive_source, environment
@@ -13,7 +14,9 @@ subprocess.run(
     env=env,
     check=True,
 )
-subprocess.run(["make", "-j" + str(os.cpu_count() or 1)], cwd=source, env=env, check=True)
+subprocess.run(
+    ["make", "-j" + str(os.cpu_count() or 1)], cwd=source, env=env, check=True
+)
 subprocess.run(
     ["make", "DESTDIR=" + os.environ["LFS_SYSROOT"], "install"],
     cwd=source,

@@ -1,9 +1,9 @@
 {
-    "name": "git",
-    "version": "2.51.0",
-    "order": 103,
-    "source": "archive",
-    "url": "https://www.kernel.org/pub/software/scm/git/git-{version}.tar.xz",
-    "archive": "git-2.51.0.tar.xz",
-    "artifact": "artifacts/git.done"
+  "name": "git",
+  "version": "2.51.0",
+  "order": 103,
+  "source": "archive",
+  "url": "https://www.kernel.org/pub/software/scm/git/git-{version}.tar.xz",
+  "archive": "git-2.51.0.tar.xz",
+  "artifact": "artifacts/git.done"
 }

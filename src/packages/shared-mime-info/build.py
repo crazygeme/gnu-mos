@@ -15,19 +15,27 @@ host_env = os.environ.copy()
 host_env["PKG_CONFIG_PATH"] = str(workspace / "tools/lib/pkgconfig")
 subprocess.run(
     [
-        "meson", "setup", str(host_build), str(source),
+        "meson",
+        "setup",
+        str(host_build),
+        str(source),
         "--prefix=" + str(workspace / "tools"),
-        "-Dbuild-tests=false", "-Dbuild-translations=false",
+        "-Dbuild-tests=false",
+        "-Dbuild-translations=false",
     ],
     env=host_env,
     check=True,
 )
 subprocess.run(["meson", "compile", "-C", str(host_build)], env=host_env, check=True)
 meson_install(
-    source, "shared-mime-info",
+    source,
+    "shared-mime-info",
     ("-Dbuild-tests=false", "-Dbuild-translations=false"),
 )
 subprocess.run(
-    [str(host_build / "src/update-mime-database"), str(Path(os.environ["LFS_SYSROOT"]) / "usr/share/mime")],
+    [
+        str(host_build / "src/update-mime-database"),
+        str(Path(os.environ["LFS_SYSROOT"]) / "usr/share/mime"),
+    ],
     check=True,
 )

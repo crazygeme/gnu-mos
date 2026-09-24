@@ -1,9 +1,9 @@
 {
-    "name": "libuuid",
-    "version": "2.41.1",
-    "order": 34,
-    "source": "archive",
-    "url": "https://www.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-{version}.tar.xz",
-    "archive": "util-linux-2.41.1.tar.xz",
-    "artifact": "artifacts/libuuid.done"
+  "name": "libuuid",
+  "version": "2.41.1",
+  "order": 34,
+  "source": "archive",
+  "url": "https://www.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-{version}.tar.xz",
+  "archive": "util-linux-2.41.1.tar.xz",
+  "artifact": "artifacts/libuuid.done"
 }

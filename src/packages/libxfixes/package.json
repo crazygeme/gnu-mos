@@ -1,12 +1,12 @@
 {
-    "name": "libxfixes",
-    "version": "6.0.1",
-    "order": 118,
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/libXfixes-{version}.tar.xz",
-    "archive": "libXfixes-6.0.1.tar.xz",
-    "artifact": "artifacts/libxfixes.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libxfixes",
+  "version": "6.0.1",
+  "order": 118,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libXfixes-{version}.tar.xz",
+  "archive": "libXfixes-6.0.1.tar.xz",
+  "artifact": "artifacts/libxfixes.done",
+  "profiles": [
+    "gui"
+  ]
 }

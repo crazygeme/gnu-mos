@@ -1,16 +1,16 @@
 {
-    "name": "xcb-proto",
-    "version": "1.17.0",
-    "order": 113,
-    "build-tools": [
-        "meson",
-        "ninja"
-    ],
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/proto/xcb-proto-{version}.tar.xz",
-    "archive": "xcb-proto-1.17.0.tar.xz",
-    "artifact": "artifacts/xcb-proto.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "xcb-proto",
+  "version": "1.17.0",
+  "order": 113,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/proto/xcb-proto-{version}.tar.xz",
+  "archive": "xcb-proto-1.17.0.tar.xz",
+  "artifact": "artifacts/xcb-proto.done",
+  "profiles": [
+    "gui"
+  ]
 }

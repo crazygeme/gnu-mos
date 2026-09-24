@@ -1,9 +1,9 @@
 {
-    "name": "meson",
-    "version": "1.8.3",
-    "order": 57,
-    "source": "archive",
-    "url": "https://files.pythonhosted.org/packages/source/m/meson/meson-{version}.tar.gz",
-    "archive": "meson-1.8.3.tar.gz",
-    "artifact": "artifacts/meson.done"
+  "name": "meson",
+  "version": "1.8.3",
+  "order": 57,
+  "source": "archive",
+  "url": "https://files.pythonhosted.org/packages/source/m/meson/meson-{version}.tar.gz",
+  "archive": "meson-1.8.3.tar.gz",
+  "artifact": "artifacts/meson.done"
 }

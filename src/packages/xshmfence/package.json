@@ -1,12 +1,12 @@
 {
-    "name": "xshmfence",
-    "version": "1.3.3",
-    "order": 122,
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/libxshmfence-{version}.tar.xz",
-    "archive": "libxshmfence-1.3.3.tar.xz",
-    "artifact": "artifacts/xshmfence.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "xshmfence",
+  "version": "1.3.3",
+  "order": 122,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libxshmfence-{version}.tar.xz",
+  "archive": "libxshmfence-1.3.3.tar.xz",
+  "artifact": "artifacts/xshmfence.done",
+  "profiles": [
+    "gui"
+  ]
 }

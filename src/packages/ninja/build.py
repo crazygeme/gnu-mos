@@ -9,7 +9,11 @@ from package_lib import archive_source
 
 source = archive_source("ninja", "ninja-1.13.1.tar.gz", "ninja-1.13.1")
 subprocess.run(
-    [str(Path(os.environ["LFS_WORKSPACE"]) / "tools/bin/python3.13"), "configure.py", "--bootstrap"],
+    [
+        str(Path(os.environ["LFS_WORKSPACE"]) / "tools/bin/python3.13"),
+        "configure.py",
+        "--bootstrap",
+    ],
     cwd=source,
     check=True,
 )

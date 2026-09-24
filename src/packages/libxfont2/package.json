@@ -1,12 +1,12 @@
 {
-    "name": "libxfont2",
-    "version": "2.0.7",
-    "order": 128,
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/libXfont2-{version}.tar.xz",
-    "archive": "libXfont2-2.0.7.tar.xz",
-    "artifact": "artifacts/libxfont2.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libxfont2",
+  "version": "2.0.7",
+  "order": 128,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libXfont2-{version}.tar.xz",
+  "archive": "libXfont2-2.0.7.tar.xz",
+  "artifact": "artifacts/libxfont2.done",
+  "profiles": [
+    "gui"
+  ]
 }

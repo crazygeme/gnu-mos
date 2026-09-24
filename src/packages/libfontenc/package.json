@@ -1,12 +1,12 @@
 {
-    "name": "libfontenc",
-    "version": "1.1.8",
-    "order": 126,
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/libfontenc-{version}.tar.xz",
-    "archive": "libfontenc-1.1.8.tar.xz",
-    "artifact": "artifacts/libfontenc.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libfontenc",
+  "version": "1.1.8",
+  "order": 126,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libfontenc-{version}.tar.xz",
+  "archive": "libfontenc-1.1.8.tar.xz",
+  "artifact": "artifacts/libfontenc.done",
+  "profiles": [
+    "gui"
+  ]
 }

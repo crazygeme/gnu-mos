@@ -1,9 +1,9 @@
 {
-    "name": "m4",
-    "version": "1.4.19",
-    "order": 6,
-    "source": "archive",
-    "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/m4/m4-{version}.tar.xz",
-    "archive": "m4-1.4.19.tar.xz",
-    "artifact": "artifacts/m4.done"
+  "name": "m4",
+  "version": "1.4.19",
+  "order": 6,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/m4/m4-{version}.tar.xz",
+  "archive": "m4-1.4.19.tar.xz",
+  "artifact": "artifacts/m4.done"
 }

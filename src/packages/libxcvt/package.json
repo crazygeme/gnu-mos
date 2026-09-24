@@ -1,16 +1,16 @@
 {
-    "name": "libxcvt",
-    "version": "0.1.3",
-    "order": 136,
-    "build-tools": [
-        "meson",
-        "ninja"
-    ],
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/libxcvt-{version}.tar.xz",
-    "archive": "libxcvt-0.1.3.tar.xz",
-    "artifact": "artifacts/libxcvt.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libxcvt",
+  "version": "0.1.3",
+  "order": 136,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libxcvt-{version}.tar.xz",
+  "archive": "libxcvt-0.1.3.tar.xz",
+  "artifact": "artifacts/libxcvt.done",
+  "profiles": [
+    "gui"
+  ]
 }

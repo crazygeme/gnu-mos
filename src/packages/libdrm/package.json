@@ -1,16 +1,16 @@
 {
-    "name": "libdrm",
-    "version": "2.4.124",
-    "order": 137,
-    "build-tools": [
-        "meson",
-        "ninja"
-    ],
-    "source": "archive",
-    "url": "https://dri.freedesktop.org/libdrm/libdrm-{version}.tar.xz",
-    "archive": "libdrm-2.4.124.tar.xz",
-    "artifact": "artifacts/libdrm.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libdrm",
+  "version": "2.4.124",
+  "order": 137,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://dri.freedesktop.org/libdrm/libdrm-{version}.tar.xz",
+  "archive": "libdrm-2.4.124.tar.xz",
+  "artifact": "artifacts/libdrm.done",
+  "profiles": [
+    "gui"
+  ]
 }

@@ -13,13 +13,15 @@ if not source.exists():
         package.extractall(workspace / "build", filter="data")
 
 environment = os.environ.copy()
-environment.update({
-    "CC": "i686-lfs-linux-gnu-gcc",
-    "AR": "i686-lfs-linux-gnu-ar",
-    "RANLIB": "i686-lfs-linux-gnu-ranlib",
-    "MYCFLAGS": "-O2 -m32 -fPIC",
-    "MYLDFLAGS": "-m32",
-})
+environment.update(
+    {
+        "CC": "i686-lfs-linux-gnu-gcc",
+        "AR": "i686-lfs-linux-gnu-ar",
+        "RANLIB": "i686-lfs-linux-gnu-ranlib",
+        "MYCFLAGS": "-O2 -m32 -fPIC",
+        "MYLDFLAGS": "-m32",
+    }
+)
 
 subprocess.run(
     ["make", "-j" + str(os.cpu_count() or 1), "linux"],

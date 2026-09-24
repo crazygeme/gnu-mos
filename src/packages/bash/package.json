@@ -1,9 +1,9 @@
 {
-    "name": "bash",
-    "version": "5.3",
-    "order": 60,
-    "source": "archive",
-    "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/bash/bash-{version}.tar.gz",
-    "archive": "bash-5.3.tar.gz",
-    "artifact": "artifacts/bash.done"
+  "name": "bash",
+  "version": "5.3",
+  "order": 60,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/bash/bash-{version}.tar.gz",
+  "archive": "bash-5.3.tar.gz",
+  "artifact": "artifacts/bash.done"
 }
