@@ -1,0 +1,13 @@
+{
+    "name": "libxml2",
+    "version": "2.13.8",
+    "order": 94,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
+    "source": "archive",
+    "url": "https://download.gnome.org/sources/libxml2/2.13/libxml2-{version}.tar.xz",
+    "archive": "libxml2-2.13.8.tar.xz",
+    "artifact": "artifacts/libxml2.done"
+}

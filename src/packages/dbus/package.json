@@ -1,7 +1,11 @@
 {
     "name": "dbus",
     "version": "1.16.2",
-    "order": 110,
+    "order": 106,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
     "source": "archive",
     "url": "https://dbus.freedesktop.org/releases/dbus/dbus-{version}.tar.xz",
     "archive": "dbus-1.16.2.tar.xz",

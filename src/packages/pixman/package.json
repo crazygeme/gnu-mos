@@ -1,0 +1,16 @@
+{
+    "name": "pixman",
+    "version": "0.46.4",
+    "order": 119,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
+    "source": "archive",
+    "url": "https://www.cairographics.org/releases/pixman-{version}.tar.xz",
+    "archive": "pixman-0.46.4.tar.xz",
+    "artifact": "artifacts/pixman.done",
+    "profiles": [
+        "gui"
+    ]
+}

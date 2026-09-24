@@ -1,0 +1,9 @@
+{
+    "name": "libmd",
+    "version": "1.1.0",
+    "order": 108,
+    "source": "archive",
+    "url": "https://distfiles.macports.org/libmd/libmd-{version}.tar.xz",
+    "archive": "libmd-1.1.0.tar.xz",
+    "artifact": "artifacts/libmd.done"
+}

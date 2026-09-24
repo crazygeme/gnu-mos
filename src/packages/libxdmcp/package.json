@@ -1,0 +1,12 @@
+{
+    "name": "libxdmcp",
+    "version": "1.1.5",
+    "order": 114,
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/lib/libXdmcp-{version}.tar.xz",
+    "archive": "libXdmcp-1.1.5.tar.xz",
+    "artifact": "artifacts/libxdmcp.done",
+    "profiles": [
+        "gui"
+    ]
+}

@@ -3,7 +3,7 @@
     "version": "3.13.7",
     "order": 54,
     "source": "archive",
-    "url": "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/python/{version}/Python-{version}.tar.xz",
     "archive": "Python-3.13.7.tar.xz",
     "artifact": "artifacts/python-host.done"
 }

@@ -1,1 +1,9 @@
-{"name":"sysvinit","version":"3.14","order":200,"source":"meta","artifact":"artifacts/sysvinit.done"}
+{
+    "name": "sysvinit",
+    "version": "3.14",
+    "order": 109.5,
+    "source": "archive",
+    "url": "https://github.com/slicer69/sysvinit/archive/refs/tags/{version}.tar.gz",
+    "archive": "sysvinit-3.14.tar.gz",
+    "artifact": "artifacts/sysvinit.done"
+}

@@ -12,3 +12,4 @@
 - If build parameters cannot resolve a source compatibility error, add a separate patch file in the package directory beside `build.py` and apply it before compilation. Upstream archives and checkouts must remain unmodified.
 - Every package patch must be validated with `patch --dry-run` against a fresh extraction of the exact configured source archive before it is used by `build.py`.
 - After modifying files, do not start or run compilation automatically. Compilation may be run only when explicitly requested.
+- Prefer verified domestic mirrors for package downloads. Retain the upstream URL when a domestic mirror is unavailable or cannot be verified.

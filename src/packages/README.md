@@ -16,3 +16,19 @@ not used as a substitute for missing source packages.
 Every compiled userspace component must have its own manifest and build recipe.
 The package list is intentionally explicit so each download, version, build
 order, and artifact is inspectable.
+
+The `ninja` and `meson` source packages install host build tools into
+`.workspace/tools/bin/` before Meson-based packages are built.
+
+Packages with `"profiles": ["gui"]` are included in the full build and
+excluded from `./lfs build --no-gui`, which builds all console packages. The
+console build uses `.workspace/sysroot/`, `.workspace/tools/`, and
+`.workspace/artifacts/`. Completed packages are shared between build modes.
+`./lfs setup --no-gui` assembles the console executables and their runtime
+libraries in `.workspace/no-gui/rootfs/` and installs them into
+`.workspace/no-gui/qemu-hd/lfs.img`. `./lfs run --no-gui` boots that image.
+`--rebuild` applies to the shared build state and cannot be combined with
+`--no-gui`.
+
+The console system uses the MOS kernel, GRUB, and sysvinit. Sysvinit starts
+the runlevel 3 console shell on `/dev/tty1`.

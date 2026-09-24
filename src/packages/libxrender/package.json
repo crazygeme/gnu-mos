@@ -1,1 +1,12 @@
-{"name":"libxrender","version":"0.9.12","order":118,"source":"archive","url":"https://www.x.org/releases/individual/lib/libXrender-{version}.tar.xz","archive":"libXrender-0.9.12.tar.xz","artifact":"artifacts/libxrender.done"}
+{
+    "name": "libxrender",
+    "version": "0.9.12",
+    "order": 121,
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/lib/libXrender-{version}.tar.xz",
+    "archive": "libXrender-0.9.12.tar.xz",
+    "artifact": "artifacts/libxrender.done",
+    "profiles": [
+        "gui"
+    ]
+}

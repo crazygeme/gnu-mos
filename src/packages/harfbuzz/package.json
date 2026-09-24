@@ -1,0 +1,16 @@
+{
+    "name": "harfbuzz",
+    "version": "11.2.1",
+    "order": 128,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
+    "source": "archive",
+    "url": "https://github.com/harfbuzz/harfbuzz/releases/download/{version}/harfbuzz-{version}.tar.xz",
+    "archive": "harfbuzz-11.2.1.tar.xz",
+    "artifact": "artifacts/harfbuzz.done",
+    "profiles": [
+        "gui"
+    ]
+}

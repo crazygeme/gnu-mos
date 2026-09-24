@@ -1,0 +1,16 @@
+{
+    "name": "mesa",
+    "version": "25.1.9",
+    "order": 139,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
+    "source": "archive",
+    "url": "https://archive.mesa3d.org/mesa-{version}.tar.xz",
+    "archive": "mesa-25.1.9.tar.xz",
+    "artifact": "artifacts/mesa.done",
+    "profiles": [
+        "gui"
+    ]
+}

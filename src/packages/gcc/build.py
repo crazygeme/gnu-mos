@@ -22,5 +22,5 @@ configure = [str(source / "configure"), "--target=i686-lfs-linux-gnu", "--prefix
              "--with-ld=" + str(target_bin / "i686-lfs-linux-gnu-ld"), "--disable-nls",
              "--disable-multilib", "--enable-languages=c,c++"]
 subprocess.run(configure, cwd=build, env=build_env, check=True)
-subprocess.run(["make", "-j" + str(os.cpu_count() or 1), "all-target-libgcc", "all-gcc"], cwd=build, env=build_env, check=True)
-subprocess.run(["make", "DESTDIR=" + os.environ["LFS_SYSROOT"], "install-target-libgcc", "install-gcc"], cwd=build, env=build_env, check=True)
+subprocess.run(["make", "-j" + str(os.cpu_count() or 1), "all-target-libgcc", "all-target-libstdc++-v3", "all-gcc"], cwd=build, env=build_env, check=True)
+subprocess.run(["make", "DESTDIR=" + os.environ["LFS_SYSROOT"], "install-target-libgcc", "install-target-libstdc++-v3", "install-gcc"], cwd=build, env=build_env, check=True)

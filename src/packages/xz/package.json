@@ -1,0 +1,9 @@
+{
+    "name": "xz",
+    "version": "5.8.1",
+    "order": 35,
+    "source": "archive",
+    "url": "https://github.com/tukaani-project/xz/releases/download/v{version}/xz-{version}.tar.xz",
+    "archive": "xz-5.8.1.tar.xz",
+    "artifact": "artifacts/xz.done"
+}

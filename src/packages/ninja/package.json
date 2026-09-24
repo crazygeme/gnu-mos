@@ -1,0 +1,9 @@
+{
+    "name": "ninja",
+    "version": "1.13.1",
+    "order": 56,
+    "source": "archive",
+    "url": "https://codeload.github.com/ninja-build/ninja/tar.gz/refs/tags/v{version}",
+    "archive": "ninja-1.13.1.tar.gz",
+    "artifact": "artifacts/ninja.done"
+}

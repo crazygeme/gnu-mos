@@ -2,8 +2,15 @@
     "name": "gnome-shell",
     "version": "48.4",
     "order": 170,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
     "source": "archive",
     "url": "https://download.gnome.org/sources/gnome-shell/48/gnome-shell-{version}.tar.xz",
     "archive": "gnome-shell-48.4.tar.xz",
-    "artifact": "artifacts/gnome-shell.done"
+    "artifact": "artifacts/gnome-shell.done",
+    "profiles": [
+        "gui"
+    ]
 }

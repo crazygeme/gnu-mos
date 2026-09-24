@@ -2,8 +2,15 @@
     "name": "gnome-session",
     "version": "48.0",
     "order": 150,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
     "source": "archive",
     "url": "https://download.gnome.org/sources/gnome-session/48/gnome-session-{version}.tar.xz",
     "archive": "gnome-session-48.0.tar.xz",
-    "artifact": "artifacts/gnome-session.done"
+    "artifact": "artifacts/gnome-session.done",
+    "profiles": [
+        "gui"
+    ]
 }

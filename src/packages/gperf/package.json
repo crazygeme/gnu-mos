@@ -1,0 +1,9 @@
+{
+    "name": "gperf",
+    "version": "3.3",
+    "order": 98,
+    "source": "archive",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/gperf/gperf-{version}.tar.gz",
+    "archive": "gperf-3.3.tar.gz",
+    "artifact": "artifacts/gperf.done"
+}
