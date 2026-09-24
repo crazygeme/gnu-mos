@@ -57,12 +57,15 @@ console.write_text(
     "#!/bin/sh\n"
     "export PATH=/sbin:/bin:/usr/sbin:/usr/bin\n"
     "export HOME=/root TERM=linux\n"
+    "if grep -qw gui /proc/cmdline 2>/dev/null && [ -x /usr/bin/startx ]; then\n"
+    "    exec /usr/bin/startx /usr/bin/gnome-session </dev/tty1 >/dev/tty1 2>&1\n"
+    "fi\n"
     "exec /bin/bash -l </dev/tty1 >/dev/tty1 2>&1\n",
     encoding="ascii",
 )
 console.chmod(0o755)
 (etc / "fstab").write_text(
-    "/dev/hda1 / ext4 defaults 0 1\n"
+    "/dev/hda1 / ext3 defaults 0 1\n"
     "proc /proc proc defaults 0 0\n"
     "tmpfs /run tmpfs defaults 0 0\n",
     encoding="ascii",

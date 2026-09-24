@@ -9,7 +9,6 @@ import subprocess
 import sys
 import tarfile
 import urllib.request
-import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,7 +65,7 @@ def select_workspace(no_gui: bool) -> None:
     WORK = BASE_WORK
     SOURCES = BASE_WORK / "sources"
     SYSROOT = WORK / "sysroot"
-    IMAGE = WORK / ("no-gui/qemu-hd/lfs.img" if no_gui else "qemu-hd/lfs.img")
+    IMAGE = WORK / "qemu-hd/lfs.img"
 
 def selected_packages(no_gui: bool) -> list[Path]:
     directories = sorted(package_dirs(), key=lambda p: (metadata(p).get("order", 9999), p.name))
@@ -256,77 +255,8 @@ def setup(no_gui: bool = False) -> None:
             raise SystemExit(f"setup requires {path}")
     create_image()
 
-CONSOLE_PROGRAMS = (
-    "usr/sbin/init", "usr/sbin/runlevel", "usr/sbin/shutdown", "usr/sbin/halt",
-    "usr/sbin/killall5", "usr/bin/bash", "usr/bin/mount", "usr/bin/umount",
-    "usr/bin/ls", "usr/bin/cat", "usr/bin/echo", "usr/bin/printf",
-    "usr/bin/mkdir", "usr/bin/rm", "usr/bin/cp", "usr/bin/mv",
-    "usr/bin/chmod", "usr/bin/chown", "usr/bin/ln", "usr/bin/pwd",
-    "usr/bin/true", "usr/bin/false", "usr/bin/sync", "usr/bin/dmesg",
-)
-
-def console_root() -> Path:
-    root = BASE_WORK / "no-gui/rootfs"
-    if root.exists():
-        shutil.rmtree(root)
-    for name in ("boot", "dev", "dev/pts", "dev/shm", "etc/init.d", "home",
-                 "proc", "root", "run", "sys", "tmp", "usr/bin", "usr/sbin",
-                 "usr/lib", "var/log", "var/run"):
-        (root / name).mkdir(parents=True, exist_ok=True)
-    for name, target in (("bin", "usr/bin"), ("sbin", "usr/sbin"), ("lib", "usr/lib")):
-        (root / name).symlink_to(target)
-    copied: set[Path] = set()
-
-    def copy_path(relative: Path) -> None:
-        if relative in copied:
-            return
-        source = SYSROOT / relative
-        if not source.exists() and not source.is_symlink():
-            raise SystemExit(f"console image requires {source}")
-        copied.add(relative)
-        destination = root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        if source.is_symlink():
-            target = source.readlink()
-            if target.is_absolute():
-                resolved = Path(*target.parts[1:])
-                if resolved.parts[:1] == ("lib",):
-                    resolved = Path("usr", *resolved.parts)
-            else:
-                resolved_source = (source.parent / target).resolve()
-                try:
-                    resolved = resolved_source.relative_to(SYSROOT.resolve())
-                except ValueError:
-                    raise SystemExit(f"console image has an external link: {source}")
-            destination.symlink_to(target)
-            copy_path(resolved)
-            return
-        shutil.copy2(source, destination)
-        with source.open("rb") as binary:
-            if binary.read(4) != b"\x7fELF":
-                return
-        dynamic = subprocess.run(["readelf", "-d", str(source)], capture_output=True, text=True, check=True).stdout
-        program = subprocess.run(["readelf", "-l", str(source)], capture_output=True, text=True, check=True).stdout
-        libraries = re.findall(r"\(NEEDED\).*?\[([^]]+)\]", dynamic)
-        libraries += re.findall(r"Requesting program interpreter: ([^]]+)", program)
-        for library in libraries:
-            name = Path(library).name
-            matches = [Path("usr/lib") / name, Path("lib") / name]
-            match = next((item for item in matches if (SYSROOT / item).exists()), None)
-            if match is None:
-                raise SystemExit(f"console image requires {name} for {source}")
-            copy_path(match)
-
-    for name in ("boot/kernel", "etc/inittab", "etc/init.d/rcS",
-                 "etc/init.d/console", "etc/fstab", *CONSOLE_PROGRAMS):
-        copy_path(Path(name))
-    copy_path(Path("usr/bin/sh"))
-    for name in ("telinit", "reboot", "poweroff"):
-        copy_path(Path("usr/sbin") / name)
-    return root
-
 def create_image() -> None:
-    image_root = console_root() if NO_GUI else SYSROOT
+    image_root = SYSROOT
     grub_install = SYSROOT / "usr/sbin/grub-install"
     grub_modules = SYSROOT / "usr/lib/grub/i386-pc"
     grub_env = os.environ.copy()
@@ -368,12 +298,23 @@ def create_image() -> None:
     mounted = False
     try:
         if new_image or empty_mbr or NO_GUI:
-            sudo_run("mkfs.ext4", "-F", partition)
+            sudo_run("mkfs.ext3", "-F", partition)
         sudo_run("mount", partition, str(mountpoint))
         mounted = True
         sudo_run("cp", "-a", str(image_root) + "/.", str(mountpoint) + "/")
         sudo_run("mkdir", "-p", str(mountpoint / "boot/grub"))
-        grub_cfg = "set timeout=3\nset default=0\nmenuentry 'LFS on MOS' {\n    multiboot /boot/kernel\n    boot\n}\n"
+        grub_cfg = (
+            "set timeout=3\n"
+            "set default=0\n"
+            "menuentry 'LFS on MOS' {\n"
+            "    multiboot /boot/kernel gui\n"
+            "    boot\n"
+            "}\n"
+            "menuentry 'LFS on MOS (debug)' {\n"
+            "    multiboot /boot/kernel logtofile verbose=2\n"
+            "    boot\n"
+            "}\n"
+        )
         (WORK / "grub.cfg").write_text(grub_cfg)
         sudo_run("cp", str(WORK / "grub.cfg"), str(mountpoint / "boot/grub/grub.cfg"))
         command = [str(grub_install), "--target=i386-pc",
@@ -390,9 +331,17 @@ def create_image() -> None:
         subprocess.run(["sudo", "losetup", "-d", partition], check=False)
         subprocess.run(["sudo", "losetup", "-d", loop], check=False)
 
-def qemu(extra: list[str]) -> None:
+def qemu(extra: list[str], debug: bool = False) -> None:
     if not IMAGE.exists(): raise SystemExit("run requires ./lfs setup")
-    run("qemu-system-i386", "-m", os.environ.get("LFS_RAM", "2048"), "-drive", f"file={IMAGE},format=raw,if=ide,index=0,media=disk", "-serial", "stdio", *extra)
+    serial = "stdio"
+    qemu_extra = list(extra)
+    if debug or "--debug" in qemu_extra:
+        if "--debug" in qemu_extra:
+            qemu_extra.remove("--debug")
+        log_path = WORK / "krn.log"
+        serial = "file:" + str(log_path)
+        print(f"serial log: {log_path}")
+    run("qemu-system-i386", "-enable-kvm", "-m", os.environ.get("LFS_RAM", "2048"), "-smp", "2", "-drive", f"file={IMAGE},format=raw,if=ide,index=0,media=disk", "-serial", serial, *qemu_extra)
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="lfs")
@@ -405,14 +354,16 @@ def main(argv: list[str]) -> int:
     build_parser.add_argument("--no-gui", action="store_true", help="build missing console packages using shared artifacts")
     run_parser = commands.add_parser("run", help="boot MOS and lfs.img with QEMU")
     run_parser.add_argument("--no-gui", action="store_true", help="boot the console system image")
-    run_parser.add_argument("args", nargs=argparse.REMAINDER)
+    run_parser.add_argument("--debug", action="store_true", help="enable kernel logtofile and verbose=2")
+    run_parser.add_argument("args", nargs=argparse.REMAINDER,
+                            help="enable kernel logtofile and verbose=2; write .workspace/krn.log")
     status_parser = commands.add_parser("status", help="show package and image state")
     status_parser.add_argument("--no-gui", action="store_true", help="show console packages and image")
     ns = parser.parse_args(argv)
     select_workspace(getattr(ns, "no_gui", False))
     if ns.command == "setup": setup(ns.no_gui)
     elif ns.command == "build": build(ns.all_mode, ns.rebuild_mode, ns.no_gui)
-    elif ns.command == "run": qemu(ns.args)
+    elif ns.command == "run": qemu(ns.args, ns.debug)
     elif ns.command == "status": status(ns.no_gui)
     return 0
 if __name__ == "__main__":
