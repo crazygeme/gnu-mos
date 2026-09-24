@@ -1,0 +1,9 @@
+{
+    "name": "expat",
+    "version": "2.7.1",
+    "order": 93,
+    "source": "archive",
+    "url": "https://github.com/libexpat/libexpat/releases/download/R_2_7_1/expat-2.7.1.tar.xz",
+    "archive": "expat-2.7.1.tar.xz",
+    "artifact": "artifacts/expat.done"
+}
