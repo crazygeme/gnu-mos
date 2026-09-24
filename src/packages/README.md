@@ -24,9 +24,9 @@ Packages with `"profiles": ["gui"]` are included in the full build and
 excluded from `./lfs build --no-gui`, which builds all console packages. The
 console build uses `.workspace/sysroot/`, `.workspace/tools/`, and
 `.workspace/artifacts/`. Completed packages are shared between build modes.
-`./lfs setup --no-gui` assembles the console executables and their runtime
-libraries in `.workspace/no-gui/rootfs/` and installs them into
-`.workspace/no-gui/qemu-hd/lfs.img`. `./lfs run --no-gui` boots that image.
+Both build modes use `.workspace/qemu-hd/lfs.img`. Sysvinit selects the
+console or graphical startup script from the `gui` kernel command-line token;
+`./lfs run --no-gui` boots the console mode.
 `--rebuild` applies to the shared build state and cannot be combined with
 `--no-gui`.
 
