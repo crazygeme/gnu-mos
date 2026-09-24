@@ -1,0 +1,16 @@
+{
+    "name": "xkeyboard-config",
+    "version": "2.43",
+    "order": 139.75,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/data/xkeyboard-config/xkeyboard-config-{version}.tar.xz",
+    "archive": "xkeyboard-config-2.43.tar.xz",
+    "artifact": "artifacts/xkeyboard-config.done",
+    "profiles": [
+        "gui"
+    ]
+}

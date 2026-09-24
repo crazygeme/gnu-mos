@@ -3,7 +3,7 @@
     "version": "1.0.8",
     "order": 32,
     "source": "archive",
-    "url": "https://sourceware.org/pub/bzip2/bzip2-{version}.tar.gz",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/sourceware/bzip2/bzip2-{version}.tar.gz",
     "archive": "bzip2-1.0.8.tar.gz",
     "artifact": "artifacts/bzip2.done"
 }

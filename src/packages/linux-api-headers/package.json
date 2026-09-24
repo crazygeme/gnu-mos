@@ -3,7 +3,7 @@
     "version": "6.16.8",
     "order": 5,
     "source": "archive",
-    "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-{version}.tar.xz",
+    "url": "https://mirrors.ustc.edu.cn/kernel.org/linux/kernel/v6.x/linux-{version}.tar.xz",
     "archive": "linux-6.16.8.tar.xz",
     "artifact": "artifacts/linux-api-headers.done"
 }

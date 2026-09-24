@@ -1,1 +1,16 @@
-{"name":"xorgproto","version":"2024.1","order":115,"source":"archive","url":"https://www.x.org/releases/individual/proto/xorgproto-{version}.tar.xz","archive":"xorgproto-2024.1.tar.xz","artifact":"artifacts/xorgproto.done"}
+{
+    "name": "xorgproto",
+    "version": "2024.1",
+    "order": 110,
+    "build-tools": [
+        "meson",
+        "ninja"
+    ],
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/proto/xorgproto-{version}.tar.xz",
+    "archive": "xorgproto-2024.1.tar.xz",
+    "artifact": "artifacts/xorgproto.done",
+    "profiles": [
+        "gui"
+    ]
+}

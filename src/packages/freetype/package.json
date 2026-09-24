@@ -1,0 +1,12 @@
+{
+    "name": "freetype",
+    "version": "2.13.3",
+    "order": 125,
+    "source": "archive",
+    "url": "https://downloads.sourceforge.net/project/freetype/freetype2/{version}/freetype-{version}.tar.xz",
+    "archive": "freetype-2.13.3.tar.xz",
+    "artifact": "artifacts/freetype.done",
+    "profiles": [
+        "gui"
+    ]
+}

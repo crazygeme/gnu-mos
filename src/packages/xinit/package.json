@@ -1,1 +1,12 @@
-{"name":"xinit","version":"1.4.3","order":121,"source":"archive","url":"https://www.x.org/releases/individual/app/xinit-{version}.tar.xz","archive":"xinit-1.4.3.tar.xz","artifact":"artifacts/xinit.done"}
+{
+    "name": "xinit",
+    "version": "1.4.3",
+    "order": 121,
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/app/xinit-{version}.tar.xz",
+    "archive": "xinit-1.4.3.tar.xz",
+    "artifact": "artifacts/xinit.done",
+    "profiles": [
+        "gui"
+    ]
+}

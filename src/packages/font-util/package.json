@@ -1,0 +1,12 @@
+{
+    "name": "font-util",
+    "version": "1.4.1",
+    "order": 134,
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/font/font-util-{version}.tar.xz",
+    "archive": "font-util-1.4.1.tar.xz",
+    "artifact": "artifacts/font-util.done",
+    "profiles": [
+        "gui"
+    ]
+}

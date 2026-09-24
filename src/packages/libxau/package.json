@@ -1,0 +1,12 @@
+{
+    "name": "libxau",
+    "version": "1.0.12",
+    "order": 112,
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/lib/libXau-{version}.tar.xz",
+    "archive": "libXau-1.0.12.tar.xz",
+    "artifact": "artifacts/libxau.done",
+    "profiles": [
+        "gui"
+    ]
+}

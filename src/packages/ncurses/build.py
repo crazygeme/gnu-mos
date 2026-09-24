@@ -25,7 +25,10 @@ common = (
     "--without-cxx",
 )
 
-for name, extra in (("narrow", ()), ("wide", ("--enable-widec",))):
+for name, extra in (
+    ("narrow", ("--with-termlib=tinfo",)),
+    ("wide", ("--enable-widec",)),
+):
     build = workspace / "build" / ("ncurses-" + name)
     if build.exists():
         shutil.rmtree(build)

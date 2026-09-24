@@ -1,0 +1,12 @@
+{
+    "name": "libxcursor",
+    "version": "1.2.3",
+    "order": 127.5,
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/lib/libXcursor-{version}.tar.xz",
+    "archive": "libXcursor-1.2.3.tar.xz",
+    "artifact": "artifacts/libxcursor.done",
+    "profiles": [
+        "gui"
+    ]
+}

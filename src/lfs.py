@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tarfile
 import urllib.request
-import time
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +18,8 @@ WORK = ROOT / ".workspace"
 SOURCES = WORK / "sources"
 SYSROOT = WORK / "sysroot"
 IMAGE = WORK / "qemu-hd/lfs.img"
+BASE_WORK = WORK
+NO_GUI = False
 TTY = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
 RESET = "\033[0m" if TTY else ""
 CYAN = "\033[36m" if TTY else ""
@@ -58,17 +60,27 @@ def run(*cmd: str, cwd: Path | None = None, env: dict[str, str] | None = None, l
 def sudo_run(*cmd: str) -> None:
     run(*(cmd if os.geteuid() == 0 else ("sudo", *cmd)))
 
+def select_workspace(no_gui: bool) -> None:
+    global WORK, SOURCES, SYSROOT, IMAGE, NO_GUI
+    NO_GUI = no_gui
+    WORK = BASE_WORK
+    SOURCES = BASE_WORK / "sources"
+    SYSROOT = WORK / "sysroot"
+    IMAGE = WORK / ("no-gui/qemu-hd/lfs.img" if no_gui else "qemu-hd/lfs.img")
+
+def selected_packages(no_gui: bool) -> list[Path]:
+    directories = sorted(package_dirs(), key=lambda p: (metadata(p).get("order", 9999), p.name))
+    if no_gui:
+        directories = [p for p in directories if "gui" not in metadata(p).get("profiles", [])]
+    return directories
+
 def setup_workspace() -> None:
     for path in (WORK, SOURCES, WORK / "build", WORK / "logs", SYSROOT, IMAGE.parent): path.mkdir(parents=True, exist_ok=True)
-    for path in ("boot", "dev", "etc", "home", "proc", "root", "run", "sys", "tmp", "usr/bin", "usr/sbin", "usr/lib", "var/log"):
+    for path in ("boot", "dev", "dev/pts", "dev/shm", "etc", "home", "proc", "root", "run", "sys", "tmp", "usr/bin", "usr/sbin", "usr/lib", "var/log", "var/run"):
         (SYSROOT / path).mkdir(parents=True, exist_ok=True)
     for name, target in (("bin", "usr/bin"), ("sbin", "usr/sbin"), ("lib", "usr/lib")):
         link = SYSROOT / name
         if not link.exists(): link.symlink_to(target)
-    init = SYSROOT / "sbin/init"
-    if not init.exists():
-        init.write_text("#!/bin/sh\nmount -a || true\nexec /bin/sh\n")
-        init.chmod(0o755)
     shell = SYSROOT / "usr/bin/sh"
     if shell.is_symlink() and shell.readlink() != Path("bash"):
         shell.unlink()
@@ -89,9 +101,9 @@ def package_state(directory: Path, info: dict) -> str:
     if info.get("source") == "meta": return "empty"
     return "empty"
 
-def status() -> None:
+def status(no_gui: bool = False) -> None:
     rows = []
-    for directory in sorted(package_dirs(), key=lambda p: metadata(p).get("order", 9999)):
+    for directory in selected_packages(no_gui):
         info = metadata(directory); rows.append({"name": info["name"], "version": info["version"], "status": package_state(directory, info)})
     done = sum(row["status"] == "built" for row in rows)
     total = len(rows)
@@ -205,10 +217,12 @@ def reset_build_state() -> None:
     setup_workspace()
     return True
 
-def build(all_mode: bool, rebuild_mode: bool = False) -> None:
+def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> None:
+    if rebuild_mode and no_gui:
+        raise SystemExit("--rebuild --no-gui would remove the shared build state; use --rebuild without --no-gui")
     if rebuild_mode and not reset_build_state():
         return
-    setup_workspace(); directories = sorted(package_dirs(), key=lambda p: metadata(p).get("order", 9999))
+    setup_workspace(); directories = selected_packages(no_gui)
     pending = [directory for directory in directories if package_state(directory, metadata(directory)) != "built"]
     total = len(pending)
     for index, directory in enumerate(pending, 1):
@@ -216,39 +230,165 @@ def build(all_mode: bool, rebuild_mode: bool = False) -> None:
         print(f"{YELLOW}package {index}/{total}{RESET} {info['name']}")
         build_package(directory)
         progress("build packages", index, total, newline=True)
-        if not all_mode:
+        if not (all_mode or no_gui):
             return
 
-def setup() -> None:
+def setup(no_gui: bool = False) -> None:
     setup_workspace()
+    missing = [metadata(directory)["name"] for directory in selected_packages(no_gui)
+               if package_state(directory, metadata(directory)) != "built"]
+    if missing:
+        raise SystemExit("setup requires built packages: " + ", ".join(missing))
+    for path in (SYSROOT / "boot/kernel", SYSROOT / "usr/sbin/init"):
+        if not path.is_file():
+            raise SystemExit(f"setup requires an i386 executable: {path}")
+        with path.open("rb") as executable:
+            header = executable.read(20)
+        if len(header) < 20 or header[:6] != b"\x7fELF\x01\x01" or header[18:20] != b"\x03\x00":
+            raise SystemExit(f"setup requires an i386 executable: {path}")
+    for path in (SYSROOT / "etc/inittab", SYSROOT / "etc/init.d/rcS",
+                 SYSROOT / "etc/init.d/console", SYSROOT / "etc/fstab", SYSROOT / "usr/bin/bash"):
+        if not path.is_file():
+            raise SystemExit(f"setup requires {path}")
+    for path in (SYSROOT / "usr/sbin/grub-install", SYSROOT / "usr/lib/grub/i386-pc/normal.mod",
+                 SYSROOT / "usr/lib/grub/i386-pc/multiboot.mod"):
+        if not path.is_file():
+            raise SystemExit(f"setup requires {path}")
     create_image()
 
+CONSOLE_PROGRAMS = (
+    "usr/sbin/init", "usr/sbin/runlevel", "usr/sbin/shutdown", "usr/sbin/halt",
+    "usr/sbin/killall5", "usr/bin/bash", "usr/bin/mount", "usr/bin/umount",
+    "usr/bin/ls", "usr/bin/cat", "usr/bin/echo", "usr/bin/printf",
+    "usr/bin/mkdir", "usr/bin/rm", "usr/bin/cp", "usr/bin/mv",
+    "usr/bin/chmod", "usr/bin/chown", "usr/bin/ln", "usr/bin/pwd",
+    "usr/bin/true", "usr/bin/false", "usr/bin/sync", "usr/bin/dmesg",
+)
+
+def console_root() -> Path:
+    root = BASE_WORK / "no-gui/rootfs"
+    if root.exists():
+        shutil.rmtree(root)
+    for name in ("boot", "dev", "dev/pts", "dev/shm", "etc/init.d", "home",
+                 "proc", "root", "run", "sys", "tmp", "usr/bin", "usr/sbin",
+                 "usr/lib", "var/log", "var/run"):
+        (root / name).mkdir(parents=True, exist_ok=True)
+    for name, target in (("bin", "usr/bin"), ("sbin", "usr/sbin"), ("lib", "usr/lib")):
+        (root / name).symlink_to(target)
+    copied: set[Path] = set()
+
+    def copy_path(relative: Path) -> None:
+        if relative in copied:
+            return
+        source = SYSROOT / relative
+        if not source.exists() and not source.is_symlink():
+            raise SystemExit(f"console image requires {source}")
+        copied.add(relative)
+        destination = root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if source.is_symlink():
+            target = source.readlink()
+            if target.is_absolute():
+                resolved = Path(*target.parts[1:])
+                if resolved.parts[:1] == ("lib",):
+                    resolved = Path("usr", *resolved.parts)
+            else:
+                resolved_source = (source.parent / target).resolve()
+                try:
+                    resolved = resolved_source.relative_to(SYSROOT.resolve())
+                except ValueError:
+                    raise SystemExit(f"console image has an external link: {source}")
+            destination.symlink_to(target)
+            copy_path(resolved)
+            return
+        shutil.copy2(source, destination)
+        with source.open("rb") as binary:
+            if binary.read(4) != b"\x7fELF":
+                return
+        dynamic = subprocess.run(["readelf", "-d", str(source)], capture_output=True, text=True, check=True).stdout
+        program = subprocess.run(["readelf", "-l", str(source)], capture_output=True, text=True, check=True).stdout
+        libraries = re.findall(r"\(NEEDED\).*?\[([^]]+)\]", dynamic)
+        libraries += re.findall(r"Requesting program interpreter: ([^]]+)", program)
+        for library in libraries:
+            name = Path(library).name
+            matches = [Path("usr/lib") / name, Path("lib") / name]
+            match = next((item for item in matches if (SYSROOT / item).exists()), None)
+            if match is None:
+                raise SystemExit(f"console image requires {name} for {source}")
+            copy_path(match)
+
+    for name in ("boot/kernel", "etc/inittab", "etc/init.d/rcS",
+                 "etc/init.d/console", "etc/fstab", *CONSOLE_PROGRAMS):
+        copy_path(Path(name))
+    copy_path(Path("usr/bin/sh"))
+    for name in ("telinit", "reboot", "poweroff"):
+        copy_path(Path("usr/sbin") / name)
+    return root
+
 def create_image() -> None:
-    if IMAGE.exists():
-        image_size = None
-    else:
+    image_root = console_root() if NO_GUI else SYSROOT
+    grub_install = SYSROOT / "usr/sbin/grub-install"
+    grub_modules = SYSROOT / "usr/lib/grub/i386-pc"
+    grub_env = os.environ.copy()
+    grub_env["GRUB_LIBDIR"] = str(SYSROOT / "usr/lib/grub")
+    grub_env["PATH"] = str(SYSROOT / "usr/sbin") + ":/usr/sbin:/usr/bin:/bin:" + grub_env["PATH"]
+    new_image = not IMAGE.exists()
+    if new_image:
         image_size = os.environ.get("LFS_IMAGE_SIZE", "8G")
         run("qemu-img", "create", "-f", "raw", str(IMAGE), image_size)
-        run("bash", "-c", f"printf 'label: dos\\n, start=2048, type=83, bootable\\n' | sfdisk {IMAGE}")
-    loop = subprocess.check_output(["sudo", "losetup", "--find", "--show", "--partscan", str(IMAGE)], text=True).strip()
+    partition_info = subprocess.run(["sfdisk", "--json", str(IMAGE)],
+                                    capture_output=True, text=True)
+    with IMAGE.open("rb") as image_file:
+        empty_mbr = image_file.read(512) == b"\0" * 512
+    if partition_info.returncode and (new_image or empty_mbr):
+        # Use the positional sfdisk partition format accepted by util-linux
+        # versions used by the build host.
+        run("bash", "-c", f"printf 'label: dos\\nunit: sectors\\n\\n2048,,83,*\\n' | sfdisk {IMAGE}")
+        partition_info = subprocess.run(["sfdisk", "--json", str(IMAGE)],
+                                        capture_output=True, text=True)
+    if partition_info.returncode:
+        raise SystemExit(f"image has no partition table: {IMAGE}")
+    partition_table = json.loads(partition_info.stdout)["partitiontable"]
+    partitions = partition_table.get("partitions", [])
+    if len(partitions) != 1:
+        raise SystemExit(f"setup requires one image partition: {IMAGE}")
+    sector_size = partition_table.get("sectorsize", 512)
+    offset = partitions[0]["start"] * sector_size
+    size = partitions[0]["size"] * sector_size
+    loop = subprocess.check_output(["sudo", "losetup", "--find", "--show", str(IMAGE)], text=True).strip()
+    try:
+        partition = subprocess.check_output(
+            ["sudo", "losetup", "--find", "--show", "--offset", str(offset),
+             "--sizelimit", str(size), str(IMAGE)], text=True).strip()
+    except Exception:
+        sudo_run("losetup", "-d", loop)
+        raise
     mountpoint = WORK / "mount"
     mountpoint.mkdir(exist_ok=True)
     mounted = False
     try:
-        if image_size is not None:
-            sudo_run("mkfs.ext4", "-F", loop + "p1")
-        sudo_run("mount", loop + "p1", str(mountpoint))
+        if new_image or empty_mbr or NO_GUI:
+            sudo_run("mkfs.ext4", "-F", partition)
+        sudo_run("mount", partition, str(mountpoint))
         mounted = True
-        sudo_run("cp", "-a", str(SYSROOT) + "/.", str(mountpoint) + "/")
+        sudo_run("cp", "-a", str(image_root) + "/.", str(mountpoint) + "/")
         sudo_run("mkdir", "-p", str(mountpoint / "boot/grub"))
         grub_cfg = "set timeout=3\nset default=0\nmenuentry 'LFS on MOS' {\n    multiboot /boot/kernel\n    boot\n}\n"
         (WORK / "grub.cfg").write_text(grub_cfg)
         sudo_run("cp", str(WORK / "grub.cfg"), str(mountpoint / "boot/grub/grub.cfg"))
-        sudo_run("grub-install", "--target=i386-pc", "--boot-directory=" + str(mountpoint / "boot"), "--modules=normal part_msdos ext2 multiboot", loop)
+        command = [str(grub_install), "--target=i386-pc",
+                   "--directory=" + str(grub_modules),
+                   "--boot-directory=" + str(mountpoint / "boot"),
+                   "--modules=normal part_msdos ext2 multiboot", loop]
+        if os.geteuid() != 0:
+            command = ["sudo", "-E", *command]
+        run(*command, env=grub_env)
         sudo_run("sync")
     finally:
-        if mounted: sudo_run("umount", str(mountpoint))
-        sudo_run("losetup", "-d", loop)
+        if mounted:
+            sudo_run("umount", str(mountpoint))
+        subprocess.run(["sudo", "losetup", "-d", partition], check=False)
+        subprocess.run(["sudo", "losetup", "-d", loop], check=False)
 
 def qemu(extra: list[str]) -> None:
     if not IMAGE.exists(): raise SystemExit("run requires ./lfs setup")
@@ -257,18 +397,23 @@ def qemu(extra: list[str]) -> None:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="lfs")
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("setup", help="copy built artifacts into lfs.img")
+    setup_parser = commands.add_parser("setup", help="install the built system into a bootable image")
+    setup_parser.add_argument("--no-gui", action="store_true", help="install the console system image")
     build_parser = commands.add_parser("build", help="fetch and build packages in order")
     build_parser.add_argument("--all", action="store_true", dest="all_mode", help="process all selected packages")
     build_parser.add_argument("--rebuild", "-r", action="store_true", dest="rebuild_mode", help="clear built state but preserve downloaded sources")
+    build_parser.add_argument("--no-gui", action="store_true", help="build missing console packages using shared artifacts")
     run_parser = commands.add_parser("run", help="boot MOS and lfs.img with QEMU")
+    run_parser.add_argument("--no-gui", action="store_true", help="boot the console system image")
     run_parser.add_argument("args", nargs=argparse.REMAINDER)
-    commands.add_parser("status", help="show package and image state")
+    status_parser = commands.add_parser("status", help="show package and image state")
+    status_parser.add_argument("--no-gui", action="store_true", help="show console packages and image")
     ns = parser.parse_args(argv)
-    if ns.command == "setup": setup()
-    elif ns.command == "build": build(ns.all_mode, ns.rebuild_mode)
+    select_workspace(getattr(ns, "no_gui", False))
+    if ns.command == "setup": setup(ns.no_gui)
+    elif ns.command == "build": build(ns.all_mode, ns.rebuild_mode, ns.no_gui)
     elif ns.command == "run": qemu(ns.args)
-    elif ns.command == "status": status()
+    elif ns.command == "status": status(ns.no_gui)
     return 0
 if __name__ == "__main__":
     try:

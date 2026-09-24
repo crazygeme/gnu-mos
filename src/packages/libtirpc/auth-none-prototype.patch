@@ -1,0 +1,53 @@
+--- a/src/auth_none.c
++++ b/src/auth_none.c
+@@ -63,7 +63,5 @@
+ static void authnone_destroy (AUTH *);
+ 
+-extern bool_t xdr_opaque_auth();
+-
+ static struct auth_ops *authnone_ops();
+ 
+ static struct authnone_private {
+--- a/src/svc_auth_none.c
++++ b/src/svc_auth_none.c
+@@ -38,6 +38,6 @@
+ #include <rpc/rpc.h>
+ 
+-static bool_t	svcauth_none_destroy();
+-static bool_t   svcauth_none_wrap();
++static bool_t	svcauth_none_destroy(SVCAUTH *);
++static bool_t   svcauth_none_wrap(SVCAUTH *, XDR *, xdrproc_t, caddr_t);
+ 
+ struct svc_auth_ops svc_auth_none_ops = {
+--- a/src/auth_time.c
++++ b/src/auth_time.c
+@@ -251,4 +251,4 @@
+-	void			(*oldsig)() = NULL; /* old alarm handler */
++	void			(*oldsig)(int) = NULL; /* old alarm handler */
+ 	struct sockaddr_in	sin;
+ 	int			s = RPC_ANYSOCK;
+ 	socklen_t len;
+@@ -420,4 +420,4 @@
+-			oldsig = (void (*)())signal(SIGALRM, alarm_hndler);
++			oldsig = signal(SIGALRM, alarm_hndler);
+ 			saw_alarm = 0; /* global tracking the alarm */
+ 			alarm(20); /* only wait 20 seconds */
+			res = connect(s, (struct sockaddr *)&sin, sizeof(sin));
+--- a/src/key_call.c
++++ b/src/key_call.c
+@@ -75,5 +75,5 @@
+-cryptkeyres *(*__key_encryptsession_pk_LOCAL)() = 0;
+-cryptkeyres *(*__key_decryptsession_pk_LOCAL)() = 0;
+-des_block *(*__key_gendes_LOCAL)() = 0;
++cryptkeyres *(*__key_encryptsession_pk_LOCAL)(uid_t, void *) = 0;
++cryptkeyres *(*__key_decryptsession_pk_LOCAL)(uid_t, void *) = 0;
++des_block *(*__key_gendes_LOCAL)(uid_t, void *) = 0;
+ 
+ static int key_call( u_long, xdrproc_t, void *, xdrproc_t, void *);
+--- a/src/getpublickey.c
++++ b/src/getpublickey.c
+@@ -55,3 +55,3 @@
+-int (*__getpublickey_LOCAL)() = 0;
++int (*__getpublickey_LOCAL)(const char *, char *) = 0;
+ 
+ /*

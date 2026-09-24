@@ -1,1 +1,12 @@
-{"name":"libxext","version":"1.3.6","order":117,"source":"archive","url":"https://www.x.org/releases/individual/lib/libXext-{version}.tar.xz","archive":"libXext-1.3.6.tar.xz","artifact":"artifacts/libxext.done"}
+{
+    "name": "libxext",
+    "version": "1.3.6",
+    "order": 117,
+    "source": "archive",
+    "url": "https://www.x.org/releases/individual/lib/libXext-{version}.tar.xz",
+    "archive": "libXext-1.3.6.tar.xz",
+    "artifact": "artifacts/libxext.done",
+    "profiles": [
+        "gui"
+    ]
+}
