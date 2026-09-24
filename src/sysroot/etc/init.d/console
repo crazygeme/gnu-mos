@@ -1,0 +1,12 @@
+#!/bin/sh
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export TERM=linux
+read -r cmdline </proc/cmdline
+case " $cmdline " in
+    *" gui "*)
+        if [ -x /usr/bin/startx ]; then
+            exec /usr/bin/startx /usr/bin/gnome-session </dev/tty1 >/dev/tty1 2>&1
+        fi
+        ;;
+esac
+exec /sbin/agetty -L tty1 115200 linux

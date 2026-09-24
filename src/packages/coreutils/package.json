@@ -1,9 +1,9 @@
 {
-    "name": "coreutils",
-    "version": "9.7",
-    "order": 40,
-    "source": "archive",
-    "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/coreutils/coreutils-{version}.tar.xz",
-    "archive": "coreutils-9.7.tar.xz",
-    "artifact": "artifacts/coreutils.done"
+  "name": "coreutils",
+  "version": "9.7",
+  "order": 40,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/coreutils/coreutils-{version}.tar.xz",
+  "archive": "coreutils-9.7.tar.xz",
+  "artifact": "artifacts/coreutils.done"
 }

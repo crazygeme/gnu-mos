@@ -1,9 +1,9 @@
 {
-    "name": "libudev",
-    "version": "3.2.14",
-    "order": 97,
-    "source": "archive",
-    "url": "https://github.com/eudev-project/eudev/releases/download/v{version}/eudev-{version}.tar.gz",
-    "archive": "eudev-3.2.14.tar.gz",
-    "artifact": "artifacts/libudev.done"
+  "name": "libudev",
+  "version": "3.2.14",
+  "order": 97,
+  "source": "archive",
+  "url": "https://github.com/eudev-project/eudev/releases/download/v{version}/eudev-{version}.tar.gz",
+  "archive": "eudev-3.2.14.tar.gz",
+  "artifact": "artifacts/libudev.done"
 }

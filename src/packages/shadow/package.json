@@ -1,0 +1,9 @@
+{
+  "name": "shadow",
+  "version": "4.18.0",
+  "order": 109.25,
+  "source": "archive",
+  "url": "https://github.com/shadow-maint/shadow/releases/download/{version}/shadow-{version}.tar.xz",
+  "archive": "shadow-4.18.0.tar.xz",
+  "artifact": "artifacts/shadow.done"
+}

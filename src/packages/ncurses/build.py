@@ -11,12 +11,14 @@ source = archive_source("ncurses", "ncurses-6.5.tar.gz", "ncurses-6.5")
 workspace = Path(os.environ["LFS_WORKSPACE"])
 sysroot = os.environ["LFS_SYSROOT"]
 env = environment()
-env.update({
-    "BUILD_CC": "gcc",
-    "BUILD_CFLAGS": "",
-    "BUILD_CPPFLAGS": "",
-    "BUILD_LDFLAGS": "",
-})
+env.update(
+    {
+        "BUILD_CC": "gcc",
+        "BUILD_CFLAGS": "",
+        "BUILD_CPPFLAGS": "",
+        "BUILD_LDFLAGS": "",
+    }
+)
 common = (
     "--prefix=/usr",
     "--with-shared",
@@ -33,18 +35,30 @@ for name, extra in (
     if build.exists():
         shutil.rmtree(build)
     shutil.copytree(source, build)
-    subprocess.run([
-        str(source / "configure"),
-        "--build=x86_64-pc-linux-gnu",
-        "--host=i686-lfs-linux-gnu",
-        *common,
-        "--with-build-cc=gcc",
-        "--with-build-cflags=",
-        "--with-build-ldflags=",
-        "--with-tic-path=/usr/bin/tic",
-        *extra,
-    ], cwd=build, env=env, check=True)
-    subprocess.run(["make", "-j" + str(os.cpu_count() or 1)], cwd=build, env=env, check=True)
+    subprocess.run(
+        [
+            str(source / "configure"),
+            "--build=x86_64-pc-linux-gnu",
+            "--host=i686-lfs-linux-gnu",
+            *common,
+            "--with-build-cc=gcc",
+            "--with-build-cflags=",
+            "--with-build-ldflags=",
+            "--with-tic-path=/usr/bin/tic",
+            *extra,
+        ],
+        cwd=build,
+        env=env,
+        check=True,
+    )
+    subprocess.run(
+        ["make", "-j" + str(os.cpu_count() or 1)], cwd=build, env=env, check=True
+    )
     install_env = env.copy()
     install_env["TIC_PATH"] = "/usr/bin/tic"
-    subprocess.run(["make", "DESTDIR=" + sysroot, "install"], cwd=build, env=install_env, check=True)
+    subprocess.run(
+        ["make", "DESTDIR=" + sysroot, "install"],
+        cwd=build,
+        env=install_env,
+        check=True,
+    )

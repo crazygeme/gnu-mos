@@ -28,25 +28,49 @@ RED = "\033[31m" if TTY else ""
 BLUE = "\033[34m" if TTY else ""
 DIM = "\033[2m" if TTY else ""
 
-def progress(label: str, current: int, total: int, width: int = 28, newline: bool = False) -> None:
+
+def progress(
+    label: str, current: int, total: int, width: int = 28, newline: bool = False
+) -> None:
     ratio = current / total if total else 0
     filled = min(width, int(width * ratio))
-    print(f"\r{label:24} [{('#' * filled) + ('.' * (width - filled))}] {ratio * 100:6.2f}%", end="", flush=True)
-    if newline or (total and current >= total): print()
+    print(
+        f"\r{label:24} [{('#' * filled) + ('.' * (width - filled))}] {ratio * 100:6.2f}%",
+        end="",
+        flush=True,
+    )
+    if newline or (total and current >= total):
+        print()
+
 
 def download_progress(name: str):
     def report(blocks: int, block_size: int, total: int) -> None:
         progress(f"download {name}", min(blocks * block_size, total), total)
+
     return report
 
-def run(*cmd: str, cwd: Path | None = None, env: dict[str, str] | None = None, log_path: Path | None = None) -> None:
+
+def run(
+    *cmd: str,
+    cwd: Path | None = None,
+    env: dict[str, str] | None = None,
+    log_path: Path | None = None,
+) -> None:
     print(f"{BLUE}→{RESET} " + " ".join(cmd))
     if log_path is None:
         subprocess.run(cmd, cwd=cwd, env=env, check=True)
         return
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("a", encoding="utf-8", errors="replace") as log:
-        process = subprocess.Popen(cmd, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+        process = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+        )
         assert process.stdout is not None
         for line in process.stdout:
             print(line, end="")
@@ -56,8 +80,10 @@ def run(*cmd: str, cwd: Path | None = None, env: dict[str, str] | None = None, l
     if result:
         raise subprocess.CalledProcessError(result, cmd)
 
+
 def sudo_run(*cmd: str) -> None:
     run(*(cmd if os.geteuid() == 0 else ("sudo", *cmd)))
+
 
 def select_workspace(no_gui: bool) -> None:
     global WORK, SOURCES, SYSROOT, IMAGE, NO_GUI
@@ -67,79 +93,153 @@ def select_workspace(no_gui: bool) -> None:
     SYSROOT = WORK / "sysroot"
     IMAGE = WORK / "qemu-hd/lfs.img"
 
+
 def selected_packages(no_gui: bool) -> list[Path]:
-    directories = sorted(package_dirs(), key=lambda p: (metadata(p).get("order", 9999), p.name))
+    directories = sorted(
+        package_dirs(), key=lambda p: (metadata(p).get("order", 9999), p.name)
+    )
     if no_gui:
-        directories = [p for p in directories if "gui" not in metadata(p).get("profiles", [])]
+        directories = [
+            p for p in directories if "gui" not in metadata(p).get("profiles", [])
+        ]
     return directories
 
+
 def setup_workspace() -> None:
-    for path in (WORK, SOURCES, WORK / "build", WORK / "logs", SYSROOT, IMAGE.parent): path.mkdir(parents=True, exist_ok=True)
-    for path in ("boot", "dev", "dev/pts", "dev/shm", "etc", "home", "proc", "root", "run", "sys", "tmp", "usr/bin", "usr/sbin", "usr/lib", "var/log", "var/run"):
+    for path in (WORK, SOURCES, WORK / "build", WORK / "logs", SYSROOT, IMAGE.parent):
+        path.mkdir(parents=True, exist_ok=True)
+    for path in (
+        "boot",
+        "dev",
+        "dev/pts",
+        "dev/shm",
+        "etc",
+        "home",
+        "proc",
+        "root",
+        "run",
+        "sys",
+        "tmp",
+        "usr/bin",
+        "usr/sbin",
+        "usr/lib",
+        "var/log",
+        "var/run",
+    ):
         (SYSROOT / path).mkdir(parents=True, exist_ok=True)
     for name, target in (("bin", "usr/bin"), ("sbin", "usr/sbin"), ("lib", "usr/lib")):
         link = SYSROOT / name
-        if not link.exists(): link.symlink_to(target)
+        if not link.exists():
+            link.symlink_to(target)
     shell = SYSROOT / "usr/bin/sh"
     if shell.is_symlink() and shell.readlink() != Path("bash"):
         shell.unlink()
     if not shell.exists() and not shell.is_symlink():
         shell.symlink_to("bash")
 
+
 def package_dirs() -> list[Path]:
     return [path.parent for path in PKG_ROOT.glob("*/package.json")]
 
 
-def metadata(directory: Path) -> dict: return json.loads((directory / "package.json").read_text())
-def artifact(directory: Path, info: dict) -> Path: return WORK / info.get("artifact", f"artifacts/{info['name']}.done")
+def metadata(directory: Path) -> dict:
+    return json.loads((directory / "package.json").read_text())
+
+
+def artifact(directory: Path, info: dict) -> Path:
+    return WORK / info.get("artifact", f"artifacts/{info['name']}.done")
+
 
 def package_state(directory: Path, info: dict) -> str:
-    if artifact(directory, info).exists(): return "built"
-    if info.get("source") == "git" and (SOURCES / info["name"]).exists(): return "fetched"
-    if info.get("source") == "archive" and (SOURCES / info["archive"]).exists(): return "fetched"
-    if info.get("source") == "meta": return "empty"
+    if artifact(directory, info).exists():
+        return "built"
+    if info.get("source") == "git" and (SOURCES / info["name"]).exists():
+        return "fetched"
+    if info.get("source") == "archive" and (SOURCES / info["archive"]).exists():
+        return "fetched"
+    if info.get("source") == "meta":
+        return "empty"
     return "empty"
+
 
 def status(no_gui: bool = False) -> None:
     rows = []
     for directory in selected_packages(no_gui):
-        info = metadata(directory); rows.append({"name": info["name"], "version": info["version"], "status": package_state(directory, info)})
+        info = metadata(directory)
+        rows.append(
+            {
+                "name": info["name"],
+                "version": info["version"],
+                "status": package_state(directory, info),
+            }
+        )
     done = sum(row["status"] == "built" for row in rows)
     total = len(rows)
     width = 28
     filled = int(width * done / total) if total else 0
     color = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
     reset = "\033[0m" if color else ""
-    cyan, green, yellow, dim = (("\033[36m", "\033[32m", "\033[33m", "\033[2m") if color else ("", "", "", ""))
+    cyan, green, yellow, dim = (
+        ("\033[36m", "\033[32m", "\033[33m", "\033[2m") if color else ("", "", "", "")
+    )
     print(f"{cyan}LFS / MOS{reset} {dim}build status{reset}")
     print(f"{dim}{'─' * 72}{reset}")
     print(f"{dim}workspace{reset}  {WORK}")
-    print(f"{dim}image{reset}      {(green + 'ready' + reset) if IMAGE.exists() else (yellow + 'pending' + reset):16} {IMAGE}")
-    print(f"{dim}packages{reset}   {cyan}[{('#' * filled) + ('.' * (width - filled))}]{reset} {done}/{total}")
+    print(
+        f"{dim}image{reset}      {(green + 'ready' + reset) if IMAGE.exists() else (yellow + 'pending' + reset):16} {IMAGE}"
+    )
+    print(
+        f"{dim}packages{reset}   {cyan}[{('#' * filled) + ('.' * (width - filled))}]{reset} {done}/{total}"
+    )
     print(f"{dim}{'─' * 72}{reset}")
     print(f"{dim}{'PACKAGE':20} {'VERSION':18} STATUS{reset}")
     print(f"{dim}{'─' * 72}{reset}")
     for row in rows:
-        state = green + "built" + reset if row["status"] == "built" else (cyan + "fetched" + reset if row["status"] == "fetched" else yellow + "empty" + reset)
+        state = (
+            green + "built" + reset
+            if row["status"] == "built"
+            else (
+                cyan + "fetched" + reset
+                if row["status"] == "fetched"
+                else yellow + "empty" + reset
+            )
+        )
         print(f"{row['name'][:20]:20} {row['version'][:18]:18} {state}")
+
 
 def fetch_package(info: dict) -> None:
     if info.get("source") == "git":
         checkout = SOURCES / info["name"]
-        if not checkout.exists(): run("git", "clone", "--depth", "1", "--branch", info["version"], info["git"], str(checkout))
+        if not checkout.exists():
+            run(
+                "git",
+                "clone",
+                "--depth",
+                "1",
+                "--branch",
+                info["version"],
+                info["git"],
+                str(checkout),
+            )
     elif info.get("source") == "archive":
-        if not info.get("url") or not info.get("archive"): raise SystemExit(f"invalid source definition for {info['name']}")
+        if not info.get("url") or not info.get("archive"):
+            raise SystemExit(f"invalid source definition for {info['name']}")
         archive = SOURCES / info["archive"]
         if not archive.exists():
             temporary = archive.with_suffix(archive.suffix + ".part")
             print(f"download {info['name']} {info['version']}")
             try:
-                urllib.request.urlretrieve(info["url"].format(version=info["version"]), temporary, reporthook=download_progress(info["name"]))
+                urllib.request.urlretrieve(
+                    info["url"].format(version=info["version"]),
+                    temporary,
+                    reporthook=download_progress(info["name"]),
+                )
                 temporary.replace(archive)
             finally:
                 temporary.unlink(missing_ok=True)
     elif info.get("source") != "meta":
         raise SystemExit(f"invalid source type for {info['name']}")
+
 
 def ensure_archive(info: dict) -> None:
     if info.get("source") != "archive":
@@ -154,12 +254,15 @@ def ensure_archive(info: dict) -> None:
         archive.unlink(missing_ok=True)
         fetch_package(info)
 
+
 def reset_archive_sources(info: dict) -> None:
     if info.get("source") != "archive":
         return
     archive = SOURCES / info["archive"]
     with tarfile.open(archive) as package:
-        roots = {Path(member.name).parts[0] for member in package.getmembers() if member.name}
+        roots = {
+            Path(member.name).parts[0] for member in package.getmembers() if member.name
+        }
     for root in roots:
         extracted = WORK / "build" / root
         if extracted.is_symlink():
@@ -167,8 +270,10 @@ def reset_archive_sources(info: dict) -> None:
         elif extracted.exists():
             shutil.rmtree(extracted)
 
+
 def build_package(directory: Path) -> None:
-    info = metadata(directory); done = artifact(directory, info)
+    info = metadata(directory)
+    done = artifact(directory, info)
     # Package builds always start from an empty build tree. Downloaded source
     # archives, installed tools, the sysroot, and package artifacts are kept.
     shutil.rmtree(WORK / "build", ignore_errors=True)
@@ -178,34 +283,56 @@ def build_package(directory: Path) -> None:
         fetch_package(info)
     reset_archive_sources(info)
     script = directory / "build.py"
-    if not script.exists(): raise SystemExit(f"package {info['name']} has no build.py")
+    if not script.exists():
+        raise SystemExit(f"package {info['name']} has no build.py")
     if info.get("source") == "archive" and not (SOURCES / info["archive"]).exists():
-        raise SystemExit(f"source missing for {info['name']}; build cannot continue for {info['name']}")
+        raise SystemExit(
+            f"source missing for {info['name']}; build cannot continue for {info['name']}"
+        )
     if info.get("source") == "git" and not (SOURCES / info["name"]).exists():
-        raise SystemExit(f"source missing for {info['name']}; build cannot continue for {info['name']}")
+        raise SystemExit(
+            f"source missing for {info['name']}; build cannot continue for {info['name']}"
+        )
     env = os.environ.copy()
-    env.update({
-        "LFS_WORKSPACE": str(WORK),
-        "LFS_SYSROOT": str(SYSROOT),
-        "LFS_SOURCES": str(SOURCES),
-        "LFS_TARGET": "i686-lfs-linux-gnu",
-        # Host utilities must precede target binaries.  Target programs in the
-        # sysroot are not runnable on the build host and must never satisfy
-        # commands such as sh, install, or sed during package builds.
-        "PATH": f"{WORK / 'tools/bin'}:/usr/bin:/bin:{SYSROOT / 'usr/bin'}:{env['PATH']}",
-        "PYTHONDONTWRITEBYTECODE": "1",
-    })
+    env.update(
+        {
+            "LFS_WORKSPACE": str(WORK),
+            "LFS_SYSROOT": str(SYSROOT),
+            "LFS_SOURCES": str(SOURCES),
+            "LFS_TARGET": "i686-lfs-linux-gnu",
+            # Host utilities must precede target binaries.  Target programs in the
+            # sysroot are not runnable on the build host and must never satisfy
+            # commands such as sh, install, or sed during package builds.
+            "PATH": f"{WORK / 'tools/bin'}:/usr/bin:/bin:{SYSROOT / 'usr/bin'}:{env['PATH']}",
+            "PYTHONDONTWRITEBYTECODE": "1",
+        }
+    )
     print(f"{CYAN}build{RESET} {info['name']} {DIM}({info['version']}){RESET}")
     log_path = WORK / "logs" / f"{info['name']}.log"
     entry = ROOT / "src/package_entry.py"
     log_path.write_text(f"$ {sys.executable} -B {entry} {script}\n", encoding="utf-8")
-    run(sys.executable, "-B", str(entry), str(script), cwd=directory, env=env, log_path=log_path)
+    run(
+        sys.executable,
+        "-B",
+        str(entry),
+        str(script),
+        cwd=directory,
+        env=env,
+        log_path=log_path,
+    )
     done.parent.mkdir(parents=True, exist_ok=True)
-    done.write_text(json.dumps({"name": info["name"], "version": info["version"]}) + "\n")
+    done.write_text(
+        json.dumps({"name": info["name"], "version": info["version"]}) + "\n"
+    )
+
 
 def reset_build_state() -> None:
-    print(f"{YELLOW}warning{RESET}: --rebuild removes built package state and compiled files.")
-    print(f"{DIM}downloaded archives and Git checkouts in {SOURCES} are preserved.{RESET}")
+    print(
+        f"{YELLOW}warning{RESET}: --rebuild removes built package state and compiled files."
+    )
+    print(
+        f"{DIM}downloaded archives and Git checkouts in {SOURCES} are preserved.{RESET}"
+    )
     answer = input("Continue? [y/N] ").strip().lower()
     if answer not in ("y", "yes"):
         print("rebuild cancelled")
@@ -216,13 +343,21 @@ def reset_build_state() -> None:
     setup_workspace()
     return True
 
+
 def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> None:
     if rebuild_mode and no_gui:
-        raise SystemExit("--rebuild --no-gui would remove the shared build state; use --rebuild without --no-gui")
+        raise SystemExit(
+            "--rebuild --no-gui would remove the shared build state; use --rebuild without --no-gui"
+        )
     if rebuild_mode and not reset_build_state():
         return
-    setup_workspace(); directories = selected_packages(no_gui)
-    pending = [directory for directory in directories if package_state(directory, metadata(directory)) != "built"]
+    setup_workspace()
+    directories = selected_packages(no_gui)
+    pending = [
+        directory
+        for directory in directories
+        if package_state(directory, metadata(directory)) != "built"
+    ]
     total = len(pending)
     for index, directory in enumerate(pending, 1):
         info = metadata(directory)
@@ -230,12 +365,19 @@ def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> N
         build_package(directory)
         progress("build packages", index, total, newline=True)
         if not (all_mode or no_gui):
+            shutil.copytree(ROOT / "src/sysroot", SYSROOT, dirs_exist_ok=True)
             return
+    shutil.copytree(ROOT / "src/sysroot", SYSROOT, dirs_exist_ok=True)
+
 
 def setup(no_gui: bool = False) -> None:
     setup_workspace()
-    missing = [metadata(directory)["name"] for directory in selected_packages(no_gui)
-               if package_state(directory, metadata(directory)) != "built"]
+    shutil.copytree(ROOT / "src/sysroot", SYSROOT, dirs_exist_ok=True)
+    missing = [
+        metadata(directory)["name"]
+        for directory in selected_packages(no_gui)
+        if package_state(directory, metadata(directory)) != "built"
+    ]
     if missing:
         raise SystemExit("setup requires built packages: " + ", ".join(missing))
     for path in (SYSROOT / "boot/kernel", SYSROOT / "usr/sbin/init"):
@@ -243,17 +385,31 @@ def setup(no_gui: bool = False) -> None:
             raise SystemExit(f"setup requires an i386 executable: {path}")
         with path.open("rb") as executable:
             header = executable.read(20)
-        if len(header) < 20 or header[:6] != b"\x7fELF\x01\x01" or header[18:20] != b"\x03\x00":
+        if (
+            len(header) < 20
+            or header[:6] != b"\x7fELF\x01\x01"
+            or header[18:20] != b"\x03\x00"
+        ):
             raise SystemExit(f"setup requires an i386 executable: {path}")
-    for path in (SYSROOT / "etc/inittab", SYSROOT / "etc/init.d/rcS",
-                 SYSROOT / "etc/init.d/console", SYSROOT / "etc/fstab", SYSROOT / "usr/bin/bash"):
+    for path in (
+        SYSROOT / "etc/inittab",
+        SYSROOT / "etc/init.d/rcS",
+        SYSROOT / "etc/init.d/console",
+        SYSROOT / "etc/fstab",
+        SYSROOT / "usr/bin/bash",
+        SYSROOT / "usr/bin/login",
+    ):
         if not path.is_file():
             raise SystemExit(f"setup requires {path}")
-    for path in (SYSROOT / "usr/sbin/grub-install", SYSROOT / "usr/lib/grub/i386-pc/normal.mod",
-                 SYSROOT / "usr/lib/grub/i386-pc/multiboot.mod"):
+    for path in (
+        SYSROOT / "usr/sbin/grub-install",
+        SYSROOT / "usr/lib/grub/i386-pc/normal.mod",
+        SYSROOT / "usr/lib/grub/i386-pc/multiboot.mod",
+    ):
         if not path.is_file():
             raise SystemExit(f"setup requires {path}")
     create_image()
+
 
 def create_image() -> None:
     image_root = SYSROOT
@@ -261,21 +417,29 @@ def create_image() -> None:
     grub_modules = SYSROOT / "usr/lib/grub/i386-pc"
     grub_env = os.environ.copy()
     grub_env["GRUB_LIBDIR"] = str(SYSROOT / "usr/lib/grub")
-    grub_env["PATH"] = str(SYSROOT / "usr/sbin") + ":/usr/sbin:/usr/bin:/bin:" + grub_env["PATH"]
+    grub_env["PATH"] = (
+        str(SYSROOT / "usr/sbin") + ":/usr/sbin:/usr/bin:/bin:" + grub_env["PATH"]
+    )
     new_image = not IMAGE.exists()
     if new_image:
         image_size = os.environ.get("LFS_IMAGE_SIZE", "8G")
         run("qemu-img", "create", "-f", "raw", str(IMAGE), image_size)
-    partition_info = subprocess.run(["sfdisk", "--json", str(IMAGE)],
-                                    capture_output=True, text=True)
+    partition_info = subprocess.run(
+        ["sfdisk", "--json", str(IMAGE)], capture_output=True, text=True
+    )
     with IMAGE.open("rb") as image_file:
         empty_mbr = image_file.read(512) == b"\0" * 512
     if partition_info.returncode and (new_image or empty_mbr):
         # Use the positional sfdisk partition format accepted by util-linux
         # versions used by the build host.
-        run("bash", "-c", f"printf 'label: dos\\nunit: sectors\\n\\n2048,,83,*\\n' | sfdisk {IMAGE}")
-        partition_info = subprocess.run(["sfdisk", "--json", str(IMAGE)],
-                                        capture_output=True, text=True)
+        run(
+            "bash",
+            "-c",
+            f"printf 'label: dos\\nunit: sectors\\n\\n2048,,83,*\\n' | sfdisk {IMAGE}",
+        )
+        partition_info = subprocess.run(
+            ["sfdisk", "--json", str(IMAGE)], capture_output=True, text=True
+        )
     if partition_info.returncode:
         raise SystemExit(f"image has no partition table: {IMAGE}")
     partition_table = json.loads(partition_info.stdout)["partitiontable"]
@@ -285,11 +449,24 @@ def create_image() -> None:
     sector_size = partition_table.get("sectorsize", 512)
     offset = partitions[0]["start"] * sector_size
     size = partitions[0]["size"] * sector_size
-    loop = subprocess.check_output(["sudo", "losetup", "--find", "--show", str(IMAGE)], text=True).strip()
+    loop = subprocess.check_output(
+        ["sudo", "losetup", "--find", "--show", str(IMAGE)], text=True
+    ).strip()
     try:
         partition = subprocess.check_output(
-            ["sudo", "losetup", "--find", "--show", "--offset", str(offset),
-             "--sizelimit", str(size), str(IMAGE)], text=True).strip()
+            [
+                "sudo",
+                "losetup",
+                "--find",
+                "--show",
+                "--offset",
+                str(offset),
+                "--sizelimit",
+                str(size),
+                str(IMAGE),
+            ],
+            text=True,
+        ).strip()
     except Exception:
         sudo_run("losetup", "-d", loop)
         raise
@@ -317,10 +494,14 @@ def create_image() -> None:
         )
         (WORK / "grub.cfg").write_text(grub_cfg)
         sudo_run("cp", str(WORK / "grub.cfg"), str(mountpoint / "boot/grub/grub.cfg"))
-        command = [str(grub_install), "--target=i386-pc",
-                   "--directory=" + str(grub_modules),
-                   "--boot-directory=" + str(mountpoint / "boot"),
-                   "--modules=normal part_msdos ext2 multiboot", loop]
+        command = [
+            str(grub_install),
+            "--target=i386-pc",
+            "--directory=" + str(grub_modules),
+            "--boot-directory=" + str(mountpoint / "boot"),
+            "--modules=normal part_msdos ext2 multiboot",
+            loop,
+        ]
         if os.geteuid() != 0:
             command = ["sudo", "-E", *command]
         run(*command, env=grub_env)
@@ -331,9 +512,11 @@ def create_image() -> None:
         subprocess.run(["sudo", "losetup", "-d", partition], check=False)
         subprocess.run(["sudo", "losetup", "-d", loop], check=False)
 
+
 def qemu(extra: list[str], debug: bool = False) -> None:
-    if not IMAGE.exists(): raise SystemExit("run requires ./lfs setup")
-    serial = "stdio"
+    if not IMAGE.exists():
+        raise SystemExit("run requires ./lfs setup")
+    serial = None
     qemu_extra = list(extra)
     if debug or "--debug" in qemu_extra:
         if "--debug" in qemu_extra:
@@ -341,31 +524,81 @@ def qemu(extra: list[str], debug: bool = False) -> None:
         log_path = WORK / "krn.log"
         serial = "file:" + str(log_path)
         print(f"serial log: {log_path}")
-    run("qemu-system-i386", "-enable-kvm", "-m", os.environ.get("LFS_RAM", "2048"), "-smp", "2", "-drive", f"file={IMAGE},format=raw,if=ide,index=0,media=disk", "-serial", serial, *qemu_extra)
+    command = [
+        "qemu-system-i386",
+        "-enable-kvm",
+        "-m",
+        os.environ.get("LFS_RAM", "2048"),
+        "-smp",
+        "2",
+        "-drive",
+        f"file={IMAGE},format=raw,if=ide,index=0,media=disk",
+    ]
+    if serial is not None:
+        command.extend(["-serial", serial])
+    command.extend(qemu_extra)
+    run(*command)
+
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="lfs")
     commands = parser.add_subparsers(dest="command", required=True)
-    setup_parser = commands.add_parser("setup", help="install the built system into a bootable image")
-    setup_parser.add_argument("--no-gui", action="store_true", help="install the console system image")
-    build_parser = commands.add_parser("build", help="fetch and build packages in order")
-    build_parser.add_argument("--all", action="store_true", dest="all_mode", help="process all selected packages")
-    build_parser.add_argument("--rebuild", "-r", action="store_true", dest="rebuild_mode", help="clear built state but preserve downloaded sources")
-    build_parser.add_argument("--no-gui", action="store_true", help="build missing console packages using shared artifacts")
+    setup_parser = commands.add_parser(
+        "setup", help="install the built system into a bootable image"
+    )
+    setup_parser.add_argument(
+        "--no-gui", action="store_true", help="install the console system image"
+    )
+    build_parser = commands.add_parser(
+        "build", help="fetch and build packages in order"
+    )
+    build_parser.add_argument(
+        "--all",
+        action="store_true",
+        dest="all_mode",
+        help="process all selected packages",
+    )
+    build_parser.add_argument(
+        "--rebuild",
+        "-r",
+        action="store_true",
+        dest="rebuild_mode",
+        help="clear built state but preserve downloaded sources",
+    )
+    build_parser.add_argument(
+        "--no-gui",
+        action="store_true",
+        help="build missing console packages using shared artifacts",
+    )
     run_parser = commands.add_parser("run", help="boot MOS and lfs.img with QEMU")
-    run_parser.add_argument("--no-gui", action="store_true", help="boot the console system image")
-    run_parser.add_argument("--debug", action="store_true", help="enable kernel logtofile and verbose=2")
-    run_parser.add_argument("args", nargs=argparse.REMAINDER,
-                            help="enable kernel logtofile and verbose=2; write .workspace/krn.log")
+    run_parser.add_argument(
+        "--no-gui", action="store_true", help="boot the console system image"
+    )
+    run_parser.add_argument(
+        "--debug", action="store_true", help="enable kernel logtofile and verbose=2"
+    )
+    run_parser.add_argument(
+        "args",
+        nargs=argparse.REMAINDER,
+        help="enable kernel logtofile and verbose=2; write .workspace/krn.log",
+    )
     status_parser = commands.add_parser("status", help="show package and image state")
-    status_parser.add_argument("--no-gui", action="store_true", help="show console packages and image")
+    status_parser.add_argument(
+        "--no-gui", action="store_true", help="show console packages and image"
+    )
     ns = parser.parse_args(argv)
     select_workspace(getattr(ns, "no_gui", False))
-    if ns.command == "setup": setup(ns.no_gui)
-    elif ns.command == "build": build(ns.all_mode, ns.rebuild_mode, ns.no_gui)
-    elif ns.command == "run": qemu(ns.args, ns.debug)
-    elif ns.command == "status": status(ns.no_gui)
+    if ns.command == "setup":
+        setup(ns.no_gui)
+    elif ns.command == "build":
+        build(ns.all_mode, ns.rebuild_mode, ns.no_gui)
+    elif ns.command == "run":
+        qemu(ns.args, ns.debug)
+    elif ns.command == "status":
+        status(ns.no_gui)
     return 0
+
+
 if __name__ == "__main__":
     try:
         raise SystemExit(main(sys.argv[1:]))
@@ -374,7 +607,10 @@ if __name__ == "__main__":
         raise SystemExit(130)
     except subprocess.CalledProcessError as error:
         command = " ".join(str(part) for part in error.cmd)
-        print(f"{RED}error{RESET}: command failed ({error.returncode}): {command}", file=sys.stderr)
+        print(
+            f"{RED}error{RESET}: command failed ({error.returncode}): {command}",
+            file=sys.stderr,
+        )
         raise SystemExit(error.returncode or 1)
     except Exception as error:
         print(f"{RED}error{RESET}: {error}", file=sys.stderr)

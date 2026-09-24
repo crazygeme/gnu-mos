@@ -1,16 +1,16 @@
 {
-    "name": "libxkbcommon",
-    "version": "1.8.1",
-    "order": 139.8,
-    "build-tools": [
-        "meson",
-        "ninja"
-    ],
-    "source": "archive",
-    "url": "https://github.com/xkbcommon/libxkbcommon/archive/refs/tags/xkbcommon-{version}.tar.gz",
-    "archive": "libxkbcommon-1.8.1.tar.gz",
-    "artifact": "artifacts/libxkbcommon.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libxkbcommon",
+  "version": "1.8.1",
+  "order": 139.8,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://github.com/xkbcommon/libxkbcommon/archive/refs/tags/xkbcommon-{version}.tar.gz",
+  "archive": "libxkbcommon-1.8.1.tar.gz",
+  "artifact": "artifacts/libxkbcommon.done",
+  "profiles": [
+    "gui"
+  ]
 }

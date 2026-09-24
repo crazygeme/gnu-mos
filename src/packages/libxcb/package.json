@@ -1,16 +1,16 @@
 {
-    "name": "libxcb",
-    "version": "1.17.0",
-    "order": 115,
-    "build-tools": [
-        "meson",
-        "ninja"
-    ],
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/libxcb-{version}.tar.xz",
-    "archive": "libxcb-1.17.0.tar.xz",
-    "artifact": "artifacts/libxcb.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libxcb",
+  "version": "1.17.0",
+  "order": 115,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libxcb-{version}.tar.xz",
+  "archive": "libxcb-1.17.0.tar.xz",
+  "artifact": "artifacts/libxcb.done",
+  "profiles": [
+    "gui"
+  ]
 }

@@ -12,8 +12,13 @@ tools = workspace / "tools"
 host_build = workspace / "build/libxml2-host-meson"
 subprocess.run(
     [
-        "meson", "setup", str(host_build), str(source),
-        "--prefix=" + str(tools), "--libdir=lib", "-Dpython=false",
+        "meson",
+        "setup",
+        str(host_build),
+        str(source),
+        "--prefix=" + str(tools),
+        "--libdir=lib",
+        "-Dpython=false",
     ],
     check=True,
 )

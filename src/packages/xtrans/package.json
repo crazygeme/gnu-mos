@@ -1,12 +1,12 @@
 {
-    "name": "xtrans",
-    "version": "1.6.0",
-    "order": 111,
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/xtrans-{version}.tar.xz",
-    "archive": "xtrans-1.6.0.tar.xz",
-    "artifact": "artifacts/xtrans.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "xtrans",
+  "version": "1.6.0",
+  "order": 111,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/xtrans-{version}.tar.xz",
+  "archive": "xtrans-1.6.0.tar.xz",
+  "artifact": "artifacts/xtrans.done",
+  "profiles": [
+    "gui"
+  ]
 }

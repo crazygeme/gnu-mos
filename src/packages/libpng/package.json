@@ -1,9 +1,9 @@
 {
-    "name": "libpng",
-    "version": "1.6.44",
-    "order": 104,
-    "source": "archive",
-    "url": "https://download.sourceforge.net/libpng/libpng-{version}.tar.xz",
-    "archive": "libpng-1.6.44.tar.xz",
-    "artifact": "artifacts/libpng.done"
+  "name": "libpng",
+  "version": "1.6.44",
+  "order": 104,
+  "source": "archive",
+  "url": "https://download.sourceforge.net/libpng/libpng-{version}.tar.xz",
+  "archive": "libpng-1.6.44.tar.xz",
+  "artifact": "artifacts/libpng.done"
 }

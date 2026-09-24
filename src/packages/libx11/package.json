@@ -1,12 +1,12 @@
 {
-    "name": "libx11",
-    "version": "1.8.12",
-    "order": 116,
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/lib/libX11-{version}.tar.xz",
-    "archive": "libX11-1.8.12.tar.xz",
-    "artifact": "artifacts/libx11.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "libx11",
+  "version": "1.8.12",
+  "order": 116,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libX11-{version}.tar.xz",
+  "archive": "libX11-1.8.12.tar.xz",
+  "artifact": "artifacts/libx11.done",
+  "profiles": [
+    "gui"
+  ]
 }

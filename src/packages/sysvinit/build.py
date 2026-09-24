@@ -9,11 +9,25 @@ from package_lib import archive_source, environment
 source = archive_source("sysvinit", "sysvinit-3.14.tar.gz", "sysvinit-3.14")
 root = Path(os.environ["LFS_SYSROOT"])
 env = environment()
-make_vars = ("VERSION=3.14", "CC=" + env["CC"], "CFLAGS=" + env["CFLAGS"],
-             "LDFLAGS=" + env["LDFLAGS"])
+make_vars = (
+    "VERSION=3.14",
+    "CC=" + env["CC"],
+    "CFLAGS=" + env["CFLAGS"],
+    "LDFLAGS=" + env["LDFLAGS"],
+)
 subprocess.run(
-    ["make", "-C", "src", "-j" + str(os.cpu_count() or 1), *make_vars,
-     "init", "runlevel", "shutdown", "halt", "killall5"],
+    [
+        "make",
+        "-C",
+        "src",
+        "-j" + str(os.cpu_count() or 1),
+        *make_vars,
+        "init",
+        "runlevel",
+        "shutdown",
+        "halt",
+        "killall5",
+    ],
     cwd=source,
     env=env,
     check=True,
@@ -30,43 +44,3 @@ for name, program in (("telinit", "init"), ("reboot", "halt"), ("poweroff", "hal
     if link.exists() or link.is_symlink():
         link.unlink()
     link.symlink_to(program)
-
-etc = root / "etc"
-etc.mkdir(parents=True, exist_ok=True)
-(etc / "inittab").write_text(
-    "id:3:initdefault:\n"
-    "si::sysinit:/etc/init.d/rcS\n"
-    "c1:3:respawn:/etc/init.d/console\n"
-    "ca::ctrlaltdel:/sbin/shutdown -r now\n",
-    encoding="ascii",
-)
-init_dir = etc / "init.d"
-init_dir.mkdir(parents=True, exist_ok=True)
-rcs = init_dir / "rcS"
-rcs.write_text(
-    "#!/bin/sh\n"
-    "export PATH=/sbin:/bin:/usr/sbin:/usr/bin\n"
-    "mount -o remount,rw /\n"
-    "mount -t proc proc /proc\n"
-    "mount -t tmpfs tmpfs /run\n",
-    encoding="ascii",
-)
-rcs.chmod(0o755)
-console = init_dir / "console"
-console.write_text(
-    "#!/bin/sh\n"
-    "export PATH=/sbin:/bin:/usr/sbin:/usr/bin\n"
-    "export HOME=/root TERM=linux\n"
-    "if grep -qw gui /proc/cmdline 2>/dev/null && [ -x /usr/bin/startx ]; then\n"
-    "    exec /usr/bin/startx /usr/bin/gnome-session </dev/tty1 >/dev/tty1 2>&1\n"
-    "fi\n"
-    "exec /bin/bash -l </dev/tty1 >/dev/tty1 2>&1\n",
-    encoding="ascii",
-)
-console.chmod(0o755)
-(etc / "fstab").write_text(
-    "/dev/hda1 / ext3 defaults 0 1\n"
-    "proc /proc proc defaults 0 0\n"
-    "tmpfs /run tmpfs defaults 0 0\n",
-    encoding="ascii",
-)

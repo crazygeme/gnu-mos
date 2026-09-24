@@ -1,0 +1,4 @@
+id:3:initdefault:
+si::sysinit:/etc/init.d/rcS
+c1:3:respawn:/etc/init.d/console
+ca::ctrlaltdel:/sbin/shutdown -r now

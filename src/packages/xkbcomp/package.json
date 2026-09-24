@@ -1,12 +1,12 @@
 {
-    "name": "xkbcomp",
-    "version": "1.4.7",
-    "order": 123,
-    "source": "archive",
-    "url": "https://www.x.org/releases/individual/app/xkbcomp-{version}.tar.xz",
-    "archive": "xkbcomp-1.4.7.tar.xz",
-    "artifact": "artifacts/xkbcomp.done",
-    "profiles": [
-        "gui"
-    ]
+  "name": "xkbcomp",
+  "version": "1.4.7",
+  "order": 123,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/app/xkbcomp-{version}.tar.xz",
+  "archive": "xkbcomp-1.4.7.tar.xz",
+  "artifact": "artifacts/xkbcomp.done",
+  "profiles": [
+    "gui"
+  ]
 }

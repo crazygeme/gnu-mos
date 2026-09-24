@@ -1,9 +1,9 @@
 {
-    "name": "libbsd",
-    "version": "0.12.2",
-    "order": 109,
-    "source": "archive",
-    "url": "https://libbsd.freedesktop.org/releases/libbsd-{version}.tar.xz",
-    "archive": "libbsd-0.12.2.tar.xz",
-    "artifact": "artifacts/libbsd.done"
+  "name": "libbsd",
+  "version": "0.12.2",
+  "order": 109,
+  "source": "archive",
+  "url": "https://libbsd.freedesktop.org/releases/libbsd-{version}.tar.xz",
+  "archive": "libbsd-0.12.2.tar.xz",
+  "artifact": "artifacts/libbsd.done"
 }

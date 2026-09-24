@@ -1,9 +1,9 @@
 {
-    "name": "openssl",
-    "version": "3.5.2",
-    "order": 70,
-    "source": "archive",
-    "url": "https://www.openssl.org/source/openssl-{version}.tar.gz",
-    "archive": "openssl-3.5.2.tar.gz",
-    "artifact": "artifacts/openssl.done"
+  "name": "openssl",
+  "version": "3.5.2",
+  "order": 70,
+  "source": "archive",
+  "url": "https://www.openssl.org/source/openssl-{version}.tar.gz",
+  "archive": "openssl-3.5.2.tar.gz",
+  "artifact": "artifacts/openssl.done"
 }
