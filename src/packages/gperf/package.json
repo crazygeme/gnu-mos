@@ -1,7 +1,7 @@
 {
     "name": "gperf",
     "version": "3.3",
-    "order": 98,
+    "order": 96.5,
     "source": "archive",
     "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/gperf/gperf-{version}.tar.gz",
     "archive": "gperf-3.3.tar.gz",

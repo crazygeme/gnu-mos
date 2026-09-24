@@ -4,7 +4,7 @@ sys.path.insert(0,str(Path(__file__).parents[2]))
 from package_lib import archive_source,configure_make_install
 configure_make_install(
     archive_source("git", "git-2.51.0.tar.xz", "git-2.51.0"),
-    options=("--with-curl", "--with-expat"),
+    options=("--with-curl", "--with-expat", "--disable-nls"),
     # The target iconv implementation emits the UTF-16/UTF-32 BOM.  Git's
     # configure test executes a target binary, which is unavailable during
     # this cross build, so provide the target property explicitly.
