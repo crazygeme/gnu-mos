@@ -1,0 +1,9 @@
+{
+  "name": "which",
+  "version": "2.21",
+  "order": 69,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/which/which-{version}.tar.gz",
+  "archive": "which-2.21.tar.gz",
+  "artifact": "artifacts/which.done"
+}
