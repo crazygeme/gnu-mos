@@ -406,47 +406,7 @@ def sync_sysroot() -> None:
 def setup(no_gui: bool = False) -> None:
     setup_workspace()
     sync_sysroot()
-    missing = [
-        metadata(directory)["name"]
-        for directory in selected_packages(no_gui)
-        if package_state(directory, metadata(directory)) != "built"
-    ]
-    if missing:
-        raise SystemExit("setup requires built packages: " + ", ".join(missing))
     run_postscripts()
-    for path in (SYSROOT / "boot/kernel", SYSROOT / "usr/sbin/init"):
-        if not path.is_file():
-            raise SystemExit(f"setup requires an i386 executable: {path}")
-        with path.open("rb") as executable:
-            header = executable.read(20)
-        if (
-            len(header) < 20
-            or header[:6] != b"\x7fELF\x01\x01"
-            or header[18:20] != b"\x03\x00"
-        ):
-            raise SystemExit(f"setup requires an i386 executable: {path}")
-    for path in (
-        SYSROOT / "etc/inittab",
-        SYSROOT / "etc/init.d/rcS",
-        SYSROOT / "etc/init.d/rc",
-        SYSROOT / "etc/init.d/boot-functions",
-        SYSROOT / "etc/init.d/graphical",
-        SYSROOT / "etc/rc3.d/S20network",
-        SYSROOT / "etc/rc3.d/S30sshd",
-        SYSROOT / "etc/fstab",
-        SYSROOT / "etc/resolv.conf",
-        SYSROOT / "usr/bin/bash",
-        SYSROOT / "usr/bin/login",
-    ):
-        if not path.is_file():
-            raise SystemExit(f"setup requires {path}")
-    for path in (
-        SYSROOT / "usr/sbin/grub-install",
-        SYSROOT / "usr/lib/grub/i386-pc/normal.mod",
-        SYSROOT / "usr/lib/grub/i386-pc/multiboot.mod",
-    ):
-        if not path.is_file():
-            raise SystemExit(f"setup requires {path}")
     create_image()
 
 
@@ -518,21 +478,6 @@ def create_image() -> None:
         sudo_run("mount", partition, str(mountpoint))
         mounted = True
         sudo_run("cp", "-a", str(image_root) + "/.", str(mountpoint) + "/")
-        sudo_run("mkdir", "-p", str(mountpoint / "boot/grub"))
-        grub_cfg = (
-            "set timeout=3\n"
-            "set default=0\n"
-            "menuentry 'LFS on MOS' {\n"
-            "    multiboot /boot/kernel gui\n"
-            "    boot\n"
-            "}\n"
-            "menuentry 'LFS on MOS (debug)' {\n"
-            "    multiboot /boot/kernel verbose=2\n"
-            "    boot\n"
-            "}\n"
-        )
-        (WORK / "grub.cfg").write_text(grub_cfg)
-        sudo_run("cp", str(WORK / "grub.cfg"), str(mountpoint / "boot/grub/grub.cfg"))
         command = [
             str(grub_install),
             "--target=i386-pc",

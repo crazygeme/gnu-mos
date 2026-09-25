@@ -13,3 +13,4 @@
 - Every package patch must be validated with `patch --dry-run` against a fresh extraction of the exact configured source archive before it is used by `build.py`.
 - After modifying files, do not start or run compilation automatically. Compilation may be run only when explicitly requested.
 - Prefer verified domestic mirrors for package downloads. Retain the upstream URL when a domestic mirror is unavailable or cannot be verified.
+- `./lfs setup` runs package postscript files and copies the configured sysroot into the bootable image. Keep system configuration in package postscript files or `src/sysroot`; do not add package-completeness, executable-format, or individual-file checks to `setup`.

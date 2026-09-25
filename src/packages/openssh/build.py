@@ -16,7 +16,7 @@ env.update(
         "RANLIB": "i686-lfs-linux-gnu-ranlib",
         "STRIP": "i686-lfs-linux-gnu-strip",
         "CFLAGS": "-O2 -m32",
-        "LDFLAGS": "--sysroot=" + str(root),
+        "LDFLAGS": "--sysroot=" + str(root) + " -no-pie",
         "PATH": "/usr/bin:/bin:" + env.get("PATH", ""),
     }
 )
@@ -29,6 +29,7 @@ subprocess.run(
         "--sysconfdir=/etc/ssh",
         "--disable-strip",
         "--without-pam",
+        "--without-pie",
     ],
     cwd=src,
     env=env,
