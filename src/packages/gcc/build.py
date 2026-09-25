@@ -6,14 +6,17 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 from package_lib import archive_source
 
 source = archive_source("gcc", "gcc-15.2.0.tar.xz", "gcc-15.2.0")
-build = Path(os.environ["LFS_WORKSPACE"]) / "build/gcc-final"
+workspace = Path(os.environ["LFS_WORKSPACE"])
+build = workspace / "build/gcc-final"
+tools = workspace / "tools"
+tools_bin = tools / "bin"
 build.mkdir(parents=True, exist_ok=True)
 tools = Path(os.environ["LFS_WORKSPACE"]) / "tools"
-target_bin = Path(os.environ["LFS_SYSROOT"]) / "usr/bin"
+target_bin = tools_bin
 build_env = os.environ.copy()
 build_env.update(
     {
-        "PATH": ":".join((str(tools / "bin"), "/usr/bin", "/bin", str(target_bin))),
+        "PATH": ":".join((str(tools_bin), "/usr/bin", "/bin")),
         "CONFIG_SHELL": "/bin/bash",
         "SHELL": "/bin/bash",
         "INSTALL": "/usr/bin/install",
@@ -30,7 +33,7 @@ for name in (
 configure = [
     str(source / "configure"),
     "--target=i686-lfs-linux-gnu",
-    "--prefix=/usr",
+    "--prefix=/",
     "--with-sysroot=" + os.environ["LFS_SYSROOT"],
     "--with-gmp=" + str(tools),
     "--with-mpfr=" + str(tools),
@@ -45,7 +48,7 @@ subprocess.run(configure, cwd=build, env=build_env, check=True)
 subprocess.run(
     [
         "make",
-        "-j" + str(os.cpu_count() or 1),
+        "-j4",
         "all-target-libgcc",
         "all-target-libstdc++-v3",
         "all-gcc",
@@ -57,7 +60,7 @@ subprocess.run(
 subprocess.run(
     [
         "make",
-        "DESTDIR=" + os.environ["LFS_SYSROOT"],
+        "DESTDIR=" + str(tools),
         "install-target-libgcc",
         "install-target-libstdc++-v3",
         "install-gcc",

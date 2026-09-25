@@ -14,7 +14,12 @@ def environment():
     env["RANLIB"] = target + "-ranlib"
     env["STRIP"] = target + "-strip"
     env["NM"] = target + "-nm"
+    tools = Path(env["LFS_WORKSPACE"]) / "tools"
+    env["PATH"] = ":".join(
+        (str(tools / "bin"), "/usr/bin", "/bin", env.get("PATH", ""))
+    )
     env["CFLAGS"] = "-O2 -m32"
+    env["CXXFLAGS"] = "-O2 -m32"
     env["LDFLAGS"] = (
         "--sysroot=" + str(sysroot) + " -Wl,-rpath-link," + str(sysroot / "usr/lib")
     )
@@ -66,9 +71,7 @@ def configure_make_install(source, prefix="/usr", options=(), env_overrides=None
         env=env,
         check=True,
     )
-    subprocess.run(
-        ["make", "-j" + str(os.cpu_count() or 1)], cwd=source, env=env, check=True
-    )
+    subprocess.run(["make", "-j4"], cwd=source, env=env, check=True)
     subprocess.run(
         ["make", "DESTDIR=" + os.environ["LFS_SYSROOT"], "install"],
         cwd=source,

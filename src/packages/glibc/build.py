@@ -24,7 +24,7 @@ subprocess.run(
     env=env,
     check=True,
 )
-subprocess.run(["make", "-j" + str(os.cpu_count() or 1)], cwd=build, check=True)
+subprocess.run(["make", "-j4"], cwd=build, check=True)
 subprocess.run(
     ["make", "DESTDIR=" + os.environ["LFS_SYSROOT"], "install"],
     cwd=build,

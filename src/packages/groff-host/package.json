@@ -1,0 +1,9 @@
+{
+  "name": "groff-host",
+  "version": "1.23.0",
+  "order": 68,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/gnu/groff/groff-{version}.tar.gz",
+  "archive": "groff-1.23.0.tar.gz",
+  "artifact": "artifacts/groff-host.done"
+}

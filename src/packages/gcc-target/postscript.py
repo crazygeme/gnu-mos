@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-
 root = Path(os.environ["LFS_SYSROOT"]) / "usr/bin"
 target = os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu")
 commands = ("gcc", "g++", "cpp", "cc", "c++")

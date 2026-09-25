@@ -51,9 +51,7 @@ for name, extra in (
         env=env,
         check=True,
     )
-    subprocess.run(
-        ["make", "-j" + str(os.cpu_count() or 1)], cwd=build, env=env, check=True
-    )
+    subprocess.run(["make", "-j4"], cwd=build, env=env, check=True)
     install_env = env.copy()
     install_env["TIC_PATH"] = "/usr/bin/tic"
     subprocess.run(

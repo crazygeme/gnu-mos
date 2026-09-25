@@ -1,6 +1,9 @@
 #!/bin/sh
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin
-mount -o remount,rw /
-mount -t proc proc /proc
-mount -t tmpfs tmpfs /run
-hostname "$(cat /etc/hostname)"
+. /etc/init.d/boot-functions
+
+boot_banner
+boot_action 'Remounting root filesystem read-write' mount -o remount,rw /
+boot_action 'Mounting proc filesystem' mount -t proc proc /proc
+boot_action 'Mounting runtime filesystem' mount -t tmpfs tmpfs /run
+boot_action 'Setting system hostname' hostname "$(cat /etc/hostname)"

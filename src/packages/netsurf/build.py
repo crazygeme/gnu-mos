@@ -16,7 +16,7 @@ env.update(
         "CFLAGS": "-O2 -m32",
     }
 )
-subprocess.run(["make", "-j" + str(os.cpu_count() or 1)], cwd=src, env=env, check=True)
+subprocess.run(["make", "-j4"], cwd=src, env=env, check=True)
 subprocess.run(
     ["make", "install", "PREFIX=/usr", "DESTDIR=" + os.environ["LFS_SYSROOT"]],
     cwd=src,

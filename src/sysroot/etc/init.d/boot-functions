@@ -1,0 +1,43 @@
+#!/bin/sh
+
+if [ -t 1 ] && [ "${TERM:-linux}" != dumb ]; then
+    boot_cyan=$(printf '\033[36m')
+    boot_green=$(printf '\033[32m')
+    boot_yellow=$(printf '\033[33m')
+    boot_red=$(printf '\033[31m')
+    boot_reset=$(printf '\033[0m')
+else
+    boot_cyan=
+    boot_green=
+    boot_yellow=
+    boot_red=
+    boot_reset=
+fi
+
+boot_banner() {
+    printf '\n%s' "$boot_cyan"
+    printf '  +------------------------------------------+\n'
+    printf '  |           MOS  SYSTEM STARTUP             |\n'
+    printf '  +------------------------------------------+%s\n\n' "$boot_reset"
+}
+
+boot_action() {
+    boot_description=$1
+    shift
+    boot_output=$("$@" 2>&1)
+    boot_result=$?
+
+    printf '  %-46s ' "$boot_description"
+    case "$boot_result" in
+        0) printf '[ %sOK%s ]\n' "$boot_green" "$boot_reset" ;;
+        77)
+            printf '[ %sSKIP%s ]\n' "$boot_yellow" "$boot_reset"
+            [ -z "$boot_output" ] || printf '      %s\n' "$boot_output"
+            ;;
+        *)
+            printf '[ %sFAIL%s ]\n' "$boot_red" "$boot_reset"
+            [ -z "$boot_output" ] || printf '      %s\n' "$boot_output"
+            ;;
+    esac
+    return "$boot_result"
+}

@@ -49,7 +49,7 @@ subprocess.run(
     env=env,
     check=True,
 )
-subprocess.run(["make", "-j" + str(os.cpu_count() or 1)], cwd=src, env=env, check=True)
+subprocess.run(["make", "-j4"], cwd=src, env=env, check=True)
 subprocess.run(
     ["make", "DESTDIR=" + str(root), "install"], cwd=src, env=env, check=True
 )

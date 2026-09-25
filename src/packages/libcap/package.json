@@ -1,0 +1,9 @@
+{
+  "name": "libcap",
+  "version": "2.76",
+  "order": 67,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/kernel.org/linux/libs/security/linux-privs/libcap2/libcap-{version}.tar.xz",
+  "archive": "libcap-2.76.tar.xz",
+  "artifact": "artifacts/libcap.done"
+}

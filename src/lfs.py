@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tarfile
 import urllib.request
+from contextlib import contextmanager
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -389,14 +390,22 @@ def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> N
         build_package(directory)
         progress("build packages", index, total, newline=True)
         if not (all_mode or no_gui):
-            shutil.copytree(ROOT / "src/sysroot", SYSROOT, dirs_exist_ok=True)
+            sync_sysroot()
             return
-    shutil.copytree(ROOT / "src/sysroot", SYSROOT, dirs_exist_ok=True)
+    sync_sysroot()
+
+
+def sync_sysroot() -> None:
+    source_root = ROOT / "src/sysroot"
+    for source in source_root.rglob("*"):
+        if source.is_symlink():
+            (SYSROOT / source.relative_to(source_root)).unlink(missing_ok=True)
+    shutil.copytree(source_root, SYSROOT, dirs_exist_ok=True, symlinks=True)
 
 
 def setup(no_gui: bool = False) -> None:
     setup_workspace()
-    shutil.copytree(ROOT / "src/sysroot", SYSROOT, dirs_exist_ok=True)
+    sync_sysroot()
     missing = [
         metadata(directory)["name"]
         for directory in selected_packages(no_gui)
@@ -419,8 +428,13 @@ def setup(no_gui: bool = False) -> None:
     for path in (
         SYSROOT / "etc/inittab",
         SYSROOT / "etc/init.d/rcS",
-        SYSROOT / "etc/init.d/console",
+        SYSROOT / "etc/init.d/rc",
+        SYSROOT / "etc/init.d/boot-functions",
+        SYSROOT / "etc/init.d/graphical",
+        SYSROOT / "etc/rc3.d/S20network",
+        SYSROOT / "etc/rc3.d/S30sshd",
         SYSROOT / "etc/fstab",
+        SYSROOT / "etc/resolv.conf",
         SYSROOT / "usr/bin/bash",
         SYSROOT / "usr/bin/login",
     ):
@@ -552,10 +566,145 @@ def qemu(extra: list[str]) -> None:
         "2",
         "-drive",
         f"file={IMAGE},format=raw,if=ide,index=0,media=disk",
+        "-netdev",
+        "tap,id=net0,ifname=lfs-tap0,script=no,downscript=no",
+        "-device",
+        "e1000,netdev=net0,mac=52:54:00:12:34:56",
     ]
     command.extend(["-serial", serial])
     command.extend(qemu_extra)
-    run(*command)
+    with qemu_network():
+        run(*command)
+
+
+@contextmanager
+def qemu_network():
+    interface = "lfs-tap0"
+    gateway = "10.0.6.1"
+    subnet = "10.0.6.0/24"
+    pid_file = WORK / "lfs-dnsmasq.pid"
+    tap_created = False
+    nat_added = False
+    forward_out_added = False
+    forward_in_added = False
+    dnsmasq_started = False
+    forwarding = None
+    try:
+        sudo_run(
+            "ip",
+            "tuntap",
+            "add",
+            "dev",
+            interface,
+            "mode",
+            "tap",
+            "user",
+            str(os.getuid()),
+        )
+        tap_created = True
+        sudo_run("ip", "addr", "add", gateway + "/24", "dev", interface)
+        sudo_run("ip", "link", "set", interface, "up")
+        forwarding = subprocess.check_output(
+            ["sysctl", "-n", "net.ipv4.ip_forward"], text=True
+        ).strip()
+        if forwarding != "1":
+            sudo_run("sysctl", "-qw", "net.ipv4.ip_forward=1")
+        sudo_run(
+            "iptables",
+            "-t",
+            "nat",
+            "-A",
+            "POSTROUTING",
+            "-s",
+            subnet,
+            "-j",
+            "MASQUERADE",
+        )
+        nat_added = True
+        sudo_run("iptables", "-A", "FORWARD", "-i", interface, "-j", "ACCEPT")
+        forward_out_added = True
+        sudo_run(
+            "iptables",
+            "-A",
+            "FORWARD",
+            "-o",
+            interface,
+            "-m",
+            "conntrack",
+            "--ctstate",
+            "ESTABLISHED,RELATED",
+            "-j",
+            "ACCEPT",
+        )
+        forward_in_added = True
+        sudo_run(
+            "dnsmasq",
+            "--conf-file=/dev/null",
+            "--interface=" + interface,
+            "--bind-interfaces",
+            "--except-interface=lo",
+            "--listen-address=" + gateway,
+            "--dhcp-range=10.0.6.2,10.0.6.20,1h",
+            "--dhcp-option=option:router," + gateway,
+            "--dhcp-option=option:dns-server," + gateway,
+            "--pid-file=" + str(pid_file),
+            "--log-facility=/dev/null",
+        )
+        dnsmasq_started = True
+        yield
+    finally:
+        if dnsmasq_started:
+            pid = pid_file.read_text().strip() if pid_file.exists() else ""
+            if pid.isdecimal():
+                cleanup_network("kill", pid)
+            pid_file.unlink(missing_ok=True)
+        if forward_in_added:
+            cleanup_network(
+                "iptables",
+                "-D",
+                "FORWARD",
+                "-o",
+                interface,
+                "-m",
+                "conntrack",
+                "--ctstate",
+                "ESTABLISHED,RELATED",
+                "-j",
+                "ACCEPT",
+            )
+        if forward_out_added:
+            cleanup_network(
+                "iptables", "-D", "FORWARD", "-i", interface, "-j", "ACCEPT"
+            )
+        if nat_added:
+            cleanup_network(
+                "iptables",
+                "-t",
+                "nat",
+                "-D",
+                "POSTROUTING",
+                "-s",
+                subnet,
+                "-j",
+                "MASQUERADE",
+            )
+        if forwarding not in (None, "1"):
+            cleanup_network("sysctl", "-qw", "net.ipv4.ip_forward=" + forwarding)
+        if tap_created:
+            cleanup_network("ip", "tuntap", "del", "dev", interface, "mode", "tap")
+
+
+def cleanup_network(*command: str) -> None:
+    result = subprocess.run(
+        command if os.geteuid() == 0 else ("sudo", *command),
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode:
+        print(
+            f"network cleanup failed: {' '.join(command)}: {result.stderr.strip()}",
+            file=sys.stderr,
+        )
 
 
 def main(argv: list[str]) -> int:
