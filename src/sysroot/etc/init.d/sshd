@@ -1,0 +1,16 @@
+#!/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+case "$1" in
+start)
+    if [ ! -x /usr/sbin/sshd ]; then
+        printf '%s\n' '/usr/sbin/sshd is unavailable'
+        exit 77
+    fi
+    [ -f /etc/ssh/ssh_host_key ] || ssh-keygen -A || exit 1
+    /usr/sbin/sshd
+    ;;
+stop)
+    [ -f /var/run/sshd.pid ] && kill "$(cat /var/run/sshd.pid)" 2>/dev/null || true
+    ;;
+restart) "$0" stop; "$0" start ;;
+esac

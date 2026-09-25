@@ -1,0 +1,9 @@
+{
+  "name": "net-tools",
+  "version": "2.10",
+  "order": 68.5,
+  "source": "archive",
+  "url": "https://downloads.sourceforge.net/project/net-tools/net-tools-{version}.tar.xz",
+  "archive": "net-tools-2.10.tar.xz",
+  "artifact": "artifacts/net-tools.done"
+}

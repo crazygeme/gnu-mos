@@ -1,0 +1,9 @@
+{
+  "name": "man-db",
+  "version": "2.13.0",
+  "order": 69,
+  "source": "archive",
+  "url": "https://download.savannah.gnu.org/releases/man-db/man-db-{version}.tar.xz",
+  "archive": "man-db-2.13.0.tar.xz",
+  "artifact": "artifacts/man-db.done"
+}

@@ -20,7 +20,7 @@ subprocess.run(
         "make",
         "-C",
         "src",
-        "-j" + str(os.cpu_count() or 1),
+        "-j4",
         *make_vars,
         "init",
         "runlevel",

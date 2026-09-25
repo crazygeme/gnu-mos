@@ -1,0 +1,9 @@
+{
+  "name": "gdbm",
+  "version": "1.26",
+  "order": 68,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/gnu/gdbm/gdbm-{version}.tar.gz",
+  "archive": "gdbm-1.26.tar.gz",
+  "artifact": "artifacts/gdbm.done"
+}

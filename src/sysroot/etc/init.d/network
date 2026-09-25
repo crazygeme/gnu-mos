@@ -1,0 +1,16 @@
+#!/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+case "$1" in
+start)
+    [ -r /proc/net/dev ] || exit 1
+    while IFS= read -r interface; do
+        case "$interface" in
+            *eth0:*) exit 0 ;;
+        esac
+    done </proc/net/dev
+    printf '%s\n' 'eth0 is unavailable'
+    exit 1
+    ;;
+stop) : ;;
+restart) "$0" stop; "$0" start ;;
+esac

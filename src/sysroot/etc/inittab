@@ -1,4 +1,6 @@
 id:3:initdefault:
 si::sysinit:/etc/init.d/rcS
-c1:3:respawn:/etc/init.d/console
+l3:3:wait:/etc/init.d/rc 3
+c1:3:respawn:/sbin/agetty -L tty1 115200 linux
+g1:3:once:/etc/init.d/graphical start
 ca::ctrlaltdel:/sbin/shutdown -r now

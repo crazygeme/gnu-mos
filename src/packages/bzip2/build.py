@@ -18,7 +18,7 @@ env.update(
 subprocess.run(
     [
         "make",
-        "-j" + str(os.cpu_count() or 1),
+        "-j4",
         "CC=" + env["CC"],
         "AR=" + env["AR"],
         "RANLIB=" + env["RANLIB"],

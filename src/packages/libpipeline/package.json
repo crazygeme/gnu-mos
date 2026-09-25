@@ -1,0 +1,9 @@
+{
+  "name": "libpipeline",
+  "version": "1.5.8",
+  "order": 68,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/libp/libpipeline/libpipeline_{version}.orig.tar.gz",
+  "archive": "libpipeline_1.5.8.orig.tar.gz",
+  "artifact": "artifacts/libpipeline.done"
+}

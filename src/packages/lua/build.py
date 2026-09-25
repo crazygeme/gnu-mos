@@ -24,7 +24,7 @@ environment.update(
 )
 
 subprocess.run(
-    ["make", "-j" + str(os.cpu_count() or 1), "linux"],
+    ["make", "-j4", "linux"],
     cwd=source,
     env=environment,
     check=True,
