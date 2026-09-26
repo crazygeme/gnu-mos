@@ -1,0 +1,17 @@
+{
+  "name": "xauth",
+  "version": "1.1.4",
+  "order": 144.5,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/app/xauth-{version}.tar.xz",
+  "archive": "xauth-1.1.4.tar.xz",
+  "artifact": "artifacts/xauth.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxmu",
+    "libxext",
+    "libxau"
+  ]
+}

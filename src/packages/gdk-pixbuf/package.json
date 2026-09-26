@@ -1,0 +1,22 @@
+{
+  "name": "gdk-pixbuf",
+  "version": "2.42.12",
+  "order": 139.81,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/gdk-pixbuf/2.42/gdk-pixbuf-{version}.tar.xz",
+  "archive": "gdk-pixbuf-2.42.12.tar.xz",
+  "artifact": "artifacts/gdk-pixbuf.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "libpng",
+    "shared-mime-info",
+    "libjpeg"
+  ]
+}

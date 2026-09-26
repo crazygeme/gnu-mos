@@ -1,0 +1,6 @@
+#!/bin/sh
+export XDG_CURRENT_DESKTOP=XFCE
+export XDG_SESSION_DESKTOP=xfce
+export XDG_SESSION_TYPE=x11
+export DESKTOP_SESSION=xfce
+exec /usr/bin/dbus-run-session -- /usr/bin/startxfce4

@@ -1,13 +1,11 @@
-import os, subprocess, tarfile
+import os, subprocess, sys
 from pathlib import Path
 
-w = Path(os.environ["LFS_WORKSPACE"])
-s = Path(os.environ["LFS_SOURCES"])
+sys.path.insert(0, str(Path(__file__).parents[2]))
+from package_lib import archive_source
+
 root = Path(os.environ["LFS_SYSROOT"])
-src = w / "build/openssh-10.0p1"
-if not src.exists():
-    with tarfile.open(s / "openssh-10.0p1.tar.gz") as f:
-        f.extractall(w / "build", filter="data")
+src = archive_source("openssh", "openssh-10.0p1.tar.gz", "openssh-10.0p1")
 env = os.environ.copy()
 env.update(
     {

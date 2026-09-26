@@ -1,0 +1,13 @@
+{
+  "name": "libjpeg",
+  "version": "9f",
+  "order": 134.3,
+  "source": "archive",
+  "url": "https://www.ijg.org/files/jpegsrc.v{version}.tar.gz",
+  "archive": "jpegsrc.v9f.tar.gz",
+  "artifact": "artifacts/libjpeg.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": []
+}

@@ -1,0 +1,15 @@
+{
+  "name": "libice",
+  "version": "1.1.2",
+  "order": 128.1,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libICE-{version}.tar.xz",
+  "archive": "libICE-1.1.2.tar.xz",
+  "artifact": "artifacts/libice.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libx11"
+  ]
+}

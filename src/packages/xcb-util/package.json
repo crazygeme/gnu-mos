@@ -1,0 +1,15 @@
+{
+  "name": "xcb-util",
+  "version": "0.4.1",
+  "order": 128.6,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/xcb-util-{version}.tar.xz",
+  "archive": "xcb-util-0.4.1.tar.xz",
+  "artifact": "artifacts/xcb-util.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxcb"
+  ]
+}

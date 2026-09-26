@@ -1,0 +1,10 @@
+{
+  "name": "sysklogd",
+  "version": "2.7.2",
+  "order": 109.6,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/lfs/lfs-packages/12.4/sysklogd-{version}.tar.gz",
+  "archive": "sysklogd-2.7.2.tar.gz",
+  "artifact": "artifacts/sysklogd.done",
+  "dependencies": ["glibc", "sysvinit"]
+}

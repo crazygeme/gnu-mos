@@ -1,0 +1,19 @@
+{
+  "name": "libdisplay-info",
+  "version": "0.2.0",
+  "order": 142,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://gitlab.freedesktop.org/emersion/libdisplay-info/-/releases/{version}/downloads/libdisplay-info-{version}.tar.xz",
+  "archive": "libdisplay-info-0.2.0.tar.xz",
+  "artifact": "artifacts/libdisplay-info.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "hwdata"
+  ]
+}

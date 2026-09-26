@@ -1,0 +1,10 @@
+{
+  "name": "nasm-host",
+  "version": "2.16.03",
+  "order": 69,
+  "source": "archive",
+  "url": "https://www.nasm.us/pub/nasm/releasebuilds/{version}/nasm-{version}.tar.xz",
+  "archive": "nasm-2.16.03.tar.xz",
+  "artifact": "artifacts/nasm-host.done",
+  "dependencies": []
+}

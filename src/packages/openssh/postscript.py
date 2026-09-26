@@ -8,14 +8,12 @@ ssh_dir.mkdir(parents=True, exist_ok=True)
 
 
 def set_attributes(path: Path, mode: str) -> None:
-    command = ["chown", "root:root", str(path)]
-    if os.geteuid() != 0:
-        command.insert(0, "sudo")
-    subprocess.run(command, check=True)
-    command = ["chmod", mode, str(path)]
-    if os.geteuid() != 0:
-        command.insert(0, "sudo")
-    subprocess.run(command, check=True)
+    # Preserve root ownership when setup runs without privilege.
+    if os.geteuid() == 0:
+        os.chown(path, 0, 0)
+        os.chmod(path, int(mode, 8))
+    elif path.stat().st_uid == os.geteuid():
+        os.chmod(path, int(mode, 8))
 
 
 privsep_dir = sysroot / "var/empty"
@@ -26,7 +24,8 @@ set_attributes(privsep_dir, "755")
 # records.  OpenSSH records the PTY login before starting the session shell.
 utmpx_file = sysroot / "var/run/utmpx"
 utmpx_file.parent.mkdir(parents=True, exist_ok=True)
-utmpx_file.touch(exist_ok=True)
+if not utmpx_file.exists():
+    utmpx_file.touch()
 set_attributes(utmpx_file, "664")
 
 for key_type in ("ed25519", "ecdsa", "rsa"):

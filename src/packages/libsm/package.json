@@ -1,0 +1,16 @@
+{
+  "name": "libsm",
+  "version": "1.2.5",
+  "order": 128.2,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libSM-{version}.tar.xz",
+  "archive": "libSM-1.2.5.tar.xz",
+  "artifact": "artifacts/libsm.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libice",
+    "libuuid"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "libyaml",
+  "version": "0.2.5",
+  "order": 142.1,
+  "source": "archive",
+  "url": "https://pyyaml.org/download/libyaml/yaml-{version}.tar.gz",
+  "archive": "yaml-0.2.5.tar.gz",
+  "artifact": "artifacts/libyaml.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": []
+}

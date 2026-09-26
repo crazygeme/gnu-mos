@@ -1,0 +1,22 @@
+{
+  "name": "pango",
+  "version": "1.56.3",
+  "order": 133,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/pango/1.56/pango-{version}.tar.xz",
+  "archive": "pango-1.56.3.tar.xz",
+  "artifact": "artifacts/pango.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "harfbuzz",
+    "fribidi",
+    "cairo"
+  ]
+}

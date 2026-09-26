@@ -1,0 +1,13 @@
+{
+  "name": "hwdata",
+  "version": "0.394",
+  "order": 141.5,
+  "source": "archive",
+  "url": "https://github.com/vcrhonek/hwdata/archive/refs/tags/v{version}.tar.gz",
+  "archive": "hwdata-0.394.tar.gz",
+  "artifact": "artifacts/hwdata.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": []
+}

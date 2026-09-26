@@ -1,0 +1,9 @@
+{
+  "name": "grep",
+  "version": "3.12",
+  "order": 68.6,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/grep/grep-{version}.tar.xz",
+  "archive": "grep-3.12.tar.xz",
+  "artifact": "artifacts/grep.done"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "fribidi",
+  "version": "1.0.16",
+  "order": 131,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://github.com/fribidi/fribidi/releases/download/v{version}/fribidi-{version}.tar.xz",
+  "archive": "fribidi-1.0.16.tar.xz",
+  "artifact": "artifacts/fribidi.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": []
+}

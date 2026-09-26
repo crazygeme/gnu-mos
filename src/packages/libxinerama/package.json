@@ -1,0 +1,15 @@
+{
+  "name": "libxinerama",
+  "version": "1.1.5",
+  "order": 128.4,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libXinerama-{version}.tar.xz",
+  "archive": "libXinerama-1.1.5.tar.xz",
+  "artifact": "artifacts/libxinerama.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxext"
+  ]
+}

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=FFplay
+GenericName=Video Player
+Comment=Play audio and video files
+Exec=ffplay -autoexit %f
+TryExec=ffplay
+Icon=video-x-generic
+Terminal=false
+Categories=AudioVideo;Player;
+MimeType=video/mp4;video/x-matroska;video/webm;video/mpeg;video/x-msvideo;video/quicktime;video/ogg;audio/mpeg;audio/flac;audio/ogg;audio/x-wav;

@@ -1,0 +1,18 @@
+{
+  "name": "xfdesktop",
+  "version": "4.20.0",
+  "order": 160,
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/xfdesktop-{version}.tar.bz2",
+  "archive": "xfdesktop-4.20.0.tar.bz2",
+  "artifact": "artifacts/xfdesktop.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxfce4windowing",
+    "thunar",
+    "garcon",
+    "libyaml"
+  ]
+}

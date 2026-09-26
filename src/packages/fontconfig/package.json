@@ -1,0 +1,16 @@
+{
+  "name": "fontconfig",
+  "version": "2.16.0",
+  "order": 130,
+  "source": "archive",
+  "url": "https://www.freedesktop.org/software/fontconfig/release/fontconfig-{version}.tar.xz",
+  "archive": "fontconfig-2.16.0.tar.xz",
+  "artifact": "artifacts/fontconfig.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "freetype",
+    "expat"
+  ]
+}

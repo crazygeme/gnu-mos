@@ -1,0 +1,9 @@
+{
+  "name": "psmisc",
+  "version": "23.7",
+  "order": 68.65,
+  "source": "archive",
+  "url": "https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-{version}.tar.xz/download",
+  "archive": "psmisc-23.7.tar.xz",
+  "artifact": "artifacts/psmisc.done"
+}

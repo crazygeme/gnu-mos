@@ -1,0 +1,19 @@
+{
+  "name": "xfce4-settings",
+  "version": "4.20.0",
+  "order": 158,
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/xfce4-settings-{version}.tar.bz2",
+  "archive": "xfce4-settings-4.20.0.tar.bz2",
+  "artifact": "artifacts/xfce4-settings.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "exo",
+    "garcon",
+    "libxi",
+    "libxrandr",
+    "fontconfig"
+  ]
+}

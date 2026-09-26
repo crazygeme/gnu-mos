@@ -1,3 +1,7 @@
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export TERM=${TERM:-linux}
+export LANG=C.UTF-8
+export LC_CTYPE=C.UTF-8
+export MANPATH=/usr/share/man:/usr/local/share/man
+export MANPAGER=/usr/bin/more
 export PS1='\u@\h:\w\$ '

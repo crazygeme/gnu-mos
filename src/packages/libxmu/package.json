@@ -1,0 +1,15 @@
+{
+  "name": "libxmu",
+  "version": "1.2.1",
+  "order": 128.9,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libXmu-{version}.tar.xz",
+  "archive": "libXmu-1.2.1.tar.xz",
+  "artifact": "artifacts/libxmu.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxt"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "xfconf",
+  "version": "4.20.0",
+  "order": 151,
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/xfconf-{version}.tar.bz2",
+  "archive": "xfconf-4.20.0.tar.bz2",
+  "artifact": "artifacts/xfconf.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxfce4util",
+    "dbus"
+  ]
+}

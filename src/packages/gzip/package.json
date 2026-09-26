@@ -1,0 +1,9 @@
+{
+  "name": "gzip",
+  "version": "1.14",
+  "order": 68.5,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/gzip/gzip-{version}.tar.xz",
+  "archive": "gzip-1.14.tar.xz",
+  "artifact": "artifacts/gzip.done"
+}

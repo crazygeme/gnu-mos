@@ -1,0 +1,24 @@
+{
+  "name": "cairo",
+  "version": "1.18.4",
+  "order": 132,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://cairographics.org/releases/cairo-{version}.tar.xz",
+  "archive": "cairo-1.18.4.tar.xz",
+  "artifact": "artifacts/cairo.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "fontconfig",
+    "pixman",
+    "libpng",
+    "libxrender",
+    "libxcb",
+    "zlib"
+  ]
+}

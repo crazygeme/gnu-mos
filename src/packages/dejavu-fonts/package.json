@@ -1,0 +1,15 @@
+{
+  "name": "dejavu-fonts",
+  "version": "2.37",
+  "order": 134.4,
+  "source": "archive",
+  "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-{version}.tar.bz2",
+  "archive": "dejavu-fonts-ttf-2.37.tar.bz2",
+  "artifact": "artifacts/dejavu-fonts.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "fontconfig"
+  ]
+}

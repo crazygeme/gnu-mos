@@ -1,0 +1,10 @@
+{
+  "name": "fzf",
+  "version": "0.65.2",
+  "order": 69,
+  "source": "archive",
+  "url": "https://github.com/junegunn/fzf/archive/refs/tags/v{version}.tar.gz",
+  "archive": "fzf-0.65.2.tar.gz",
+  "artifact": "artifacts/fzf.done",
+  "dependencies": ["go-host"]
+}
