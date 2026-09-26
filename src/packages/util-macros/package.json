@@ -1,0 +1,12 @@
+{
+  "name": "util-macros",
+  "version": "1.20.2",
+  "order": 109,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/util/util-macros-{version}.tar.xz",
+  "archive": "util-macros-1.20.2.tar.xz",
+  "artifact": "artifacts/util-macros.done",
+  "profiles": [
+    "gui"
+  ]
+}

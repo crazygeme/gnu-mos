@@ -1,0 +1,15 @@
+{
+  "name": "scron",
+  "version": "0.4",
+  "order": 109.7,
+  "source": "archive",
+  "url": "https://dl.2f30.org/releases/scron-{version}.tar.gz",
+  "archive": "scron-0.4.tar.gz",
+  "artifact": "artifacts/scron.done",
+  "dependencies": [
+    "glibc",
+    "bash",
+    "sysvinit",
+    "sysklogd"
+  ]
+}

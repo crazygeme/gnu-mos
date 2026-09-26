@@ -1,0 +1,17 @@
+{
+  "name": "xcb-util-keysyms",
+  "version": "0.4.1",
+  "order": 128.64,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/xcb-util-keysyms-{version}.tar.xz",
+  "archive": "xcb-util-keysyms-0.4.1.tar.xz",
+  "artifact": "artifacts/xcb-util-keysyms.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxcb",
+    "xorgproto",
+    "util-macros"
+  ]
+}

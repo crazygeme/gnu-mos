@@ -1,0 +1,16 @@
+{
+  "name": "xcb-util-renderutil",
+  "version": "0.3.10",
+  "order": 128.61,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/xcb-util-renderutil-{version}.tar.xz",
+  "archive": "xcb-util-renderutil-0.3.10.tar.xz",
+  "artifact": "artifacts/xcb-util-renderutil.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxcb",
+    "util-macros"
+  ]
+}

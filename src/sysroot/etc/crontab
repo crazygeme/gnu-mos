@@ -1,0 +1,4 @@
+# Fields: minute hour day-of-month month day-of-week command
+# Commands execute as root through /bin/sh. There is no user field.
+# Reload with: /etc/init.d/scron reload
+# Example: 0 6 * * * /usr/bin/date >> /var/log/cron-jobs.log 2>&1

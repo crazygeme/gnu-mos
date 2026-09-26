@@ -12,5 +12,14 @@
   "artifact": "artifacts/xorg-server.done",
   "profiles": [
     "gui"
+  ],
+  "dependencies": [
+    "libpciaccess",
+    "libxcb",
+    "xcb-util",
+    "xcb-util-renderutil",
+    "xcb-util-image",
+    "xcb-util-wm",
+    "xcb-util-keysyms"
   ]
 }

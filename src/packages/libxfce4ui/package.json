@@ -2,6 +2,9 @@
   "name": "libxfce4ui",
   "version": "4.20.0",
   "order": 152,
+  "build-tools": [
+    "xfce4-dev-tools"
+  ],
   "source": "archive",
   "url": "https://archive.xfce.org/xfce/4.20/src/libxfce4ui-{version}.tar.bz2",
   "archive": "libxfce4ui-4.20.0.tar.bz2",

@@ -503,7 +503,7 @@ def qemu(extra: list[str]) -> None:
     serial = "file:" + str(WORK / "krn.log")
     qemu_extra = list(extra)
     command = [
-        "qemu-system-i386",
+        "qemu-system-x86_64",
         "-enable-kvm",
         "-m",
         os.environ.get("LFS_RAM", "2048"),

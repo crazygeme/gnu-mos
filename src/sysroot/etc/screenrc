@@ -1,0 +1,4 @@
+startup_message off
+shell /bin/bash
+# Match the MOS console capabilities and use ASCII line drawing.
+termcapinfo linux 'am@:xn@:ut@:ec@:G0@:as@:ae@:ac=j+k+l+m+n+q-t+u+v+w+x|'

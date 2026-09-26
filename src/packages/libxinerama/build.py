@@ -8,5 +8,6 @@ configure_make_install(
     archive_source('libxinerama', 'libXinerama-1.1.5.tar.xz', 'libXinerama-1.1.5'),
     options=(
         '--disable-static',
+        '--enable-malloc0returnsnull',
     ),
 )

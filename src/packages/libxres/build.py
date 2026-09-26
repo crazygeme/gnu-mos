@@ -8,5 +8,6 @@ configure_make_install(
     archive_source('libxres', 'libXres-1.2.2.tar.xz', 'libXres-1.2.2'),
     options=(
         '--disable-static',
+        '--enable-malloc0returnsnull',
     ),
 )

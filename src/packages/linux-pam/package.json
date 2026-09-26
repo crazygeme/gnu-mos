@@ -1,0 +1,15 @@
+{
+  "name": "linux-pam",
+  "version": "1.7.1",
+  "order": 68.85,
+  "source": "archive",
+  "url": "https://github.com/linux-pam/linux-pam/releases/download/v{version}/Linux-PAM-{version}.tar.xz",
+  "archive": "Linux-PAM-1.7.1.tar.xz",
+  "artifact": "artifacts/linux-pam.done",
+  "dependencies": [
+    "glibc",
+    "libxcrypt",
+    "meson",
+    "ninja"
+  ]
+}

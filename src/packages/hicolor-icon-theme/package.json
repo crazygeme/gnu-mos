@@ -2,6 +2,10 @@
   "name": "hicolor-icon-theme",
   "version": "0.18",
   "order": 143,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
   "source": "archive",
   "url": "https://icon-theme.freedesktop.org/releases/hicolor-icon-theme-{version}.tar.xz",
   "archive": "hicolor-icon-theme-0.18.tar.xz",
