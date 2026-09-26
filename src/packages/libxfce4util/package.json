@@ -1,0 +1,15 @@
+{
+  "name": "libxfce4util",
+  "version": "4.20.0",
+  "order": 150,
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/libxfce4util-{version}.tar.bz2",
+  "archive": "libxfce4util-4.20.0.tar.bz2",
+  "artifact": "artifacts/libxfce4util.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib"
+  ]
+}

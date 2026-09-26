@@ -1,0 +1,9 @@
+{
+  "name": "go-host",
+  "version": "1.25.1",
+  "order": 68.9,
+  "source": "archive",
+  "url": "https://mirrors.aliyun.com/golang/go{version}.linux-amd64.tar.gz",
+  "archive": "go1.25.1.linux-amd64.tar.gz",
+  "artifact": "artifacts/go-host.done"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "startup-notification",
+  "version": "0.12",
+  "order": 129,
+  "source": "archive",
+  "url": "https://www.freedesktop.org/software/startup-notification/releases/startup-notification-{version}.tar.gz",
+  "archive": "startup-notification-0.12.tar.gz",
+  "artifact": "artifacts/startup-notification.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libx11",
+    "xcb-util"
+  ]
+}

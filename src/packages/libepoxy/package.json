@@ -1,0 +1,20 @@
+{
+  "name": "libepoxy",
+  "version": "1.5.10",
+  "order": 139.82,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/libepoxy/1.5/libepoxy-{version}.tar.xz",
+  "archive": "libepoxy-1.5.10.tar.xz",
+  "artifact": "artifacts/libepoxy.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "mesa",
+    "libx11"
+  ]
+}

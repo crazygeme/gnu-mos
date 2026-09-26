@@ -1,0 +1,10 @@
+{
+  "name": "tmux",
+  "version": "3.5a",
+  "order": 68.8,
+  "source": "archive",
+  "url": "https://github.com/tmux/tmux/releases/download/{version}/tmux-{version}.tar.gz",
+  "archive": "tmux-3.5a.tar.gz",
+  "artifact": "artifacts/tmux.done",
+  "dependencies": ["libevent", "ncurses"]
+}

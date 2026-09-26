@@ -1,0 +1,44 @@
+#!/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+pidfile=/run/syslogd.pid
+
+case "$1" in
+start)
+    if [ -s "$pidfile" ]; then
+        read -r pid < "$pidfile"
+        case "$pid" in
+            '' | *[!0-9]* | 0 | 1) ;;
+            *) kill -0 "$pid" 2>/dev/null && exit 0 ;;
+        esac
+    fi
+    /usr/sbin/syslogd -s -s -m 0 -f /etc/syslog.conf -P "$pidfile"
+    ;;
+stop)
+    if [ -s "$pidfile" ]; then
+        read -r pid < "$pidfile"
+        case "$pid" in
+            '' | *[!0-9]* | 0 | 1) exit 1 ;;
+        esac
+        kill "$pid" 2>/dev/null || true
+    fi
+    ;;
+restart)
+    "$0" stop || exit 1
+    elapsed=0
+    while [ -s "$pidfile" ]; do
+        read -r pid < "$pidfile"
+        case "$pid" in
+            '' | *[!0-9]* | 0 | 1) break ;;
+        esac
+        kill -0 "$pid" 2>/dev/null || break
+        [ "$elapsed" -lt 5 ] || exit 1
+        sleep 1 || exit 1
+        elapsed=$((elapsed + 1))
+    done
+    "$0" start
+    ;;
+*)
+    printf '%s\n' 'Usage: sysklogd {start|stop|restart}' >&2
+    exit 1
+    ;;
+esac

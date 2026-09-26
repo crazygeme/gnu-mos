@@ -1,0 +1,21 @@
+{
+  "name": "libwnck",
+  "version": "43.2",
+  "order": 141,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/libwnck/43/libwnck-{version}.tar.xz",
+  "archive": "libwnck-43.2.tar.xz",
+  "artifact": "artifacts/libwnck.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtk3",
+    "startup-notification",
+    "libxres"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "gtk3",
+  "version": "3.24.49",
+  "order": 140,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/gtk/3.24/gtk-{version}.tar.xz",
+  "archive": "gtk-3.24.49.tar.xz",
+  "artifact": "artifacts/gtk3.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "pango",
+    "gdk-pixbuf",
+    "at-spi2-core",
+    "libepoxy",
+    "libxcomposite",
+    "libxinerama",
+    "libxcursor",
+    "libxrandr"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "xfce4-appfinder",
+  "version": "4.20.0",
+  "order": 161,
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/xfce4-appfinder-{version}.tar.bz2",
+  "archive": "xfce4-appfinder-4.20.0.tar.bz2",
+  "artifact": "artifacts/xfce4-appfinder.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "garcon",
+    "xfconf"
+  ]
+}

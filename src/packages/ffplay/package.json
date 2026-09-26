@@ -1,0 +1,16 @@
+{
+  "name": "ffplay",
+  "version": "8.0.3",
+  "order": 190,
+  "source": "archive",
+  "url": "https://ffmpeg.org/releases/ffmpeg-{version}.tar.xz",
+  "archive": "ffmpeg-8.0.3.tar.xz",
+  "artifact": "artifacts/ffplay.done",
+  "dependencies": [
+    "ffmpeg",
+    "sdl2"
+  ],
+  "profiles": [
+    "gui"
+  ]
+}

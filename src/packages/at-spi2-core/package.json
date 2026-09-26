@@ -1,0 +1,22 @@
+{
+  "name": "at-spi2-core",
+  "version": "2.56.2",
+  "order": 134.2,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/at-spi2-core/2.56/at-spi2-core-{version}.tar.xz",
+  "archive": "at-spi2-core-2.56.2.tar.xz",
+  "artifact": "artifacts/at-spi2-core.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "dbus",
+    "libxtst",
+    "libxml2"
+  ]
+}

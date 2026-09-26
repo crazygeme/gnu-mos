@@ -1,0 +1,17 @@
+{
+  "name": "ffmpeg",
+  "version": "8.0.3",
+  "order": 175,
+  "source": "archive",
+  "url": "https://ffmpeg.org/releases/ffmpeg-{version}.tar.xz",
+  "archive": "ffmpeg-8.0.3.tar.xz",
+  "artifact": "artifacts/ffmpeg.done",
+  "dependencies": [
+    "glibc",
+    "nasm-host",
+    "zlib",
+    "bzip2",
+    "xz",
+    "openssl"
+  ]
+}

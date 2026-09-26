@@ -1,0 +1,24 @@
+{
+  "name": "sdl2",
+  "version": "2.32.10",
+  "order": 180,
+  "source": "archive",
+  "url": "https://www.libsdl.org/release/SDL2-{version}.tar.gz",
+  "archive": "SDL2-2.32.10.tar.gz",
+  "artifact": "artifacts/sdl2.done",
+  "dependencies": [
+    "alsa-lib",
+    "libx11",
+    "libxext",
+    "libxrandr",
+    "libxcursor",
+    "libxi",
+    "libxfixes",
+    "libxinerama",
+    "libxrender",
+    "mesa"
+  ],
+  "profiles": [
+    "gui"
+  ]
+}

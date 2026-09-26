@@ -1,0 +1,17 @@
+{
+  "name": "thunar",
+  "version": "4.20.0",
+  "order": 156,
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/thunar-{version}.tar.bz2",
+  "archive": "thunar-4.20.0.tar.bz2",
+  "artifact": "artifacts/thunar.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "exo",
+    "xfconf",
+    "pango"
+  ]
+}

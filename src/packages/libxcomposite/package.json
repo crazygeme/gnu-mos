@@ -1,0 +1,16 @@
+{
+  "name": "libxcomposite",
+  "version": "0.4.6",
+  "order": 128.3,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libXcomposite-{version}.tar.xz",
+  "archive": "libXcomposite-0.4.6.tar.xz",
+  "artifact": "artifacts/libxcomposite.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libx11",
+    "libxfixes"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "xfce4-panel",
+  "version": "4.20.0",
+  "order": 157,
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/xfce4-panel-{version}.tar.bz2",
+  "archive": "xfce4-panel-4.20.0.tar.bz2",
+  "artifact": "artifacts/xfce4-panel.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "exo",
+    "garcon",
+    "libxfce4windowing"
+  ]
+}
