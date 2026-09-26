@@ -5,9 +5,6 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 from package_lib import archive_source, configure_make_install
 
 configure_make_install(
-    archive_source('libxinerama', 'libXinerama-1.1.5.tar.xz', 'libXinerama-1.1.5'),
-    options=(
-        '--disable-static',
-        '--enable-malloc0returnsnull',
-    ),
+    archive_source("xcb-util-renderutil", "xcb-util-renderutil-0.3.10.tar.xz", "xcb-util-renderutil-0.3.10"),
+    options=("--disable-static",),
 )

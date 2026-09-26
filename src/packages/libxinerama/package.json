@@ -10,6 +10,7 @@
     "gui"
   ],
   "dependencies": [
+    "util-macros",
     "libxext"
   ]
 }

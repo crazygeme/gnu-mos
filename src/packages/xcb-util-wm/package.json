@@ -1,0 +1,16 @@
+{
+  "name": "xcb-util-wm",
+  "version": "0.4.2",
+  "order": 128.63,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/xcb-util-wm-{version}.tar.xz",
+  "archive": "xcb-util-wm-0.4.2.tar.xz",
+  "artifact": "artifacts/xcb-util-wm.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxcb",
+    "util-macros"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "libpciaccess",
+  "version": "0.18.1",
+  "order": 136.5,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libpciaccess-{version}.tar.xz",
+  "archive": "libpciaccess-0.18.1.tar.xz",
+  "artifact": "artifacts/libpciaccess.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "zlib"
+  ]
+}

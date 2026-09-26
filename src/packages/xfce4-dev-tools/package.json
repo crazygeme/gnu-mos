@@ -1,0 +1,16 @@
+{
+  "name": "xfce4-dev-tools",
+  "version": "4.20.0",
+  "order": 149,
+  "build-tools": [
+    "meson",
+    "python-host"
+  ],
+  "source": "archive",
+  "url": "https://archive.xfce.org/xfce/4.20/src/xfce4-dev-tools-{version}.tar.bz2",
+  "archive": "xfce4-dev-tools-4.20.0.tar.bz2",
+  "artifact": "artifacts/xfce4-dev-tools.done",
+  "profiles": [
+    "gui"
+  ]
+}

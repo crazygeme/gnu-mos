@@ -1,0 +1,14 @@
+{
+  "name": "screen",
+  "version": "5.0.1",
+  "order": 68.9,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/gnu/screen/screen-{version}.tar.gz",
+  "archive": "screen-5.0.1.tar.gz",
+  "artifact": "artifacts/screen.done",
+  "dependencies": [
+    "ncurses",
+    "libxcrypt",
+    "linux-pam"
+  ]
+}

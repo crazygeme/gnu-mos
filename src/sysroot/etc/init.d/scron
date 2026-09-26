@@ -1,0 +1,51 @@
+#!/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+pidfile=/var/run/crond.pid
+
+running()
+{
+    [ -s "$pidfile" ] || return 1
+    read -r pid < "$pidfile"
+    case "$pid" in
+        '' | *[!0-9]* | 0 | 1) return 1 ;;
+    esac
+    kill -0 "$pid" 2>/dev/null
+}
+
+case "$1" in
+start)
+    running && exit 0
+    mkdir -p /var/run
+    /usr/bin/crond -f /etc/crontab
+    ;;
+stop)
+    running || exit 0
+    kill -TERM "$pid" || exit 1
+    elapsed=0
+    while kill -0 "$pid" 2>/dev/null; do
+        [ "$elapsed" -lt 5 ] || exit 1
+        sleep 1 || exit 1
+        elapsed=$((elapsed + 1))
+    done
+    ;;
+restart)
+    "$0" stop && "$0" start
+    ;;
+reload)
+    running || exit 1
+    kill -HUP "$pid"
+    ;;
+status)
+    if running; then
+        printf 'scron is running (PID %s).\n' "$pid"
+    else
+        printf '%s\n' 'scron is stopped.'
+        exit 3
+    fi
+    ;;
+*)
+    printf '%s\n' 'Usage: scron {start|stop|restart|reload|status}' >&2
+    exit 1
+    ;;
+esac
