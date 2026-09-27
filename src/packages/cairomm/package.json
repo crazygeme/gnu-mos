@@ -1,0 +1,21 @@
+{
+  "name": "cairomm",
+  "version": "1.14.5",
+  "order": 167,
+  "source": "archive",
+  "url": "https://www.cairographics.org/releases/cairomm-{version}.tar.xz",
+  "archive": "cairomm-1.14.5.tar.xz",
+  "artifact": "artifacts/cairomm.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libsigc++",
+    "cairo"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}
+

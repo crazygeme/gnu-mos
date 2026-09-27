@@ -77,6 +77,11 @@ with GTK 3.24.49 and a dedicated D-Bus session. The GUI profile includes
 Xfwm4, Xfdesktop, the panel, settings manager, application finder, Thunar,
 and xterm 411. Xterm is the default terminal emulator and appears as Terminal
 in the application menu. Logging out returns to the XDM login screen.
+The GUI profile also includes MATE System Monitor 1.28.1, MATE Calculator
+1.28.0, and Mousepad 0.6.5. Resource Manager opens CPU, memory, and network
+usage graphs from the application menu. Calculator provides graphical
+calculations, and Mousepad is the default text editor. Application commands
+and supporting libraries are described in [Xfce desktop](xfce/README.md).
 `telinit 3` stops the display manager; `telinit 5` starts it.
 The init entry uses `once`, so an exited display manager is not automatically
 restarted. XDM configuration resides in `/etc/X11/xdm`, PAM policy in

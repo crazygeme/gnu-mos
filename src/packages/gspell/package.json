@@ -1,0 +1,17 @@
+{
+  "name": "gspell",
+  "version": "1.12.2",
+  "order": 177,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/gspell/1.12/gspell-{version}.tar.xz",
+  "archive": "gspell-1.12.2.tar.xz",
+  "artifact": "artifacts/gspell.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtk3",
+    "enchant",
+    "icu"
+  ]
+}

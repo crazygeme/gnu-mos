@@ -1,0 +1,20 @@
+{
+  "name": "mate-calc",
+  "version": "1.28.0",
+  "order": 179,
+  "source": "archive",
+  "url": "https://github.com/mate-desktop/mate-calc/releases/download/v{version}/mate-calc-{version}.tar.xz",
+  "archive": "mate-calc-1.28.0.tar.xz",
+  "artifact": "artifacts/mate-calc.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtk3",
+    "libxml2",
+    "mpfr-target",
+    "mpc-target",
+    "gmp-target",
+    "itstool"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "pangomm",
+  "version": "2.46.4",
+  "order": 168,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/pangomm/2.46/pangomm-{version}.tar.xz",
+  "archive": "pangomm-2.46.4.tar.xz",
+  "artifact": "artifacts/pangomm.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glibmm",
+    "cairomm",
+    "pango"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}
+

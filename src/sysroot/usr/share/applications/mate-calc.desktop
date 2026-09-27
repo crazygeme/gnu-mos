@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Calculator
+Name[zh_CN]=计算器
+Comment=Perform arithmetic and scientific calculations
+Exec=env GSETTINGS_BACKEND=keyfile mate-calc
+TryExec=mate-calc
+Icon=accessories-calculator
+Terminal=false
+Categories=GTK;Utility;Calculator;
+StartupNotify=true

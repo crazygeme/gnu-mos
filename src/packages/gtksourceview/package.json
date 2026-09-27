@@ -1,0 +1,22 @@
+{
+  "name": "gtksourceview",
+  "version": "4.8.4",
+  "order": 174,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/gtksourceview/4.8/gtksourceview-{version}.tar.xz",
+  "archive": "gtksourceview-4.8.4.tar.xz",
+  "artifact": "artifacts/gtksourceview.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtk3",
+    "libxml2",
+    "fribidi"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}
+

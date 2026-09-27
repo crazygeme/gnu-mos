@@ -1,0 +1,17 @@
+{
+  "name": "libxml2-python-host",
+  "version": "2.13.8",
+  "order": 163,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/libxml2/2.13/libxml2-{version}.tar.xz",
+  "archive": "libxml2-2.13.8.tar.xz",
+  "artifact": "artifacts/libxml2-python-host.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxml2",
+    "python-host"
+  ]
+}
+

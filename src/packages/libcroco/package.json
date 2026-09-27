@@ -1,0 +1,17 @@
+{
+  "name": "libcroco",
+  "version": "0.6.13",
+  "order": 171,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/libcroco/0.6/libcroco-{version}.tar.xz",
+  "archive": "libcroco-0.6.13.tar.xz",
+  "artifact": "artifacts/libcroco.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "libxml2"
+  ]
+}
+

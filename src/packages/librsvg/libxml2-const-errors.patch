@@ -1,0 +1,22 @@
+--- a/rsvg-css.c
++++ b/rsvg-css.c
+@@ -839,7 +839,7 @@
+ }
+ 
+ static void
+-rsvg_xml_noerror (void *data, xmlErrorPtr error)
++rsvg_xml_noerror (void *data, const xmlError *error)
+ {
+ }
+ 
+--- a/rsvg-base.c
++++ b/rsvg-base.c
+@@ -1197,7 +1197,7 @@
+ static void
+ rsvg_set_error (GError **error, xmlParserCtxtPtr ctxt)
+ {
+-    xmlErrorPtr xerr;
++    const xmlError *xerr;
+ 
+     xerr = xmlCtxtGetLastError (ctxt);
+     if (xerr) {
