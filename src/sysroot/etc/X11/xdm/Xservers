@@ -1,0 +1,1 @@
+:0 local /usr/libexec/Xorg :0 vt2 -nolisten tcp

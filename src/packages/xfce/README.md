@@ -12,13 +12,20 @@ DejaVu fonts and the Adwaita icon theme provide desktop resources. The hardware
 database is installed into both the sysroot and host tools prefix for native
 display-information code generation.
 
-Runlevel 5 starts Xfce directly as root through `startx` on virtual terminal 2.
-The init entry uses `once`; an exited session is not automatically restarted.
+Runlevel 5 starts XDM 1.1.17 on virtual terminal 2. PAM authenticates system
+accounts and creates missing home directories. The authenticated user runs
+Xfce through `/etc/X11/xdm/Xsession`; logout returns to the login screen.
+The init entry uses `once`; an exited display manager is not automatically
+restarted. XDM accepts local logins only.
 Runlevel 3 provides the console environment; the GRUB console entry selects
 this runlevel.
 `mos-xfce-session` sets the desktop environment variables and runs `startxfce4`
 within `dbus-run-session`. Session bus lifetime follows the desktop session.
 The selected display backend is X11.
+
+The default wallpaper is `/usr/share/backgrounds/xfce/xfce-blue.jpg`.
+The configured image loaders support JPEG and PNG. SVG wallpaper decoding
+is unavailable.
 
 The application menu provides Terminal (xterm). Xfce also uses xterm as its
 default terminal emulator. DejaVu Sans Mono and UTF-8 are configured for

@@ -1,0 +1,20 @@
+--- a/src/xfdesktop-backdrop-renderer.c
++++ b/src/xfdesktop-backdrop-renderer.c
+@@ -520,6 +520,8 @@
+             image_data_error(image_data, error);
+             image_data_free(image_data);
+             g_error_free(error);
++        } else {
++            loader_closed_cb(image_data->loader, image_data);
+         }
+     } else if (gdk_pixbuf_loader_write(image_data->loader, image_data->image_buffer, bytes, &error)) {
+         g_input_stream_read_async(stream,
+@@ -623,8 +625,6 @@
+ 
+         g_signal_connect(image_data->loader, "size-prepared",
+                          G_CALLBACK(loader_size_prepared_cb), image_data);
+-        g_signal_connect(image_data->loader, "closed",
+-                         G_CALLBACK(loader_closed_cb), image_data);
+ 
+         g_file_read_async(image_data->image_file,
+                           G_PRIORITY_DEFAULT,

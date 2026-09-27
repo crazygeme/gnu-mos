@@ -1,0 +1,16 @@
+{
+  "name": "xdm",
+  "version": "1.1.17",
+  "order": 163,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/app/xdm-{version}.tar.xz",
+  "archive": "xdm-1.1.17.tar.xz",
+  "artifact": "artifacts/xdm.done",
+  "profiles": ["gui"],
+  "dependencies": [
+    "linux-pam", "libbsd", "libxcrypt", "libx11", "libxau", "libxdmcp",
+    "libxmu", "libxaw", "libxt", "libxext", "libxinerama", "libxft",
+    "libxrender", "libxpm", "xorgproto", "xorg-server", "xrdb",
+    "xfce4-session"
+  ]
+}

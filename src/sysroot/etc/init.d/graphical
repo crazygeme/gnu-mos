@@ -7,7 +7,9 @@ case "$1" in
     *) exit 1 ;;
 esac
 
-[ -x /usr/bin/startx ] || exit 0
-[ -x /usr/bin/startxfce4 ] || exit 0
-[ -x /usr/bin/dbus-run-session ] || exit 0
-exec /usr/bin/startx /usr/bin/mos-xfce-session -- vt2 </dev/tty2 >/dev/tty2 2>&1
+[ -x /usr/bin/xdm ] || exit 0
+umask 077
+mkdir -p /run/xdm /var/log || exit 1
+chown 0:0 /run/xdm || exit 1
+chmod 0700 /run/xdm || exit 1
+exec /usr/bin/xdm -nodaemon -config /etc/X11/xdm/xdm-config
