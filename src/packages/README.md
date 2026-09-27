@@ -93,12 +93,12 @@ Xorg 21.1.18 reads `/etc/X11/xorg.conf`. Its Meson cross configuration selects
 the `poll` event backend because MOS does not implement `epoll_create1`.
 The configured hostname is resolved through `/etc/hosts`, with the
 `files` name service preceding DNS in `/etc/nsswitch.conf`.
-The MOS configuration uses the
-VESA driver with a VBE-compatible virtual display at 800 by 600 pixels and
-24-bit color depth, with 640 by 480 available as an alternate mode. The GUI
-profile includes `xf86-video-vesa` 2.6.0, `xf86-input-keyboard` 1.9.0, and
-`xf86-input-mouse` 1.9.5. These drivers are built after the Xorg server and
-installed into `/usr/lib/xorg/modules`.
+The MOS configuration uses the Xorg modesetting driver, glamor, and Mesa
+VirGL with a preferred virtual display mode of 1920 by 1080 pixels at 120 Hz
+and 24-bit color depth. The DRM implementation does not provide page-flip
+or vblank events; the mode frequency does not guarantee the presentation rate.
+The GUI profile includes `xf86-input-keyboard` 1.9.0 and
+`xf86-input-mouse` 1.9.5, installed into `/usr/lib/xorg/modules`.
 The keyboard uses the console `kbd` driver with the `base` XKB rules and a
 US PC105 layout. The keyboard package provides the Linux console backend
 required by MOS; the kernel does not expose evdev input event devices.
@@ -107,9 +107,17 @@ protocol on `/dev/input/mice`,
 including wheel buttons 4 and 5. Device and GPU automatic addition are
 disabled; the server layout selects the configured devices explicitly.
 Core X fonts use the server's `built-ins` font path. Desktop applications
-use the installed DejaVu fonts through Fontconfig. The VESA display path
-uses software rendering and requires BIOS/VBE access and physical video
-memory mapping; it does not provide GPU acceleration.
+use the installed DejaVu fonts through Fontconfig. The desktop graphics path
+uses the `qemu-host` package (QEMU 10.2.1) and requires hardware-accelerated
+host OpenGL. The package installs into `.workspace/tools/qemu` and applies
+`sdl-gl-scanout.patch` so SDL refresh preserves active OpenGL scanout.
+`sdl-relative-pointer.patch` forwards SDL relative motion without window scaling
+to preserve small PS/2 pointer movements.
+Its native development dependencies are listed in the root README. Mesa is
+configured with the VirGL Gallium driver. The `mesa-utils` package supplies
+`glxinfo`, `glxgears`, and `eglinfo`.
+The `xshmfence` package uses `/dev/shm` for DRI3 synchronization files.
+Boot initialization mounts tmpfs there and sets directory permissions to 1777.
 
 Xorg uses the setuid-root `/usr/libexec/Xorg.wrap` entry point with
 `allowed_users=console` and `needs_root_rights=yes` in

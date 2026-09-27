@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OpenGL Gears
+Name[zh_CN]=OpenGL 齿轮演示
+Comment=Run the GLX rendering demonstration
+Exec=glxgears -info
+Icon=video-display
+Terminal=false
+Categories=Graphics;

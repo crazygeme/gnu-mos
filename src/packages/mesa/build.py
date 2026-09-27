@@ -10,12 +10,15 @@ meson_install(
     "mesa",
     (
         "-Dplatforms=x11",
-        "-Dgallium-drivers=softpipe",
+        "-Dgallium-drivers=virgl",
         "-Dvulkan-drivers=",
         "-Dglx=dri",
         "-Degl=enabled",
         "-Dgbm=enabled",
         "-Dllvm=disabled",
+        "--buildtype=release",
+        "-Dgles1=enabled",
+        "-Dgles2=enabled",
     ),
 )
 

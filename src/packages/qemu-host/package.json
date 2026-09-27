@@ -1,0 +1,18 @@
+{
+  "name": "qemu-host",
+  "version": "10.2.1",
+  "order": 58,
+  "build-tools": [
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.qemu.org/qemu-{version}.tar.xz",
+  "archive": "qemu-10.2.1.tar.xz",
+  "artifact": "artifacts/qemu-host.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "ninja"
+  ]
+}

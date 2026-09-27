@@ -1,0 +1,24 @@
+#!/bin/sh
+# Report the active OpenGL renderer and require hardware-backed VirGL.
+LC_ALL=C
+export LC_ALL
+if ! report=$(glxinfo -B 2>&1); then
+    printf '%s\n' "$report" >&2
+    printf '%s\n' 'Hardware OpenGL initialization failed.' >&2
+    exit 1
+fi
+printf '%s\n' "$report"
+renderer=$(printf '%s\n' "$report" | sed -n 's/^OpenGL renderer string: //p' | tr '[:upper:]' '[:lower:]')
+case "$renderer" in
+    *llvmpipe*|*softpipe*|*swrast*|*software*)
+        printf '%s\n' 'Software rendering is not supported by this configuration.' >&2
+        exit 1 ;;
+    *virgl*) ;;
+    *)
+        printf '%s\n' 'The active renderer is not VirGL. Check the VirtIO-GPU and host OpenGL configuration.' >&2
+        exit 1 ;;
+esac
+case "$report" in
+    *'direct rendering: Yes'*) ;;
+    *) printf '%s\n' 'Direct rendering is unavailable.' >&2; exit 1 ;;
+esac
