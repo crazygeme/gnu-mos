@@ -21,6 +21,10 @@
     "xcb-util-renderutil",
     "xcb-util-image",
     "xcb-util-wm",
-    "xcb-util-keysyms"
+    "xcb-util-keysyms",
+    "mesa",
+    "libdrm",
+    "libepoxy",
+    "xshmfence"
   ]
 }

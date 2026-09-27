@@ -20,6 +20,10 @@ meson_install(
     (
         "--cross-file=" + str(Path(__file__).with_name("mos-cross.ini").resolve()),
         "-Dxorg=true",
+        "-Dglamor=true",
+        "-Ddri2=true",
+        "-Ddri3=true",
+        "-Dglx=true",
         "-Dxephyr=true",
         "-Dxnest=true",
         "-Dxvfb=true",

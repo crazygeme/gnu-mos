@@ -12,5 +12,14 @@
   "artifact": "artifacts/mesa.done",
   "profiles": [
     "gui"
+  ],
+  "dependencies": [
+    "libdrm",
+    "libx11",
+    "libxext",
+    "libxcb",
+    "xshmfence",
+    "mako",
+    "python-packaging"
   ]
 }

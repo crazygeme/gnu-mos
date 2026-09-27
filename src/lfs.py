@@ -503,8 +503,11 @@ def qemu(extra: list[str]) -> None:
         raise SystemExit("run requires ./lfs setup")
     serial = "file:" + str(WORK / "krn.log")
     qemu_extra = list(extra)
+    executable = str(WORK / "tools/qemu/bin/qemu-system-x86_64")
+    if not Path(executable).is_file():
+        raise SystemExit("desktop QEMU is missing; run ./lfs build --all to build qemu-host")
     command = [
-        "qemu-system-x86_64",
+        executable,
         "-enable-kvm",
         "-cpu",
         "host",
@@ -519,6 +522,10 @@ def qemu(extra: list[str]) -> None:
         "-device",
         "e1000,netdev=net0,mac=52:54:00:12:34:56",
     ]
+    if not NO_GUI:
+        command.extend(["-vga", "none", "-device", "virtio-vga-gl,xres=1920,yres=1080"])
+        if "-display" not in qemu_extra:
+            command.extend(["-display", "sdl,gl=on"])
     command.extend(["-serial", serial])
     command.extend(qemu_extra)
     with qemu_network():

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OpenGL Information
+Name[zh_CN]=OpenGL 信息
+Comment=Display and validate the hardware OpenGL renderer
+Exec=xterm -hold -e /usr/bin/mos-gpu-info
+Icon=video-display
+Terminal=false
+Categories=System;Monitor;

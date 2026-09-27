@@ -7,4 +7,5 @@ from package_lib import archive_source, meson_install
 meson_install(
     archive_source("libdrm", "libdrm-2.4.124.tar.xz", "libdrm-2.4.124"),
     "libdrm",
+    ("-Dinstall-test-programs=true",),
 )

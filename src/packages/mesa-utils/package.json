@@ -1,0 +1,18 @@
+{
+  "name": "mesa-utils",
+  "version": "9.0.0",
+  "order": 161.6,
+  "source": "archive",
+  "url": "https://archive.mesa3d.org/demos/mesa-demos-{version}.tar.xz",
+  "archive": "mesa-demos-9.0.0.tar.xz",
+  "artifact": "artifacts/mesa-utils.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "mesa",
+    "libx11",
+    "libxext",
+    "xterm"
+  ]
+}

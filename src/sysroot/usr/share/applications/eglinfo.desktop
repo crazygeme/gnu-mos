@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=EGL Information
+Name[zh_CN]=EGL 信息
+Comment=Display EGL capabilities
+Exec=xterm -hold -e eglinfo
+Icon=video-display
+Terminal=false
+Categories=System;Monitor;
