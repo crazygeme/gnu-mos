@@ -1,0 +1,17 @@
+{
+  "name": "libxaw",
+  "version": "1.0.16",
+  "order": 129.3,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libXaw-{version}.tar.xz",
+  "archive": "libXaw-1.0.16.tar.xz",
+  "artifact": "artifacts/libxaw.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxmu",
+    "libxpm",
+    "libxext"
+  ]
+}

@@ -1,3 +1,4 @@
 /dev/hda1 / ext3 defaults 0 1
 proc /proc proc defaults 0 0
+sysfs /sys sysfs defaults 0 0
 tmpfs /run tmpfs defaults 0 0

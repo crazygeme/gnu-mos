@@ -10,8 +10,4 @@ esac
 [ -x /usr/bin/startx ] || exit 0
 [ -x /usr/bin/startxfce4 ] || exit 0
 [ -x /usr/bin/dbus-run-session ] || exit 0
-read -r cmdline </proc/cmdline || exit 0
-case " $cmdline " in
-    *" gui "*) exec /usr/bin/startx /usr/bin/mos-xfce-session -- vt2 </dev/tty2 >/dev/tty2 2>&1 ;;
-esac
-exit 0
+exec /usr/bin/startx /usr/bin/mos-xfce-session -- vt2 </dev/tty2 >/dev/tty2 2>&1

@@ -1,0 +1,17 @@
+{
+  "name": "xf86-video-vesa",
+  "version": "2.6.0",
+  "order": 145.1,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/driver/xf86-video-vesa-{version}.tar.xz",
+  "archive": "xf86-video-vesa-2.6.0.tar.xz",
+  "artifact": "artifacts/xf86-video-vesa.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "xorg-server",
+    "xorgproto",
+    "libpciaccess"
+  ]
+}

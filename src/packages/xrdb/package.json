@@ -1,0 +1,18 @@
+{
+  "name": "xrdb",
+  "version": "1.2.2",
+  "order": 129.1,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/app/xrdb-{version}.tar.xz",
+  "archive": "xrdb-1.2.2.tar.xz",
+  "artifact": "artifacts/xrdb.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxmu",
+    "libx11",
+    "xorgproto",
+    "gcc-target"
+  ]
+}

@@ -4,7 +4,13 @@ export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 boot_banner
 boot_action 'Remounting root filesystem read-write' mount -o remount,rw /
+if [ -e /usr/libexec/Xorg.wrap ]; then
+    boot_action 'Setting Xorg system file ownership' /usr/bin/python3 /usr/libexec/mos-xorg-ownership.py || exit 1
+fi
 boot_action 'Mounting proc filesystem' mount -t proc proc /proc
+boot_action 'Mounting sysfs filesystem' mount -t sysfs sysfs /sys
 boot_action 'Mounting pseudo-terminal filesystem' mount -t devpts devpts /dev/pts
 boot_action 'Mounting runtime filesystem' mount -t tmpfs tmpfs /run
+boot_action 'Creating X11 socket directories' mkdir -p /tmp/.X11-unix /tmp/.ICE-unix
+boot_action 'Setting X11 socket directory permissions' chmod 1777 /tmp /tmp/.X11-unix /tmp/.ICE-unix
 boot_action 'Setting system hostname' hostname "$(cat /etc/hostname)"
