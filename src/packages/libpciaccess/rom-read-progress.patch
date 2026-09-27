@@ -1,0 +1,20 @@
+--- a/src/linux_devmem.c
++++ b/src/linux_devmem.c
+@@ -126,10 +126,16 @@
+ 	size_t bytes;
+ 
+ 	for (bytes = 0; bytes < rom_size; /* empty */) {
+-	    const ssize_t got = pread(fd, buffer, rom_size - bytes,
++	    const ssize_t got = pread(fd, (char *)buffer + bytes, rom_size - bytes,
+ 				      rom_base + bytes);
+ 	    if (got == -1) {
++		if (errno == EINTR)
++		    continue;
+ 		err = errno;
++		break;
++	    }
++	    if (got == 0) {
++		err = EIO;
+ 		break;
+ 	    }
+ 

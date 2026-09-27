@@ -24,9 +24,13 @@ Packages with `"profiles": ["gui"]` are included in the full build and
 excluded from `./lfs build --no-gui`, which builds all console packages. The
 console build uses `.workspace/sysroot/`, `.workspace/tools/`, and
 `.workspace/artifacts/`. Completed packages are shared between build modes.
-Both build modes use `.workspace/qemu-hd/lfs.img`. The graphical startup script
-uses the `gui` kernel command-line token;
-`./lfs run --no-gui` boots the console mode.
+Both build modes use `.workspace/qemu-hd/lfs.img`. `./lfs setup` configures
+default runlevel 5; `./lfs setup --no-gui` configures default runlevel 3.
+`./lfs run` boots the configuration installed in the shared image.
+The GRUB entry `LFS on MOS (console)` passes `3` to `/sbin/init` and starts
+text mode regardless of the configured default runlevel. MOS forwards standalone
+`3` and `5` kernel command-line arguments to SysV init; the last matching
+argument takes precedence.
 `./lfs run` connects an e1000 adapter through `lfs-tap0`. The host provides
 DHCP, DNS, and IPv4 NAT on `10.0.6.0/24`; the guest uses `10.0.6.1` as its
 name server.
@@ -44,8 +48,9 @@ The FFmpeg and FFplay recipes use the same source release and common build
 configuration; the FFplay package installs only the player executable.
 
 The console system uses the MOS kernel, GRUB, and sysvinit. Sysvinit runs
-the runlevel 3 service scripts, displays startup results, and respawns
-`agetty` on `/dev/tty1`.
+the shared `/etc/rc3.d` service scripts in runlevels 3 and 5, displays startup
+results, and respawns `agetty` on `/dev/tty1`. These shared init entries remain
+active during transitions between runlevels 3 and 5.
 The `sysklogd` service starts before the network and SSH services and accepts
 local messages through `/dev/log`. Authentication messages are stored in
 `/var/log/auth.log`, kernel messages in `/var/log/kern.log`, and other messages
@@ -65,7 +70,88 @@ The man-db configuration is `/etc/man_db.conf`, also available through
 `/usr/etc/man_db.conf`.
 The network service checks for `eth0` in `/proc/net/dev`. DHCP is provided by
 the MOS kernel; service startup does not wait for address assignment.
-When the `gui` kernel command-line token is present and the graphical
-components are installed, the Xfce 4.20.0 session starts on `/dev/tty2` with
-GTK 3.24.49 and a dedicated D-Bus session. The GUI profile includes Xfwm4,
-Xfdesktop, the panel, settings manager, application finder, and Thunar.
+In runlevel 5, `startx` starts Xfce 4.20.0 directly as root on `/dev/tty2`,
+with GTK 3.24.49 and a dedicated D-Bus session. The GUI profile includes
+Xfwm4, Xfdesktop, the panel, settings manager, application finder, Thunar,
+and xterm 411. Xterm is the default terminal emulator and appears as Terminal
+in the application menu. `telinit 3` stops the graphical session;
+`telinit 5` starts it. The init entry uses `once`, so an exited session is
+not automatically restarted.
+
+Xorg 21.1.18 reads `/etc/X11/xorg.conf`. Its Meson cross configuration selects
+the `poll` event backend because MOS does not implement `epoll_create1`.
+The configured hostname is resolved through `/etc/hosts`, with the
+`files` name service preceding DNS in `/etc/nsswitch.conf`.
+The MOS configuration uses the
+VESA driver with a VBE-compatible virtual display at 800 by 600 pixels and
+24-bit color depth, with 640 by 480 available as an alternate mode. The GUI
+profile includes `xf86-video-vesa` 2.6.0, `xf86-input-keyboard` 1.9.0, and
+`xf86-input-mouse` 1.9.5. These drivers are built after the Xorg server and
+installed into `/usr/lib/xorg/modules`.
+The keyboard uses the console `kbd` driver with the `base` XKB rules and a
+US PC105 layout. The keyboard package provides the Linux console backend
+required by MOS; the kernel does not expose evdev input event devices.
+The mouse package provides the Linux PS/2 backend and uses the IMPS/2
+protocol on `/dev/input/mice`,
+including wheel buttons 4 and 5. Device and GPU automatic addition are
+disabled; the server layout selects the configured devices explicitly.
+Core X fonts use the server's `built-ins` font path. Desktop applications
+use the installed DejaVu fonts through Fontconfig. The VESA display path
+uses software rendering and requires BIOS/VBE access and physical video
+memory mapping; it does not provide GPU acceleration.
+
+Xorg uses the setuid-root `/usr/libexec/Xorg.wrap` entry point with
+`allowed_users=console` and `needs_root_rights=yes` in
+`/etc/X11/Xwrapper.config`. The package postscript sets the wrapper and
+server ownership and creates the X11 and ICE socket directories with mode
+1777. The boot script recreates these directories and mounts sysfs on `/sys`.
+Before login, the Xorg ownership script assigns `/usr` and `/etc` to root
+and removes group and other write permissions from their regular files and
+directories. This protects the privileged server, libraries, modules, and
+configuration while leaving the host build sysroot writable for package builds.
+The wrapper receives mode 4755 only after ownership initialization completes.
+MOS exposes PCI configuration space, device attributes, and BAR resources
+under `/sys/bus/pci/devices`. Memory BAR mappings are restricted to root
+and to the 32-bit physical address space. Libpciaccess enables its
+`/dev/mem` ROM fallback for BIOS video initialization.
+Xorg uses explicitly configured input devices without the udev discovery
+backend. XKB data resides in `/usr/share/X11/xkb`, compiled keymaps in
+`/var/lib/xkb`, and the XKB compiler in `/usr/bin`.
+
+The xinit package requires GNU sed 4.9 for the `startx` authentication setup.
+MOS exposes fixed x86 platform I/O resources through `/proc/ioports`; this
+interface does not enumerate PCI BAR allocations. Xorg reads the hexadecimal
+port ranges to exclude keyboard and timer ports from direct I/O access.
+The Xorg package applies `linux-ioports.patch` to validate the input and report
+an unavailable `/proc/ioports` without dereferencing a null stream.
+
+The MOS `/dev/mem` interface addresses the 32-bit physical address space,
+including PCI expansion ROMs above installed RAM. Positioned I/O preserves
+64-bit offsets and rejects negative offsets; reads at or above 4 GiB return
+EOF. Libpciaccess applies `rom-read-progress.patch` so ROM reads advance the
+output buffer after short reads, retry interrupted reads, and return `EIO`
+on premature EOF.
+
+Xorg resolves software DRI drivers in `/usr/lib/dri` on the target system.
+The `xrdb` package installs the X resource database utility and uses
+`/usr/bin/cpp` for preprocessing. Xfce session setup depends on `xrdb`.
+MOS accepts `SOCK_CLOEXEC` and `SOCK_NONBLOCK` on Unix socket pairs and applies
+the flags to both descriptors. The 32-bit and time64 futex interfaces support
+WAIT, WAKE, WAIT_BITSET, and WAKE_BITSET; bitset waits accept absolute monotonic
+or realtime deadlines. Futex wait queues are scoped to the process address
+space and do not provide cross-process shared-memory synchronization.
+
+MOS implements `SO_PEERCRED` for Unix sockets. Connected stream sockets retain
+the peer PID and effective UID/GID captured at connection establishment;
+socket pairs retain the creator credentials. Credential snapshots remain
+available after peer closure and support D-Bus EXTERNAL authentication.
+
+Unix socket `recv`, `recvfrom`, and `recvmsg` share the locked receive path.
+Consuming buffered data wakes the peer so that blocked writes and writable
+poll events can proceed when receive-buffer space becomes available.
+
+MOS detaches socket and poll wait registrations before closing descriptors or
+releasing an exiting thread's kernel stack. Explicit `SCM_CREDENTIALS` messages
+are accepted for the sender's PID and real, effective, or saved UID/GID. With
+`SO_PASSCRED` disabled, validated credentials are discarded and the payload is
+transferred; receivers can query connection credentials using `SO_PEERCRED`.

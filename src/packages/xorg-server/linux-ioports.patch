@@ -1,0 +1,47 @@
+--- a/hw/xfree86/os-support/linux/lnx_video.c
++++ b/hw/xfree86/os-support/linux/lnx_video.c
+@@ -116,10 +116,9 @@
+ static Bool
+ hwEnableIO(void)
+ {
+-    short i;
+     size_t n=0;
+-    int begin, end;
+-    char *buf=NULL, target[5];
++    unsigned int begin, end;
++    char *buf=NULL;
+     FILE *fp;
+ 
+     if (ioperm(0, 1024, 1)) {
+@@ -129,21 +128,20 @@
+     }
+ 
+ #if !defined(__alpha__)
+-    target[4] = '\0';
+-
+     /* trap access to the keyboard controller(s) and timer chip(s) */
+     fp = fopen("/proc/ioports", "r");
++    if (fp == NULL) {
++        ErrorF("xf86EnableIO: cannot open /proc/ioports (%s)\n",
++               strerror(errno));
++        ioperm(0, 1024, 0);
++        return FALSE;
++    }
+     while (getline(&buf, &n, fp) != -1) {
+         if ((strstr(buf, "keyboard") != NULL) || (strstr(buf, "timer") != NULL)) {
+-            for (i=0; i<4; i++)
+-                target[i] = buf[i+2];
+-            begin = atoi(target);
+-
+-            for (i=0; i<4; i++)
+-                target[i] = buf[i+7];
+-            end = atoi(target);
+-
+-            ioperm(begin, end-begin+1, 0);
++            if (sscanf(buf, " %x-%x", &begin, &end) != 2 ||
++                begin > end || end > 0xffff)
++                continue;
++            ioperm(begin, end - begin + 1, 0);
+         }
+     }
+     free(buf);

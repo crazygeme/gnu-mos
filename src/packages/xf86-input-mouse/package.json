@@ -1,0 +1,16 @@
+{
+  "name": "xf86-input-mouse",
+  "version": "1.9.5",
+  "order": 145.3,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/driver/xf86-input-mouse-{version}.tar.xz",
+  "archive": "xf86-input-mouse-1.9.5.tar.xz",
+  "artifact": "artifacts/xf86-input-mouse.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "xorg-server",
+    "xorgproto"
+  ]
+}

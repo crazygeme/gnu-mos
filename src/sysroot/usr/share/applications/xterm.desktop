@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Terminal
+Comment=Open a command shell
+Exec=xterm -fa "DejaVu Sans Mono" -fs 11 -u8 -ls
+TryExec=xterm
+Icon=utilities-terminal
+Terminal=false
+Categories=System;TerminalEmulator;
+StartupNotify=false

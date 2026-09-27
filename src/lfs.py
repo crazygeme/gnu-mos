@@ -343,6 +343,7 @@ def run_postscripts() -> None:
             "LFS_SYSROOT": str(SYSROOT),
             "LFS_SOURCES": str(SOURCES),
             "LFS_TARGET": "i686-lfs-linux-gnu",
+            "LFS_NO_GUI": "1" if NO_GUI else "0",
         }
     )
     entry = ROOT / "src/package_entry.py"
@@ -505,6 +506,8 @@ def qemu(extra: list[str]) -> None:
     command = [
         "qemu-system-x86_64",
         "-enable-kvm",
+        "-cpu",
+        "host",
         "-m",
         os.environ.get("LFS_RAM", "2048"),
         "-smp",

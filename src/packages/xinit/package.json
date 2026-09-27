@@ -8,5 +8,8 @@
   "artifact": "artifacts/xinit.done",
   "profiles": [
     "gui"
+  ],
+  "dependencies": [
+    "sed"
   ]
 }

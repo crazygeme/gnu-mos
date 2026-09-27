@@ -1,6 +1,6 @@
-id:3:initdefault:
+id:5:initdefault:
 si::sysinit:/etc/init.d/rcS
-l3:3:wait:/etc/init.d/rc 3
-c1:3:respawn:/sbin/agetty -L tty1 115200 linux
-g1:3:once:/etc/init.d/graphical start
+l3:35:wait:/etc/init.d/rc 3
+c1:35:respawn:/sbin/agetty -L tty1 115200 linux
+g1:5:once:/etc/init.d/graphical start
 ca::ctrlaltdel:/sbin/shutdown -r now

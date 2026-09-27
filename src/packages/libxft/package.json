@@ -1,0 +1,17 @@
+{
+  "name": "libxft",
+  "version": "2.3.9",
+  "order": 130.1,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/lib/libXft-{version}.tar.xz",
+  "archive": "libXft-2.3.9.tar.xz",
+  "artifact": "artifacts/libxft.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "fontconfig",
+    "freetype",
+    "libxrender"
+  ]
+}
