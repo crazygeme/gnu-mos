@@ -1,0 +1,17 @@
+{
+  "name": "enchant",
+  "version": "2.8.2",
+  "order": 176,
+  "source": "archive",
+  "url": "https://github.com/AbiWord/enchant/releases/download/v{version}/enchant-{version}.tar.gz",
+  "archive": "enchant-2.8.2.tar.gz",
+  "artifact": "artifacts/enchant.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "hunspell"
+  ]
+}
+

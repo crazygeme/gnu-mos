@@ -1,0 +1,21 @@
+{
+  "name": "atkmm",
+  "version": "2.28.4",
+  "order": 169,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/atkmm/2.28/atkmm-{version}.tar.xz",
+  "archive": "atkmm-2.28.4.tar.xz",
+  "artifact": "artifacts/atkmm.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glibmm",
+    "at-spi2-core"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}
+

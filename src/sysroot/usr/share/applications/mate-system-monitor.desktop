@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Resource Manager
+Name[zh_CN]=资源管理器
+Comment=Monitor CPU, memory, network activity and processes
+Exec=env GSETTINGS_BACKEND=keyfile mate-system-monitor --show-resources-tab
+TryExec=mate-system-monitor
+Icon=utilities-system-monitor
+Terminal=false
+Categories=GTK;System;Monitor;
+StartupNotify=true

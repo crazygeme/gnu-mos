@@ -1,0 +1,16 @@
+{
+  "name": "libgtop",
+  "version": "2.40.0",
+  "order": 173,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/libgtop/2.40/libgtop-{version}.tar.xz",
+  "archive": "libgtop-2.40.0.tar.xz",
+  "artifact": "artifacts/libgtop.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib"
+  ]
+}
+

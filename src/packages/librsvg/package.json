@@ -1,0 +1,21 @@
+{
+  "name": "librsvg",
+  "version": "2.40.21",
+  "order": 172,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/librsvg/2.40/librsvg-{version}.tar.xz",
+  "archive": "librsvg-2.40.21.tar.xz",
+  "artifact": "artifacts/librsvg.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libcroco",
+    "gdk-pixbuf",
+    "pango",
+    "cairo",
+    "gtk3",
+    "libxml2"
+  ]
+}
+

@@ -1,0 +1,21 @@
+{
+  "name": "glibmm",
+  "version": "2.66.8",
+  "order": 166,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/glibmm/2.66/glibmm-{version}.tar.xz",
+  "archive": "glibmm-2.66.8.tar.xz",
+  "artifact": "artifacts/glibmm.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libsigc++",
+    "glib"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}
+

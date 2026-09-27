@@ -1,0 +1,20 @@
+{
+  "name": "mate-system-monitor",
+  "version": "1.28.1",
+  "order": 178,
+  "source": "archive",
+  "url": "https://github.com/mate-desktop/mate-system-monitor/releases/download/v{version}/mate-system-monitor-{version}.tar.xz",
+  "archive": "mate-system-monitor-1.28.1.tar.xz",
+  "artifact": "artifacts/mate-system-monitor.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtkmm",
+    "libgtop",
+    "librsvg",
+    "libxml2",
+    "libwnck",
+    "itstool"
+  ]
+}

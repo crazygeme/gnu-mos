@@ -1,0 +1,20 @@
+{
+  "name": "libsigc++",
+  "version": "2.12.1",
+  "order": 165,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/libsigc++/2.12/libsigc++-{version}.tar.xz",
+  "archive": "libsigc++-2.12.1.tar.xz",
+  "artifact": "artifacts/libsigc++.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gcc-target"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}
+

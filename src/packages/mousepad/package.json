@@ -1,0 +1,21 @@
+{
+  "name": "mousepad",
+  "version": "0.6.5",
+  "order": 180,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://archive.xfce.org/src/apps/mousepad/0.6/mousepad-{version}.tar.xz",
+  "archive": "mousepad-0.6.5.tar.xz",
+  "artifact": "artifacts/mousepad.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtksourceview",
+    "gspell",
+    "libxfce4ui"
+  ]
+}

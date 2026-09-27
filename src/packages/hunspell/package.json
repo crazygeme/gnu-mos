@@ -1,0 +1,16 @@
+{
+  "name": "hunspell",
+  "version": "1.7.2",
+  "order": 175,
+  "source": "archive",
+  "url": "https://github.com/hunspell/hunspell/releases/download/v{version}/hunspell-{version}.tar.gz",
+  "archive": "hunspell-1.7.2.tar.gz",
+  "artifact": "artifacts/hunspell.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gcc-target",
+    "ncurses"
+  ]
+}

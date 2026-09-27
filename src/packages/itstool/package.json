@@ -1,0 +1,16 @@
+{
+  "name": "itstool",
+  "version": "2.0.7",
+  "order": 164,
+  "source": "archive",
+  "url": "https://files.itstool.org/itstool/itstool-{version}.tar.bz2",
+  "archive": "itstool-2.0.7.tar.bz2",
+  "artifact": "artifacts/itstool.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libxml2-python-host"
+  ]
+}
+

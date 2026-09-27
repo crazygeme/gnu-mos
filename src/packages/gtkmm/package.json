@@ -1,0 +1,24 @@
+{
+  "name": "gtkmm",
+  "version": "3.24.10",
+  "order": 170,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/gtkmm/3.24/gtkmm-{version}.tar.xz",
+  "archive": "gtkmm-3.24.10.tar.xz",
+  "artifact": "artifacts/gtkmm.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtk3",
+    "glibmm",
+    "cairomm",
+    "pangomm",
+    "atkmm"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}
+
