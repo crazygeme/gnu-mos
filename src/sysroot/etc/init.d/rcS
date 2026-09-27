@@ -11,6 +11,7 @@ boot_action 'Mounting proc filesystem' mount -t proc proc /proc
 boot_action 'Mounting sysfs filesystem' mount -t sysfs sysfs /sys
 boot_action 'Mounting pseudo-terminal filesystem' mount -t devpts devpts /dev/pts
 boot_action 'Mounting runtime filesystem' mount -t tmpfs tmpfs /run
+boot_action 'Removing stale X11 display files' rm -f /tmp/.X0-lock /tmp/.tX0-lock /tmp/.X11-unix/X0 || exit 1
 boot_action 'Creating X11 socket directories' mkdir -p /tmp/.X11-unix /tmp/.ICE-unix
 boot_action 'Setting X11 socket directory permissions' chmod 1777 /tmp /tmp/.X11-unix /tmp/.ICE-unix
 boot_action 'Setting system hostname' hostname "$(cat /etc/hostname)"

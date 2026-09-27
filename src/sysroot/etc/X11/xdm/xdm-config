@@ -1,0 +1,12 @@
+DisplayManager.authDir: /run/xdm
+DisplayManager.errorLogFile: /var/log/xdm.log
+DisplayManager.pidFile: /run/xdm.pid
+DisplayManager.servers: /etc/X11/xdm/Xservers
+DisplayManager.requestPort: 0
+DisplayManager*authorize: true
+DisplayManager*authName: MIT-MAGIC-COOKIE-1
+DisplayManager*authComplain: true
+DisplayManager*resources: /etc/X11/xdm/Xresources
+DisplayManager*session: /etc/X11/xdm/Xsession
+DisplayManager*userPath: /usr/local/bin:/usr/bin:/bin
+DisplayManager*systemPath: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

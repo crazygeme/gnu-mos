@@ -70,13 +70,19 @@ The man-db configuration is `/etc/man_db.conf`, also available through
 `/usr/etc/man_db.conf`.
 The network service checks for `eth0` in `/proc/net/dev`. DHCP is provided by
 the MOS kernel; service startup does not wait for address assignment.
-In runlevel 5, `startx` starts Xfce 4.20.0 directly as root on `/dev/tty2`,
+In runlevel 5, XDM 1.1.17 provides a local graphical login on `/dev/tty2`.
+PAM authenticates system accounts and creates missing home directories with
+mode 0700. Successful login starts Xfce 4.20.0 as the authenticated user,
 with GTK 3.24.49 and a dedicated D-Bus session. The GUI profile includes
 Xfwm4, Xfdesktop, the panel, settings manager, application finder, Thunar,
 and xterm 411. Xterm is the default terminal emulator and appears as Terminal
-in the application menu. `telinit 3` stops the graphical session;
-`telinit 5` starts it. The init entry uses `once`, so an exited session is
-not automatically restarted.
+in the application menu. Logging out returns to the XDM login screen.
+`telinit 3` stops the display manager; `telinit 5` starts it.
+The init entry uses `once`, so an exited display manager is not automatically
+restarted. XDM configuration resides in `/etc/X11/xdm`, PAM policy in
+`/etc/pam.d/xdm`, and display-manager diagnostics in `/var/log/xdm.log`.
+Session output is appended to `~/.xsession-errors`. XDMCP and X11 TCP
+listeners are disabled.
 
 Xorg 21.1.18 reads `/etc/X11/xorg.conf`. Its Meson cross configuration selects
 the `poll` event backend because MOS does not implement `epoll_create1`.
@@ -104,7 +110,9 @@ Xorg uses the setuid-root `/usr/libexec/Xorg.wrap` entry point with
 `allowed_users=console` and `needs_root_rights=yes` in
 `/etc/X11/Xwrapper.config`. The package postscript sets the wrapper and
 server ownership and creates the X11 and ICE socket directories with mode
-1777. The boot script recreates these directories and mounts sysfs on `/sys`.
+1777. Before graphical services start, boot initialization removes the
+display `:0` lock files and socket from `/tmp`, recreates the socket
+directories, and mounts sysfs on `/sys`.
 Before login, the Xorg ownership script assigns `/usr` and `/etc` to root
 and removes group and other write permissions from their regular files and
 directories. This protects the privileged server, libraries, modules, and

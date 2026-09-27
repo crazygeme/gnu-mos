@@ -1,0 +1,19 @@
+xlogin*greeting: MOS Login
+xlogin*namePrompt: Login:
+xlogin*passwdPrompt: Password:
+xlogin*fail: Authentication failed
+xlogin*font: fixed
+xlogin*greetFont: fixed
+xlogin*promptFont: fixed
+xlogin*failFont: fixed
+xlogin*face: DejaVu Sans-12
+xlogin*greetFace: DejaVu Sans-18:bold
+xlogin*promptFace: DejaVu Sans-12:bold
+xlogin*failFace: DejaVu Sans-12:bold
+xlogin*background: #e8edf2
+xlogin*foreground: #202830
+xlogin*greetColor: #245078
+xlogin*failColor: #a02020
+xlogin*borderWidth: 1
+xlogin*frameWidth: 2
+xlogin*innerFramesWidth: 1
