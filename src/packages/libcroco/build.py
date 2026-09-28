@@ -12,4 +12,3 @@ configure_make_install(
     ),
     env_overrides={"CFLAGS": "-O2 -m32 -std=gnu11"},
 )
-

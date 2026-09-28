@@ -13,4 +13,3 @@ meson_install(
         "-Dbuild-examples=false",
     ),
 )
-

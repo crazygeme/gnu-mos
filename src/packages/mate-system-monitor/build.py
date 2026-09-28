@@ -10,7 +10,11 @@ if os.environ.get("GETTEXTDATADIRS"):
     gettext_dirs.append(os.environ["GETTEXTDATADIRS"])
 
 configure_make_install(
-    archive_source("mate-system-monitor", "mate-system-monitor-1.28.1.tar.xz", "mate-system-monitor-1.28.1"),
+    archive_source(
+        "mate-system-monitor",
+        "mate-system-monitor-1.28.1.tar.xz",
+        "mate-system-monitor-1.28.1",
+    ),
     options=(
         "--disable-static",
         "--disable-maintainer-mode",

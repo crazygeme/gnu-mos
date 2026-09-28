@@ -63,6 +63,19 @@ Both profiles share `.workspace/sysroot/`, build artifacts, host tools, and `.wo
 
 ### Build control
 
+Bash completion is installed automatically when `./lfs` is executed. The launcher
+links `completions/lfs.bash` into
+`${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion/completions/lfs`.
+When `BASH_COMPLETION_USER_DIR` is configured, its first nonempty directory is
+used with the `completions/lfs` suffix. Existing files and links are preserved;
+installation failures do not interrupt the requested command.
+
+With `bash-completion` enabled in the interactive shell, completion loads on
+demand for `./lfs` and `lfs` without a separate installation command or manual
+`source`. Completion provides subcommands and their options, omits options
+already present, and uses filename completion for QEMU arguments after
+`./lfs run --`.
+
 | Command | Behavior |
 | --- | --- |
 | `./lfs status` | Display configured package versions, source/build state, and image presence. |

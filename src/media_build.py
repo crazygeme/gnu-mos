@@ -45,13 +45,27 @@ def build_ffmpeg(player=False):
         "--enable-version3",
     ]
     if player:
-        options += ["--enable-sdl2", "--enable-ffplay", "--disable-ffmpeg", "--disable-ffprobe"]
+        options += [
+            "--enable-sdl2",
+            "--enable-ffplay",
+            "--disable-ffmpeg",
+            "--disable-ffprobe",
+        ]
     else:
-        options += ["--disable-sdl2", "--disable-ffplay", "--enable-ffmpeg", "--enable-ffprobe"]
-    subprocess.run([str(source / "configure"), *options], cwd=build, env=env, check=True)
+        options += [
+            "--disable-sdl2",
+            "--disable-ffplay",
+            "--enable-ffmpeg",
+            "--enable-ffprobe",
+        ]
+    subprocess.run(
+        [str(source / "configure"), *options], cwd=build, env=env, check=True
+    )
     subprocess.run(
         ["make", "-j4", "ffplay" if player else "all"],
-        cwd=build, env=env, check=True,
+        cwd=build,
+        env=env,
+        check=True,
     )
     if player:
         # The console package owns the shared libraries and command-line tools.
@@ -61,5 +75,7 @@ def build_ffmpeg(player=False):
     else:
         subprocess.run(
             ["make", "DESTDIR=" + str(sysroot), "install"],
-            cwd=build, env=env, check=True,
+            cwd=build,
+            env=env,
+            check=True,
         )

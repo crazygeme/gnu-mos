@@ -1,4 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
+lfs_root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+lfs_install_completion()
+{
+    local directory base
+    local -a user_dirs
+    if [[ -n ${BASH_COMPLETION_USER_DIR:-} ]]; then
+        IFS=: read -r -a user_dirs <<< "$BASH_COMPLETION_USER_DIR"
+        for base in "${user_dirs[@]}"; do
+            [[ -n $base ]] || continue
+            directory=$base/completions
+            break
+        done
+    else
+        base=${XDG_DATA_HOME:-${HOME:+$HOME/.local/share}}
+        [[ -n $base ]] || return 0
+        directory=$base/bash-completion/completions
+    fi
+    [[ -n ${directory:-} ]] || return 0
+    [[ -e $directory/lfs || -L $directory/lfs ]] && return 0
+    mkdir -p -- "$directory" &&
+        ln -sT -- "$lfs_root/completions/lfs.bash" "$directory/lfs"
+}
+
+# Completion installation is optional and must not prevent command execution.
+lfs_install_completion 2>/dev/null || true
 export PYTHONDONTWRITEBYTECODE=1
-exec python3 -B "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/src/lfs.py" "$@"
+exec python3 -B "$lfs_root/src/lfs.py" "$@"

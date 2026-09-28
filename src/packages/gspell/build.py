@@ -14,4 +14,3 @@ configure_make_install(
     ),
     host_tools=("glib-compile-resources", "glib-mkenums", "glib-compile-schemas"),
 )
-

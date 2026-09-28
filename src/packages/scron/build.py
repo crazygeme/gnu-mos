@@ -12,5 +12,7 @@ args = ["CC=" + env["CC"], "PREFIX=/usr", "MANPREFIX=/usr/share/man"]
 subprocess.run(["make", "-j4", *args], cwd=source, env=env, check=True)
 subprocess.run(
     ["make", *args, "DESTDIR=" + os.environ["LFS_SYSROOT"], "install"],
-    cwd=source, env=env, check=True,
+    cwd=source,
+    env=env,
+    check=True,
 )
