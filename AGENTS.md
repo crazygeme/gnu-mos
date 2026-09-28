@@ -1,5 +1,6 @@
 # Project Documentation Rules
 
+- Changes requiring recompilation must increment the integer in the affected package's `src/packages/<package>/version` file. Agents must not increment or synchronize the `version` field in existing `*.done` completion markers; the build process records the configured build version only after successful compilation. The automatic initialization of markers without a `version` field remains part of the status and build scanning logic.
 - Documentation must describe only the current implementation, configuration, behavior, and supported usage.
 - Do not mention historical states, previous implementations, migrations, former defects, or earlier decisions unless they are required to define current behavior.
 - Do not mention that information came from the user, from a request, or from a conversation.

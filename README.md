@@ -67,14 +67,14 @@ Both profiles share `.workspace/sysroot/`, build artifacts, host tools, and `.wo
 | --- | --- |
 | `./lfs status` | Display configured package versions, source/build state, and image presence. |
 | `./lfs status --no-gui` | Display state for the console package selection. |
-| `./lfs build` | Build the next package without a completion artifact. |
+| `./lfs build` | Build the next package with a missing or outdated completion artifact. |
 | `./lfs build --all` | Build all pending packages in manifest order. |
 | `./lfs build --no-gui` | Build all pending console packages. |
-| `./lfs build --all --rebuild` | Request confirmation, clear build state and the sysroot, and rebuild all packages. |
+| `./lfs build --all --rebuild` | Delete all completion markers and build all pending packages in manifest order. |
 | `./lfs setup` | Copy system configuration, run postscripts for completed packages, and install the sysroot into the image. |
 | `./lfs run` | Boot the image with QEMU and configure host networking for the session. |
 
-Builds fetch missing sources automatically and skip packages with existing completion artifacts. Completion artifacts do not track recipe or source changes. `--rebuild` preserves downloaded archives and Git checkouts and cannot be combined with `--no-gui`.
+Builds fetch missing sources automatically. Each package defines a positive integer build version in `src/packages/<package>/version`, independently of the upstream software version in `package.json`. Completion artifacts record this build version in their JSON `version` field. Both `status` and `build` consider a package built when its completion version is at least its configured build version. A missing artifact or an older completion version requires compilation. An existing artifact without a `version` field, including an empty artifact, is assigned the configured build version and remains built. Changes requiring recompilation must increment the affected package's build version. `--rebuild` deletes all `*.done` files recursively under `.workspace/artifacts/` without prompting, then follows the normal build flow. The deletion preserves all other files. Normal package selection and stopping rules apply: the default builds one package, `--all` builds all pending packages, and `--no-gui` builds all pending console packages. All completion markers are deleted even when `--no-gui` is selected.
 
 Each package build starts with an empty `.workspace/build/` directory. Package builds must run sequentially within a workspace. Build logs are written to `.workspace/logs/<package>.log`.
 
