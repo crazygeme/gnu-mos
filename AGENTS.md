@@ -9,6 +9,7 @@
 - When a limitation is relevant, describe it as a current technical constraint and state its observable impact.
 - Version, package, and compatibility information must identify the currently configured values only.
 - Build errors must be fixed through package configuration, build flags, dependency declarations, or external patches; do not modify upstream source files directly.
+- MOS is an exception to the upstream source modification restriction: modify its source directly in `.workspace/sources/mos`. Do not use or modify `../mos`. MOS source changes requiring recompilation must increment `src/packages/mos/version`.
 - When a failure is caused by a missing library or development dependency, add and build the required package, headers, library paths, and build-order dependency. Do not disable the affected component to avoid the dependency.
 - If build parameters cannot resolve a source compatibility error, add a separate patch file in the package directory beside `build.py` and apply it before compilation. Upstream archives and checkouts must remain unmodified.
 - Every package patch must be validated with `patch --dry-run` against a fresh extraction of the exact configured source archive before it is used by `build.py`.

@@ -23,6 +23,10 @@ this runlevel.
 within `dbus-run-session`. Session bus lifetime follows the desktop session.
 The selected display backend is X11.
 
+ICE authentication uses iceauth 1.0.10 at `/usr/bin/iceauth`. Xfce session
+clients authenticate through ICE to participate in session saving and logout.
+The session manager build uses this target path explicitly.
+
 The session logout dialog provides shutdown and restart through the Xfce
 polkit fallback. The GUI profile includes polkit 126 and Duktape 2.7.0.
 The system D-Bus and polkit services start before graphical login. Members
@@ -30,6 +34,8 @@ of the `sudo` group, including `ezheng`, are authorized to invoke the Xfce
 shutdown helper without an additional password. Authorization uses group
 membership for both local and remote processes; no session-tracking daemon
 is configured. Other polkit actions retain their individual policies.
+`/etc/shells` lists the installed Bash and POSIX shell paths accepted by
+`pkexec` when validating the session's `SHELL` environment variable.
 
 Shutdown enters SysV runlevel 0 and restart enters runlevel 6. Both runlevels
 terminate remaining processes, synchronize filesystem data, unmount mounted

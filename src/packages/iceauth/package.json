@@ -1,0 +1,16 @@
+{
+  "name": "iceauth",
+  "version": "1.0.10",
+  "order": 144.6,
+  "source": "archive",
+  "url": "https://www.x.org/releases/individual/app/iceauth-{version}.tar.xz",
+  "archive": "iceauth-1.0.10.tar.xz",
+  "artifact": "artifacts/iceauth.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "xorgproto",
+    "libice"
+  ]
+}
