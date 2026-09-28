@@ -25,6 +25,7 @@
     "adwaita-icon-theme",
     "dejavu-fonts",
     "xauth",
+    "iceauth",
     "xf86-video-vesa",
     "xf86-input-keyboard",
     "xf86-input-mouse",

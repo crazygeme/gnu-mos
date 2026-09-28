@@ -12,7 +12,10 @@ if os.environ.get("GETTEXTDATADIRS"):
 configure_make_install(
     archive_source('xfce4-session', 'xfce4-session-4.20.0.tar.bz2', 'xfce4-session-4.20.0'),
     host_tools=('gdbus-codegen',),
-    env_overrides={"GETTEXTDATADIRS": ":".join(gettext_dirs)},
+    env_overrides={
+        "GETTEXTDATADIRS": ":".join(gettext_dirs),
+        "ICEAUTH": "/usr/bin/iceauth",
+    },
     options=(
         '--sysconfdir=/etc',
         '--disable-static',
