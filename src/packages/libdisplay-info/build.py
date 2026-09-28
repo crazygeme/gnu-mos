@@ -14,9 +14,9 @@ native.write_text(
 )
 
 meson_install(
-    archive_source('libdisplay-info', 'libdisplay-info-0.2.0.tar.xz', 'libdisplay-info-0.2.0'),
-    'libdisplay-info',
-    options=(
-        "--native-file=" + str(native),
+    archive_source(
+        "libdisplay-info", "libdisplay-info-0.2.0.tar.xz", "libdisplay-info-0.2.0"
     ),
+    "libdisplay-info",
+    options=("--native-file=" + str(native),),
 )

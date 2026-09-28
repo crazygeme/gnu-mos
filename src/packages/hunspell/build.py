@@ -6,8 +6,5 @@ from package_lib import archive_source, configure_make_install
 
 configure_make_install(
     archive_source("hunspell", "hunspell-1.7.2.tar.gz", "hunspell-1.7.2"),
-    options=(
-        "--disable-static",
-    ),
+    options=("--disable-static",),
 )
-

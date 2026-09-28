@@ -8,7 +8,11 @@ from package_lib import archive_source, configure_make_install
 source = archive_source("libgtop", "libgtop-2.40.0.tar.xz", "libgtop-2.40.0")
 subprocess.run(
     [
-        "patch", "-p1", "--forward", "--batch", "-i",
+        "patch",
+        "-p1",
+        "--forward",
+        "--batch",
+        "-i",
         str(Path(__file__).with_name("daemon-proc-io-pid.patch").resolve()),
     ],
     cwd=source,

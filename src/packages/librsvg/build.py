@@ -8,7 +8,11 @@ from package_lib import archive_source, configure_make_install
 source = archive_source("librsvg", "librsvg-2.40.21.tar.xz", "librsvg-2.40.21")
 subprocess.run(
     [
-        "patch", "-p1", "--forward", "--batch", "-i",
+        "patch",
+        "-p1",
+        "--forward",
+        "--batch",
+        "-i",
         str(Path(__file__).with_name("libxml2-const-errors.patch").resolve()),
     ],
     cwd=source,

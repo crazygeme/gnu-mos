@@ -15,4 +15,3 @@ configure_make_install(
         "--without-voikko",
     ),
 )
-

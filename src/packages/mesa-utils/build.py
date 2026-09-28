@@ -19,13 +19,27 @@ programs = {
     "eglinfo": ([source / "src/egl/opengl/eglinfo.c", *common], ["egl", "gl"]),
 }
 for name, (files, dependencies) in programs.items():
-    flags = shlex.split(subprocess.check_output(
-        ["pkg-config", "--cflags", "--libs", *dependencies], env=env, text=True
-    ))
+    flags = shlex.split(
+        subprocess.check_output(
+            ["pkg-config", "--cflags", "--libs", *dependencies], env=env, text=True
+        )
+    )
     subprocess.run(
-        [env["CC"], *shlex.split(env["CFLAGS"]), "-D_GNU_SOURCE", "-std=c11",
-         "-I" + str(source / "src/util"), "-I" + str(source / "src/glad/include"),
-         *(str(path) for path in files), *shlex.split(env["LDFLAGS"]),
-         *flags, "-lm", "-ldl", "-o", str(target / name)],
-        env=env, check=True,
+        [
+            env["CC"],
+            *shlex.split(env["CFLAGS"]),
+            "-D_GNU_SOURCE",
+            "-std=c11",
+            "-I" + str(source / "src/util"),
+            "-I" + str(source / "src/glad/include"),
+            *(str(path) for path in files),
+            *shlex.split(env["LDFLAGS"]),
+            *flags,
+            "-lm",
+            "-ldl",
+            "-o",
+            str(target / name),
+        ],
+        env=env,
+        check=True,
     )

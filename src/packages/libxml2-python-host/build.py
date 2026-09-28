@@ -6,7 +6,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[2]))
 from package_lib import archive_source
 
-source = archive_source("libxml2-python-host", "libxml2-2.13.8.tar.xz", "libxml2-2.13.8")
+source = archive_source(
+    "libxml2-python-host", "libxml2-2.13.8.tar.xz", "libxml2-2.13.8"
+)
 tools = Path(os.environ["LFS_WORKSPACE"]) / "tools"
 env = os.environ.copy()
 env.update(

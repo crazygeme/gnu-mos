@@ -5,6 +5,8 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 from package_lib import archive_source, configure_make_install
 
 configure_make_install(
-    archive_source("xcb-util-keysyms", "xcb-util-keysyms-0.4.1.tar.xz", "xcb-util-keysyms-0.4.1"),
+    archive_source(
+        "xcb-util-keysyms", "xcb-util-keysyms-0.4.1.tar.xz", "xcb-util-keysyms-0.4.1"
+    ),
     options=("--disable-static",),
 )

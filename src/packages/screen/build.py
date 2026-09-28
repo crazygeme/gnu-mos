@@ -9,11 +9,18 @@ from package_lib import archive_source, environment
 source = archive_source("screen", "screen-5.0.1.tar.gz", "screen-5.0.1")
 env = environment()
 subprocess.run(
-    [str(source / "configure"), "--build=x86_64-pc-linux-gnu",
-     "--host=" + env.get("LFS_TARGET", "i686-lfs-linux-gnu"),
-     "--prefix=/usr", "--sysconfdir=/etc", "--enable-pam",
-     "--with-system_screenrc=/etc/screenrc"],
-    cwd=source, env=env, check=True,
+    [
+        str(source / "configure"),
+        "--build=x86_64-pc-linux-gnu",
+        "--host=" + env.get("LFS_TARGET", "i686-lfs-linux-gnu"),
+        "--prefix=/usr",
+        "--sysconfdir=/etc",
+        "--enable-pam",
+        "--with-system_screenrc=/etc/screenrc",
+    ],
+    cwd=source,
+    env=env,
+    check=True,
 )
 # Rebuild all generated objects with the target compiler.
 subprocess.run(["make", "clean"], cwd=source, env=env, check=True)

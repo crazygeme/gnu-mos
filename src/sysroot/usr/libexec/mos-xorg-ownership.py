@@ -9,7 +9,11 @@ wrapper = Path("/usr/libexec/Xorg.wrap")
 if wrapper.exists():
     for root in (Path("/usr"), Path("/etc")):
         attributes = root.stat()
-        if attributes.st_uid == 0 and attributes.st_gid == 0 and not attributes.st_mode & 0o022:
+        if (
+            attributes.st_uid == 0
+            and attributes.st_gid == 0
+            and not attributes.st_mode & 0o022
+        ):
             continue
         # Protect children before marking the directory tree as initialized.
         for directory, subdirectories, files in os.walk(root, topdown=False):

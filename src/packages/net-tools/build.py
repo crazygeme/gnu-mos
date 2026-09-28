@@ -19,7 +19,13 @@ subprocess.run(
 )
 subprocess.run(["make", "-j4"], cwd=source, env=env, check=True)
 subprocess.run(
-    ["make", "DESTDIR=" + str(sysroot), "BINDIR=/usr/bin", "SBINDIR=/usr/sbin", "install"],
+    [
+        "make",
+        "DESTDIR=" + str(sysroot),
+        "BINDIR=/usr/bin",
+        "SBINDIR=/usr/sbin",
+        "install",
+    ],
     cwd=source,
     env=env,
     check=True,

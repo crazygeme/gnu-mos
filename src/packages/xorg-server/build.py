@@ -5,11 +5,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[2]))
 from package_lib import archive_source, meson_install
 
-source = archive_source("xorg-server", "xorg-server-21.1.18.tar.xz", "xorg-server-21.1.18")
+source = archive_source(
+    "xorg-server", "xorg-server-21.1.18.tar.xz", "xorg-server-21.1.18"
+)
 for patch_name in ("linux-ioports.patch", "target-dri-path.patch"):
     subprocess.run(
-        ["patch", "-p1", "--forward", "--batch", "-i",
-         str(Path(__file__).with_name(patch_name).resolve())],
+        [
+            "patch",
+            "-p1",
+            "--forward",
+            "--batch",
+            "-i",
+            str(Path(__file__).with_name(patch_name).resolve()),
+        ],
         cwd=source,
         check=True,
     )

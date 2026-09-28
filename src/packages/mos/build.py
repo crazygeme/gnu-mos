@@ -12,7 +12,16 @@ if build.exists():
 build.mkdir(parents=True)
 # Snapshot tracked and non-ignored source files, including working-tree edits.
 paths = subprocess.check_output(
-    ["git", "-C", str(mos), "ls-files", "--cached", "--others", "--exclude-standard", "-z"]
+    [
+        "git",
+        "-C",
+        str(mos),
+        "ls-files",
+        "--cached",
+        "--others",
+        "--exclude-standard",
+        "-z",
+    ]
 ).split(b"\0")
 for raw_path in paths:
     if not raw_path:

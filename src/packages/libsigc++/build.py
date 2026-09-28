@@ -15,4 +15,3 @@ meson_install(
         "-Dvalidation=false",
     ),
 )
-

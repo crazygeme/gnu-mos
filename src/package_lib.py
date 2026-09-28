@@ -1,7 +1,6 @@
 import os, shutil, subprocess, tarfile
 from pathlib import Path
 
-
 GLIB_HOST_TOOLS = (
     "glib-compile-resources",
     "glib-compile-schemas",
@@ -65,7 +64,9 @@ def archive_source(name, archive, directory, excluded_members=()):
 
 
 def host_tool_paths(env, names):
-    host_path = ":".join((str(Path(env["LFS_WORKSPACE"]) / "tools/bin"), "/usr/bin", "/bin"))
+    host_path = ":".join(
+        (str(Path(env["LFS_WORKSPACE"]) / "tools/bin"), "/usr/bin", "/bin")
+    )
     result = {}
     for name in names:
         executable = shutil.which(name, path=host_path)
@@ -75,7 +76,9 @@ def host_tool_paths(env, names):
     return result
 
 
-def configure_make_install(source, prefix="/usr", options=(), env_overrides=None, host_tools=()):
+def configure_make_install(
+    source, prefix="/usr", options=(), env_overrides=None, host_tools=()
+):
     env = environment()
     tool_variables = {
         name.upper().replace("-", "_"): path
@@ -126,9 +129,7 @@ def meson_install(source, name, options=(), host_tools=GLIB_HOST_TOOLS):
         f"cpp = '{target}-g++'\n"
         f"ar = '{target}-ar'\n"
         f"strip = '{target}-strip'\n"
-        "pkg-config = 'pkg-config'\n"
-        + tool_entries
-        + "\n[host_machine]\n"
+        "pkg-config = 'pkg-config'\n" + tool_entries + "\n[host_machine]\n"
         "system = 'linux'\n"
         "cpu_family = 'x86'\n"
         "cpu = 'i686'\n"

@@ -12,4 +12,3 @@ meson_install(
         "-Dbuild-documentation=false",
     ),
 )
-

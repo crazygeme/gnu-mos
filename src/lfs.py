@@ -346,11 +346,14 @@ def build_package(directory: Path) -> None:
     )
     done.parent.mkdir(parents=True, exist_ok=True)
     done.write_text(
-        json.dumps({
-            "name": info["name"],
-            "version": build_version(directory),
-            "source_version": info["version"],
-        }) + "\n"
+        json.dumps(
+            {
+                "name": info["name"],
+                "version": build_version(directory),
+                "source_version": info["version"],
+            }
+        )
+        + "\n"
     )
 
 
@@ -516,7 +519,9 @@ def qemu(extra: list[str]) -> None:
     qemu_extra = list(extra)
     executable = str(WORK / "tools/qemu/bin/qemu-system-x86_64")
     if not Path(executable).is_file():
-        raise SystemExit("desktop QEMU is missing; run ./lfs build --all to build qemu-host")
+        raise SystemExit(
+            "desktop QEMU is missing; run ./lfs build --all to build qemu-host"
+        )
     command = [
         executable,
         "-enable-kvm",
@@ -538,10 +543,14 @@ def qemu(extra: list[str]) -> None:
     ]
     if "-audiodev" not in qemu_extra and "-audio" not in qemu_extra:
         audio_backend = os.environ.get("MOS_AUDIO_BACKEND", "sdl")
-        command.extend([
-            "-audiodev", f"{audio_backend},id=audio0",
-            "-device", "AC97,audiodev=audio0",
-        ])
+        command.extend(
+            [
+                "-audiodev",
+                f"{audio_backend},id=audio0",
+                "-device",
+                "AC97,audiodev=audio0",
+            ]
+        )
     if not NO_GUI:
         command.extend(["-vga", "none", "-device", "virtio-vga-gl,xres=1920,yres=1080"])
         if "-display" not in qemu_extra:
