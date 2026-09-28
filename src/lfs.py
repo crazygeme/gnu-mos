@@ -151,8 +151,31 @@ def artifact(directory: Path, info: dict) -> Path:
     return WORK / info.get("artifact", f"artifacts/{info['name']}.done")
 
 
+def build_version(directory: Path) -> int:
+    version = int((directory / "version").read_text().strip())
+    if version < 1:
+        raise ValueError(f"invalid build version for {directory.name}: {version}")
+    return version
+
+
+def artifact_current(directory: Path, info: dict) -> bool:
+    version = build_version(directory)
+    done = artifact(directory, info)
+    if not done.exists():
+        return False
+    content = done.read_text()
+    record = json.loads(content) if content.strip() else {}
+    if "version" not in record:
+        record.update(name=info["name"], version=version)
+        done.write_text(json.dumps(record) + "\n")
+    recorded_version = record["version"]
+    if type(recorded_version) is not int or recorded_version < 1:
+        raise ValueError(f"invalid build version in {done}: {recorded_version!r}")
+    return recorded_version >= version
+
+
 def package_state(directory: Path, info: dict) -> str:
-    if artifact(directory, info).exists():
+    if artifact_current(directory, info):
         return "built"
     if info.get("source") == "git" and (SOURCES / info["name"]).exists():
         return "fetched"
@@ -323,7 +346,11 @@ def build_package(directory: Path) -> None:
     )
     done.parent.mkdir(parents=True, exist_ok=True)
     done.write_text(
-        json.dumps({"name": info["name"], "version": info["version"]}) + "\n"
+        json.dumps({
+            "name": info["name"],
+            "version": build_version(directory),
+            "source_version": info["version"],
+        }) + "\n"
     )
 
 
@@ -353,30 +380,14 @@ def run_postscripts() -> None:
 
 
 def reset_build_state() -> None:
-    print(
-        f"{YELLOW}warning{RESET}: --rebuild removes built package state and compiled files."
-    )
-    print(
-        f"{DIM}downloaded archives and Git checkouts in {SOURCES} are preserved.{RESET}"
-    )
-    answer = input("Continue? [y/N] ").strip().lower()
-    if answer not in ("y", "yes"):
-        print("rebuild cancelled")
-        return False
-    shutil.rmtree(WORK / "build", ignore_errors=True)
-    shutil.rmtree(WORK / "artifacts", ignore_errors=True)
-    shutil.rmtree(SYSROOT, ignore_errors=True)
-    setup_workspace()
-    return True
+    for done in (WORK / "artifacts").rglob("*.done"):
+        if done.is_file() or done.is_symlink():
+            done.unlink()
 
 
 def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> None:
-    if rebuild_mode and no_gui:
-        raise SystemExit(
-            "--rebuild --no-gui would remove the shared build state; use --rebuild without --no-gui"
-        )
-    if rebuild_mode and not reset_build_state():
-        return
+    if rebuild_mode:
+        reset_build_state()
     setup_workspace()
     directories = selected_packages(no_gui)
     pending = [
@@ -694,7 +705,7 @@ def main(argv: list[str]) -> int:
         "-r",
         action="store_true",
         dest="rebuild_mode",
-        help="clear built state but preserve downloaded sources",
+        help="delete all .done markers and continue the normal build",
     )
     build_parser.add_argument(
         "--no-gui",
