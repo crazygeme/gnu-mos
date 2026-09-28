@@ -1,0 +1,11 @@
+{
+  "name": "duktape",
+  "version": "2.7.0",
+  "order": 106.1,
+  "source": "archive",
+  "url": "https://duktape.org/duktape-{version}.tar.xz",
+  "archive": "duktape-2.7.0.tar.xz",
+  "artifact": "artifacts/duktape.done",
+  "profiles": ["gui"],
+  "dependencies": ["glibc"]
+}

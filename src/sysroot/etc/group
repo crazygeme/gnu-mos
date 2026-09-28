@@ -1,5 +1,7 @@
 root:x:0:
 sshd:x:74:
+messagebus:x:81:
+polkitd:x:102:
 tty:x:5:
 sudo:x:27:ezheng
 ezheng:x:1000:

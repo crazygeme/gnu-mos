@@ -1,0 +1,12 @@
+{
+  "name": "polkit",
+  "version": "126",
+  "order": 109.6,
+  "source": "archive",
+  "url": "https://github.com/polkit-org/polkit/archive/refs/tags/{version}.tar.gz",
+  "archive": "polkit-126.tar.gz",
+  "artifact": "artifacts/polkit.done",
+  "profiles": ["gui"],
+  "build-tools": ["meson", "ninja"],
+  "dependencies": ["duktape", "glib", "dbus", "expat", "linux-pam"]
+}
