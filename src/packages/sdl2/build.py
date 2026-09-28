@@ -11,6 +11,7 @@ configure_make_install(
         "--enable-video-x11",
         "--disable-video-wayland",
         "--enable-alsa",
+        "--enable-oss",
         "--disable-rpath",
     ),
 )

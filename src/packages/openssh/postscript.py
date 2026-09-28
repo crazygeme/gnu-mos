@@ -5,15 +5,12 @@ from pathlib import Path
 sysroot = Path(os.environ["LFS_SYSROOT"])
 ssh_dir = sysroot / "etc/ssh"
 ssh_dir.mkdir(parents=True, exist_ok=True)
+privileged = [] if os.geteuid() == 0 else ["sudo"]
 
 
 def set_attributes(path: Path, mode: str) -> None:
-    # Preserve root ownership when setup runs without privilege.
-    if os.geteuid() == 0:
-        os.chown(path, 0, 0)
-        os.chmod(path, int(mode, 8))
-    elif path.stat().st_uid == os.geteuid():
-        os.chmod(path, int(mode, 8))
+    subprocess.run(privileged + ["chown", "0:0", str(path)], check=True)
+    subprocess.run(privileged + ["chmod", mode, str(path)], check=True)
 
 
 privsep_dir = sysroot / "var/empty"
@@ -40,4 +37,4 @@ for key_type in ("ed25519", "ecdsa", "rsa"):
         )
     set_attributes(private_key, "600")
     if public_key.is_file():
-        public_key.chmod(0o644)
+        set_attributes(public_key, "644")

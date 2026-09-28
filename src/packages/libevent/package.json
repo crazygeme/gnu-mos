@@ -5,5 +5,6 @@
   "source": "archive",
   "url": "https://github.com/libevent/libevent/releases/download/release-{version}/libevent-{version}.tar.gz",
   "archive": "libevent-2.1.12-stable.tar.gz",
-  "artifact": "artifacts/libevent.done"
+  "artifact": "artifacts/libevent.done",
+  "dependencies": ["openssl"]
 }

@@ -24,6 +24,13 @@ Image installation requires `sudo`, `qemu-img`, `sfdisk`, `losetup`, `mkfs.ext3`
 
 The GUI profile builds QEMU 10.2.1 through `qemu-host`, installs it in `.workspace/tools/qemu`, and uses that executable for desktop launches. Its SDL refresh path preserves active OpenGL scanout. The desktop launcher uses `virtio-vga-gl` with `-display sdl,gl=on`. The window initially follows the guest framebuffer dimensions. PS/2 relative-pointer movement is forwarded without window scaling, preserving small movements in both windowed and fullscreen modes. `Ctrl+Alt+F` toggles fullscreen mode. The host graphics driver must provide hardware-accelerated OpenGL. An explicit `-display` argument overrides the default display backend.
 
+The launcher provides an AC97 sound card using QEMU's SDL audio backend.
+`MOS_AUDIO_BACKEND` selects another backend supported by the configured QEMU
+executable. Explicit `-audio` or `-audiodev` arguments replace the default audio
+configuration and must include the required guest sound device. MOS exposes
+AC97 playback through `/dev/dsp`; the XFCE session defaults SDL applications to
+the `dsp` audio driver. An explicit `SDL_AUDIODRIVER` value overrides that default.
+
 The `qemu-host` recipe links against native host development libraries. On Debian or Ubuntu, install these dependencies before building the GUI profile:
 
 ```sh
@@ -76,9 +83,11 @@ Each package build starts with an empty `.workspace/build/` directory. Package b
 | Environment variable | Default | Purpose |
 | --- | --- | --- |
 | `LFS_IMAGE_SIZE` | `8G` | Raw disk size when `setup` creates a new image. |
-| `LFS_RAM` | `2048` | Guest memory passed to QEMU with `-m`. |
+| `LFS_RAM` | `4096` | Guest memory passed to QEMU with `-m`. |
 
 The image uses a DOS partition table, one ext3 partition, and the GRUB `i386-pc` boot target. The launcher uses KVM, the host CPU model, two virtual CPUs, and an IDE disk. Serial output is written to `.workspace/krn.log`.
+
+The launcher sets `opt/org.seabios/pci64=0` through QEMU firmware configuration to keep PCI memory resources below 4 GiB, within the i686 kernel's device mapping range.
 
 During execution, the launcher creates `lfs-tap0`, assigns the host address `10.0.6.1`, and serves the `10.0.6.0/24` subnet. It configures DHCP, DNS, forwarding, and NAT, then removes its network configuration when QEMU exits.
 

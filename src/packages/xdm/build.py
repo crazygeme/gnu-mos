@@ -17,6 +17,7 @@ configure_make_install(
         "--with-default-vt=vt2",
         "--with-default-session=/usr/bin/mos-xfce-session",
         "--with-xrdb=/usr/bin/xrdb",
+        "--with-random-device=/dev/urandom",
         "--with-pam",
         "--with-xft",
         "--without-systemd-daemon",
