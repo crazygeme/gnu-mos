@@ -20,6 +20,8 @@
     "xfce4-appfinder",
     "xinit",
     "dbus",
+    "polkit",
+    "sysvinit",
     "adwaita-icon-theme",
     "dejavu-fonts",
     "xauth",

@@ -1,0 +1,44 @@
+#!/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+pidfile=/run/polkitd.pid
+
+running() {
+    [ -s "$pidfile" ] || return 1
+    read -r pid < "$pidfile"
+    case "$pid" in
+        '' | *[!0-9]* | 0 | 1) return 1 ;;
+    esac
+    kill -0 "$pid" 2>/dev/null
+}
+
+case "$1" in
+start)
+    [ -x /usr/lib/polkit-1/polkitd ] || exit 77
+    running && exit 0
+    umask 077
+    mkdir -p /var/lib/polkit-1 /etc/polkit-1/rules.d /usr/share/polkit-1/rules.d || exit 1
+    chown polkitd:polkitd /var/lib/polkit-1 || exit 1
+    chown root:polkitd /etc/polkit-1/rules.d /usr/share/polkit-1/rules.d || exit 1
+    chmod 0750 /etc/polkit-1/rules.d /usr/share/polkit-1/rules.d || exit 1
+    chown root:root /usr/bin/pkexec /usr/lib/polkit-1/polkit-agent-helper-1 || exit 1
+    chmod 4755 /usr/bin/pkexec /usr/lib/polkit-1/polkit-agent-helper-1 || exit 1
+    /usr/lib/polkit-1/polkitd --no-debug >>/var/log/polkit.log 2>&1 &
+    pid=$!
+    printf '%s\n' "$pid" > "$pidfile"
+    if ! /usr/bin/gdbus wait --system --timeout 15 org.freedesktop.PolicyKit1; then
+        kill -TERM "$pid" 2>/dev/null || true
+        rm -f "$pidfile"
+        exit 1
+    fi
+    kill -0 "$pid" 2>/dev/null
+    ;;
+stop)
+    running || exit 0
+    kill -TERM "$pid"
+    ;;
+*)
+    printf '%s\n' 'Usage: polkit {start|stop}' >&2
+    exit 1
+    ;;
+esac

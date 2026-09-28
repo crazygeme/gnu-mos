@@ -1,6 +1,8 @@
 id:5:initdefault:
 si::sysinit:/etc/init.d/rcS
 l3:35:wait:/etc/init.d/rc 3
+l0:0:wait:/etc/init.d/rc 0
+l6:6:wait:/etc/init.d/rc 6
 c1:35:respawn:/sbin/agetty -L tty1 115200 linux
 g1:5:once:/etc/init.d/graphical start
 ca::ctrlaltdel:/sbin/shutdown -r now

@@ -23,6 +23,22 @@ this runlevel.
 within `dbus-run-session`. Session bus lifetime follows the desktop session.
 The selected display backend is X11.
 
+The session logout dialog provides shutdown and restart through the Xfce
+polkit fallback. The GUI profile includes polkit 126 and Duktape 2.7.0.
+The system D-Bus and polkit services start before graphical login. Members
+of the `sudo` group, including `ezheng`, are authorized to invoke the Xfce
+shutdown helper without an additional password. Authorization uses group
+membership for both local and remote processes; no session-tracking daemon
+is configured. Other polkit actions retain their individual policies.
+
+Shutdown enters SysV runlevel 0 and restart enters runlevel 6. Both runlevels
+terminate remaining processes, synchronize filesystem data, unmount mounted
+filesystems where possible, and remount the root filesystem read-only before
+the privileged terminal poweroff or reboot command.
+MOS powers off the configured QEMU PIIX4 machine through its PCI-discovered
+ACPI power-management registers. The terminal reboot syscall requires
+effective UID 0 and performs the hardware reset from the runlevel script.
+
 The default wallpaper is `/usr/share/backgrounds/xfce/xfce-blue.jpg`.
 The configured image loaders support JPEG and PNG. SVG wallpaper decoding
 is unavailable.

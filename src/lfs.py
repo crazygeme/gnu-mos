@@ -721,7 +721,7 @@ def main(argv: list[str]) -> int:
     elif ns.command == "build":
         build(ns.all_mode, ns.rebuild_mode, ns.no_gui)
     elif ns.command == "run":
-        qemu(ns.args)
+        qemu(ns.args[1:] if ns.args[:1] == ["--"] else ns.args)
     elif ns.command == "status":
         status(ns.no_gui)
     return 0
