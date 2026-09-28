@@ -512,9 +512,12 @@ def qemu(extra: list[str]) -> None:
         "-cpu",
         "host",
         "-m",
-        os.environ.get("LFS_RAM", "2048"),
+        os.environ.get("LFS_RAM", "4096"),
         "-smp",
         "2",
+        # The i686 kernel maps PCI MMIO only below 4 GiB.
+        "-fw_cfg",
+        "name=opt/org.seabios/pci64,string=0",
         "-drive",
         f"file={IMAGE},format=raw,if=ide,index=0,media=disk",
         "-netdev",
@@ -522,6 +525,12 @@ def qemu(extra: list[str]) -> None:
         "-device",
         "e1000,netdev=net0,mac=52:54:00:12:34:56",
     ]
+    if "-audiodev" not in qemu_extra and "-audio" not in qemu_extra:
+        audio_backend = os.environ.get("MOS_AUDIO_BACKEND", "sdl")
+        command.extend([
+            "-audiodev", f"{audio_backend},id=audio0",
+            "-device", "AC97,audiodev=audio0",
+        ])
     if not NO_GUI:
         command.extend(["-vga", "none", "-device", "virtio-vga-gl,xres=1920,yres=1080"])
         if "-display" not in qemu_extra:

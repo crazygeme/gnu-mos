@@ -1,0 +1,12 @@
+--- a/ui/sdl2-gl.c
++++ b/ui/sdl2-gl.c
+@@ -196,6 +196,9 @@
+     assert(scon->opengl);
+     scon->w = 0;
+     scon->h = 0;
++    /* Framebuffer objects belong to the SDL window context. */
++    SDL_GL_MakeCurrent(scon->real_window, scon->winctx);
++
+     sdl2_set_scanout_mode(scon, false);
+ }
+ 

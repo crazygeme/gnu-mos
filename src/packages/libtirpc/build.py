@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -17,4 +18,10 @@ subprocess.run(
     cwd=source,
     check=True,
 )
-configure_make_install(source, options=("--disable-static",))
+configure_make_install(
+    source,
+    options=("--disable-static", "--enable-gssapi"),
+    env_overrides={
+        "KRB5_CONFIG": str(Path(os.environ["LFS_SYSROOT"]) / "usr/bin/krb5-config"),
+    },
+)

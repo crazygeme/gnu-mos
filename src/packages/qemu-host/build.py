@@ -35,7 +35,9 @@ source = archive_source(
         "qemu-10.2.1/roms/edk2/EmulatorPkg/Unix/Host/X11IncludeHack",
     ),
 )
-for patch_name in ("sdl-gl-scanout.patch", "sdl-relative-pointer.patch"):
+for patch_name in (
+    "sdl-gl-scanout.patch", "sdl-relative-pointer.patch", "sdl-gl-context.patch",
+):
     patch = Path(__file__).with_name(patch_name)
     for options in (("--dry-run",), ()):
         subprocess.run(
