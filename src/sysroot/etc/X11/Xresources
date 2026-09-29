@@ -2,7 +2,11 @@ Xcursor.theme: Adwaita
 Xcursor.size: 48
 
 XTerm*faceName: Fira Code:style=Regular
-XTerm*faceSize: 22
+XTerm*faceSize: 11
 XTerm*utf8: 1
 XTerm*saveLines: 10000
 XTerm*loginShell: true
+
+! Backspace uses DEL; Ctrl+h remains a distinct terminal input.
+XTerm*ttyModes: erase ^?
+XTerm*backarrowKeyIsErase: true

@@ -108,7 +108,7 @@ During execution, the launcher creates `lfs-tap0`, assigns the host address `10.
 
 XDM provides local graphical login on virtual terminal 2. Successful authentication starts Xfce under the selected system account; logging out returns to XDM. From a privileged guest shell, `telinit 3` stops graphical login and `telinit 5` starts it.
 
-Xorg uses the modesetting driver with glamor and the Mesa VirGL driver. The preferred virtual display mode is 1920 × 1080 at 120 Hz with 24-bit color depth. Rendering executes on the host GPU. The DRM implementation does not provide page-flip or vblank events; the advertised mode frequency does not guarantee a 120 FPS presentation rate. Presentation also depends on the host display and QEMU frontend.
+Xorg uses the modesetting driver with glamor and the Mesa VirGL driver. QEMU supplies a default preferred size of 2560 × 1440; the driver probes this size and exposes a preferred mode at a nominal 120 Hz with 24-bit color depth. Xfce display settings support runtime resolution changes. Rendering executes on the host GPU. The DRM implementation does not provide page-flip or vblank events; the advertised mode frequency does not guarantee a 120 FPS presentation rate. Presentation also depends on the host display and QEMU frontend.
 
 The desktop provides `glxinfo`, `glxgears`, `eglinfo`, and `mos-gpu-info`. A zero video-memory value means that the queried capacity is unavailable when VirGL does not expose the corresponding host capability; it is not a measurement of allocated graphics memory. `mos-gpu-info` checks direct rendering and the renderer string. Shared graphics buffers use implicit synchronization between VirGL contexts.
 

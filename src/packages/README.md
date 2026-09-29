@@ -94,8 +94,10 @@ the `poll` event backend because MOS does not implement `epoll_create1`.
 The configured hostname is resolved through `/etc/hosts`, with the
 `files` name service preceding DNS in `/etc/nsswitch.conf`.
 The MOS configuration uses the Xorg modesetting driver, glamor, and Mesa
-VirGL with a preferred virtual display mode of 1920 by 1080 pixels at 120 Hz
-and 24-bit color depth. The DRM implementation does not provide page-flip
+VirGL with 24-bit color depth. The driver probes the host's preferred size,
+which QEMU configures as 2560 by 1440 pixels by default, and advertises a
+preferred mode at a nominal 120 Hz. Xfce supports runtime resolution selection.
+The DRM implementation does not provide page-flip
 or vblank events; the mode frequency does not guarantee the presentation rate.
 The GUI profile includes `xf86-input-keyboard` 1.9.0 and
 `xf86-input-mouse` 1.9.5, installed into `/usr/lib/xorg/modules`.
