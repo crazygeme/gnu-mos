@@ -77,7 +77,12 @@ def host_tool_paths(env, names):
 
 
 def configure_make_install(
-    source, prefix="/usr", options=(), env_overrides=None, host_tools=()
+    source,
+    prefix="/usr",
+    options=(),
+    env_overrides=None,
+    host_tools=(),
+    install_options=(),
 ):
     env = environment()
     tool_variables = {
@@ -103,7 +108,13 @@ def configure_make_install(
     )
     subprocess.run(["make", "-j4", *make_tools], cwd=source, env=env, check=True)
     subprocess.run(
-        ["make", "DESTDIR=" + os.environ["LFS_SYSROOT"], *make_tools, "install"],
+        [
+            "make",
+            "DESTDIR=" + os.environ["LFS_SYSROOT"],
+            *make_tools,
+            *install_options,
+            "install",
+        ],
         cwd=source,
         env=env,
         check=True,

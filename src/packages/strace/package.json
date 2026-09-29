@@ -1,0 +1,13 @@
+{
+  "name": "strace",
+  "version": "6.18",
+  "order": 69.1,
+  "source": "archive",
+  "url": "https://strace.io/files/{version}/strace-{version}.tar.xz",
+  "archive": "strace-6.18.tar.xz",
+  "artifact": "artifacts/strace.done",
+  "dependencies": [
+    "glibc",
+    "linux-api-headers"
+  ]
+}

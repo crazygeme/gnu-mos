@@ -412,10 +412,8 @@ def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> N
 
 def sync_sysroot() -> None:
     source_root = ROOT / "src/sysroot"
-    for source in source_root.rglob("*"):
-        if source.is_symlink():
-            (SYSROOT / source.relative_to(source_root)).unlink(missing_ok=True)
-    shutil.copytree(source_root, SYSROOT, dirs_exist_ok=True, symlinks=True)
+    SYSROOT.mkdir(parents=True, exist_ok=True)
+    run("cp", "-af", str(source_root) + "/.", str(SYSROOT))
 
 
 def setup(no_gui: bool = False) -> None:
