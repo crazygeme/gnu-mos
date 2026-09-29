@@ -180,6 +180,10 @@ are accepted for the sender's PID and real, effective, or saved UID/GID. With
 transferred; receivers can query connection credentials using `SO_PEERCRED`.
 
 The console and GUI profiles include strace 6.18 and sudo 1.9.17p2.
+File 5.46 identifies file formats using `/usr/share/misc/magic.mgc`.
+The target binutils 2.45 package builds all default components and installs
+their complete installable output into the sysroot using `make install`,
+including command-line tools, libraries, support files, and documentation.
 Strace traces system calls with `strace command`. MOS supports syscall-stop
 markers and exec/exit trace events. Process attachment and child-process
 trace options are unavailable, so `strace -p` and `strace -f` are unsupported.

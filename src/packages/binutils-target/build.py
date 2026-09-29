@@ -7,6 +7,12 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 from package_lib import archive_source, environment
 
 source = archive_source("binutils-target", "binutils-2.45.tar.xz", "binutils-2.45")
+subprocess.run(
+    ["patch", "-p1", "--forward", "--batch", "-i",
+     str(Path(__file__).with_name("gprofng-glibc-strstr.patch"))],
+    cwd=source,
+    check=True,
+)
 workspace = Path(os.environ["LFS_WORKSPACE"])
 sysroot = Path(os.environ["LFS_SYSROOT"])
 target = os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu")
@@ -29,9 +35,9 @@ subprocess.run(
     env=env,
     check=True,
 )
-subprocess.run(["make", "-j4", "all-gas", "all-ld"], cwd=build, env=env, check=True)
+subprocess.run(["make", "-j4"], cwd=build, env=env, check=True)
 subprocess.run(
-    ["make", "DESTDIR=" + str(sysroot), "install-gas", "install-ld"],
+    ["make", "DESTDIR=" + str(sysroot), "install"],
     cwd=build,
     env=env,
     check=True,

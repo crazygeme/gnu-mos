@@ -2,7 +2,7 @@ Xcursor.theme: Adwaita
 Xcursor.size: 48
 
 XTerm*faceName: Fira Code:style=Regular
-XTerm*faceSize: 11
+XTerm*faceSize: 12
 XTerm*utf8: 1
 XTerm*saveLines: 10000
 XTerm*loginShell: true
