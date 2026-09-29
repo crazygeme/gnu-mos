@@ -18,7 +18,7 @@
     <property name="EnableInputFeedbackSounds" type="bool" value="false"/>
   </property>
   <property name="Xft" type="empty">
-    <property name="DPI" type="int" value="-1"/>
+    <property name="DPI" type="int" value="192"/>
     <property name="Antialias" type="int" value="-1"/>
     <property name="Hinting" type="int" value="-1"/>
     <property name="HintStyle" type="string" value="hintnone"/>
@@ -42,5 +42,6 @@
   </property>
   <property name="Gdk" type="empty">
     <property name="WindowScalingFactor" type="int" value="2"/>
+    <property name="UnscaledDPI" type="int" value="98304"/>
   </property>
 </channel>

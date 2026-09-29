@@ -23,9 +23,19 @@ this runlevel.
 within `dbus-run-session`. Session bus lifetime follows the desktop session.
 The selected display backend is X11.
 
-The default GTK window scaling factor is 2. The system Xsettings configuration
-is installed from `src/sysroot/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml`.
-Per-user Xfconf settings can override this default.
+QEMU supplies a default preferred output size of 2560 × 1440. Xorg selects
+the preferred mode reported by the VirtIO-GPU driver, with a nominal refresh
+rate of 120 Hz. Xfce display settings can select other advertised resolutions
+at runtime. GTK uses a window scaling factor of 2; the default output has no
+RandR resampling.
+Xft uses 192 DPI for clients such as xterm. GTK uses `Gdk/UnscaledDPI` of
+98304 (96 × 1024) with its window scaling factor, giving both font paths an
+effective 192 DPI.
+The system Xsettings configuration is installed from `xsettings.xml`
+in `src/sysroot/etc/xdg/xfce4/xfconf/xfce-perchannel-xml`.
+The system `displays.xml` channel contains no saved mode, so the session
+retains the mode selected by Xorg. Per-user Xfconf settings can override
+these defaults.
 The default cursor theme is Adwaita with a nominal size of 48 pixels.
 Xsettings and `/etc/X11/Xresources` configure the cursor theme and size for
 GTK and Xcursor clients.
@@ -57,7 +67,7 @@ The configured image loaders support JPEG and PNG. SVG wallpaper decoding
 is unavailable.
 
 The application menu provides Terminal (xterm). Xfce also uses xterm as its
-default terminal emulator. Fira Code 6.002 Regular at 22 points and UTF-8 are
+default terminal emulator. Fira Code 6.002 Regular at 11 points and UTF-8 are
 configured for terminal text. The variable font is installed from
 `src/sysroot/usr/share/fonts/fira-code/FiraCode_VF.ttf`; its SIL Open Font
 License 1.1 is included in the same directory.
