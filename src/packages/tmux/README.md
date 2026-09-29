@@ -2,6 +2,10 @@ tmux 3.5a uses `/etc/tmux.conf` for system configuration, followed by
 the user configuration files. The system configuration is supplied by
 `src/sysroot/etc/tmux.conf` and installed into the image by `./lfs setup`.
 
+PTY write readiness reflects available buffer space. A full output buffer
+is not writable; draining or flushing it wakes registered `poll` and
+`select` write waiters. This supports tmux's nonblocking terminal output.
+
 For clients using `TERM=linux`, terminal capability overrides accommodate
 the MOS console's immediate line wrapping, fixed-color scroll fills, and
 absence of erase-character and alternate-character-set support. tmux uses
