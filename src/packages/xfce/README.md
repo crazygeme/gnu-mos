@@ -67,7 +67,7 @@ The configured image loaders support JPEG and PNG. SVG wallpaper decoding
 is unavailable.
 
 The application menu provides Terminal (xterm). Xfce also uses xterm as its
-default terminal emulator. Fira Code 6.002 Regular at 11 points and UTF-8 are
+default terminal emulator. Fira Code 6.002 Regular at 13 points and UTF-8 are
 configured for terminal text. The variable font is installed from
 `src/sysroot/usr/share/fonts/fira-code/FiraCode_VF.ttf`; its SIL Open Font
 License 1.1 is included in the same directory.
