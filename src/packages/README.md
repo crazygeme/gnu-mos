@@ -128,7 +128,7 @@ server ownership and creates the X11 and ICE socket directories with mode
 1777. Before graphical services start, boot initialization removes the
 display `:0` lock files and socket from `/tmp`, recreates the socket
 directories, and mounts sysfs on `/sys`.
-Before login, the Xorg ownership script assigns `/usr` and `/etc` to root
+Before login, the system ownership script assigns `/usr` and `/etc` to root
 and removes group and other write permissions from their regular files and
 directories. This protects the privileged server, libraries, modules, and
 configuration while leaving the host build sysroot writable for package builds.
@@ -178,3 +178,24 @@ releasing an exiting thread's kernel stack. Explicit `SCM_CREDENTIALS` messages
 are accepted for the sender's PID and real, effective, or saved UID/GID. With
 `SO_PASSCRED` disabled, validated credentials are discarded and the payload is
 transferred; receivers can query connection credentials using `SO_PEERCRED`.
+
+The console and GUI profiles include strace 6.18 and sudo 1.9.17p2.
+Strace traces system calls with `strace command`. MOS supports syscall-stop
+markers and exec/exit trace events. Process attachment and child-process
+trace options are unavailable, so `strace -p` and `strace -f` are unsupported.
+Sudo uses PAM authentication and `/etc/sudoers`; members of the `sudo` group
+can execute commands as another user after password authentication.
+Boot initialization assigns root ownership to privileged system files and
+sets `/usr/bin/sudo` to mode 4755 and `/etc/sudoers` to mode 0440.
+The sudo postscript and boot initialization assign root ownership to
+`/var/lib/sudo` (mode 0711) and `/var/lib/sudo/lectured` (mode 0700).
+MOS supports `mkdirat` for directory creation relative to a directory descriptor,
+including sudo runtime directories under `/run/sudo`.
+
+`/etc/mtab` links to the live MOS mount table at `/proc/mounts`, which provides
+filesystem enumeration for `df` and other mount-table consumers.
+
+MOS resolves final symbolic-link targets through the VFS mount tree, including
+links from ext4 to procfs. The i386 `statfs64` and `fstatfs64` interfaces return
+64-bit filesystem counters; legacy `statfs` interfaces report `EOVERFLOW` when
+these counters cannot be represented in their 32-bit layout.
