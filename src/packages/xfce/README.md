@@ -23,6 +23,13 @@ this runlevel.
 within `dbus-run-session`. Session bus lifetime follows the desktop session.
 The selected display backend is X11.
 
+The default GTK window scaling factor is 2. The system Xsettings configuration
+is installed from `src/sysroot/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml`.
+Per-user Xfconf settings can override this default.
+The default cursor theme is Adwaita with a nominal size of 48 pixels.
+Xsettings and `/etc/X11/Xresources` configure the cursor theme and size for
+GTK and Xcursor clients.
+
 ICE authentication uses iceauth 1.0.10 at `/usr/bin/iceauth`. Xfce session
 clients authenticate through ICE to participate in session saving and logout.
 The session manager build uses this target path explicitly.
@@ -50,8 +57,10 @@ The configured image loaders support JPEG and PNG. SVG wallpaper decoding
 is unavailable.
 
 The application menu provides Terminal (xterm). Xfce also uses xterm as its
-default terminal emulator. DejaVu Sans Mono and UTF-8 are configured for
-terminal text.
+default terminal emulator. Fira Code 6.002 Regular at 22 points and UTF-8 are
+configured for terminal text. The variable font is installed from
+`src/sysroot/usr/share/fonts/fira-code/FiraCode_VF.ttf`; its SIL Open Font
+License 1.1 is included in the same directory.
 
 The application menu includes the following GTK 3 applications:
 

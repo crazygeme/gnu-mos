@@ -1,5 +1,8 @@
-XTerm*faceName: DejaVu Sans Mono
-XTerm*faceSize: 11
+Xcursor.theme: Adwaita
+Xcursor.size: 48
+
+XTerm*faceName: Fira Code:style=Regular
+XTerm*faceSize: 22
 XTerm*utf8: 1
 XTerm*saveLines: 10000
 XTerm*loginShell: true
