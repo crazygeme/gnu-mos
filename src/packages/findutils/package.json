@@ -3,7 +3,7 @@
   "version": "4.10.0",
   "order": 68.55,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/findutils/findutils-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/findutils/findutils-{version}.tar.xz",
   "archive": "findutils-4.10.0.tar.xz",
   "artifact": "artifacts/findutils.done"
 }

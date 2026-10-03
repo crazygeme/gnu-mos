@@ -4,11 +4,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source, environment
+from package_lib import run_configure, archive_source, environment
 
 source = archive_source("screen", "screen-5.0.1.tar.gz", "screen-5.0.1")
 env = environment()
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",

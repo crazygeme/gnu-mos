@@ -2,7 +2,7 @@ import os, subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 source = archive_source("python", "Python-3.13.7.tar.xz", "Python-3.13.7")
 build = Path(os.environ["LFS_WORKSPACE"]) / "build/python"
@@ -25,7 +25,7 @@ env.update(
         "CONFIG_SITE": str(config_site),
     }
 )
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",

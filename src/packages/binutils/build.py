@@ -2,7 +2,7 @@ import os, subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 source = archive_source("binutils", "binutils-2.45.tar.xz", "binutils-2.45")
 workspace = Path(os.environ["LFS_WORKSPACE"])
@@ -15,7 +15,7 @@ subprocess.run(
     cwd=source,
     check=True,
 )
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",

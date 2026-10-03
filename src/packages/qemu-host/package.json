@@ -5,6 +5,20 @@
   "build-tools": [
     "ninja"
   ],
+  "host-packages": {
+    "apt": [
+      "pkg-config",
+      "libsdl2-dev",
+      "libvirglrenderer-dev",
+      "libgbm-dev",
+      "libdrm-dev",
+      "libepoxy-dev",
+      "libglib2.0-dev",
+      "libpixman-1-dev",
+      "zlib1g-dev",
+      "python3-venv"
+    ]
+  },
   "source": "archive",
   "url": "https://download.qemu.org/qemu-{version}.tar.xz",
   "archive": "qemu-10.2.1.tar.xz",

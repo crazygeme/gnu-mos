@@ -26,17 +26,17 @@ The selected display backend is X11.
 QEMU supplies a default preferred output size of 2560 × 1440. Xorg selects
 the preferred mode reported by the VirtIO-GPU driver, with a nominal refresh
 rate of 120 Hz. Xfce display settings can select other advertised resolutions
-at runtime. GTK uses a window scaling factor of 2; the default output has no
+at runtime. GTK uses a window scaling factor of 1; the default output has no
 RandR resampling.
-Xft uses 192 DPI for clients such as xterm. GTK uses `Gdk/UnscaledDPI` of
+Xft uses 96 DPI for clients such as xterm. GTK uses `Gdk/UnscaledDPI` of
 98304 (96 × 1024) with its window scaling factor, giving both font paths an
-effective 192 DPI.
+effective 96 DPI.
 The system Xsettings configuration is installed from `xsettings.xml`
 in `src/sysroot/etc/xdg/xfce4/xfconf/xfce-perchannel-xml`.
 The system `displays.xml` channel contains no saved mode, so the session
 retains the mode selected by Xorg. Per-user Xfconf settings can override
 these defaults.
-The default cursor theme is Adwaita with a nominal size of 48 pixels.
+The default cursor theme is Adwaita with a nominal size of 24 pixels.
 Xsettings and `/etc/X11/Xresources` configure the cursor theme and size for
 GTK and Xcursor clients.
 

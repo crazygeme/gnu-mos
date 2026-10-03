@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source, environment
+from package_lib import run_configure, archive_source, environment
 
 source = archive_source("gmp-target", "gmp-6.3.0.tar.xz", "gmp-6.3.0")
 build = Path(os.environ["LFS_WORKSPACE"]) / "build/gmp-target"
@@ -13,7 +13,7 @@ env = environment()
 env["CFLAGS"] = "-O2 -m32 -std=gnu11"
 env["ABI"] = "32"
 env.pop("LD_LIBRARY_PATH", None)
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",

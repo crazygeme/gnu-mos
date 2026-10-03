@@ -3,7 +3,7 @@
   "version": "2.45",
   "order": 25.5,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/sourceware/binutils/releases/binutils-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/binutils/binutils-{version}.tar.xz",
   "archive": "binutils-2.45.tar.xz",
   "artifact": "artifacts/binutils-target.done"
 }

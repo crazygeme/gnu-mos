@@ -3,7 +3,7 @@
   "version": "4.9",
   "order": 68.7,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/sed/sed-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/sed/sed-{version}.tar.xz",
   "archive": "sed-4.9.tar.xz",
   "artifact": "artifacts/sed.done"
 }

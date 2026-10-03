@@ -3,7 +3,7 @@
   "version": "3.8.2",
   "order": 7,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/bison/bison-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/bison/bison-{version}.tar.xz",
   "archive": "bison-3.8.2.tar.xz",
   "artifact": "artifacts/bison.done"
 }

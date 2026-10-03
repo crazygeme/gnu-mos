@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 source = archive_source("gcc", "gcc-15.2.0.tar.xz", "gcc-15.2.0")
 workspace = Path(os.environ["LFS_WORKSPACE"])
@@ -44,7 +44,7 @@ configure = [
     "--disable-multilib",
     "--enable-languages=c,c++",
 ]
-subprocess.run(configure, cwd=build, env=build_env, check=True)
+run_configure(configure, cwd=build, env=build_env, check=True)
 subprocess.run(
     [
         "make",

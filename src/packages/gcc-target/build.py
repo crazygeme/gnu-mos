@@ -2,7 +2,7 @@ import os, subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 workspace = Path(os.environ["LFS_WORKSPACE"])
 sysroot = Path(os.environ["LFS_SYSROOT"])
@@ -50,7 +50,7 @@ configure = [
     "--disable-multilib",
     "--enable-languages=c,c++",
 ]
-subprocess.run(configure, cwd=build, env=env, check=True)
+run_configure(configure, cwd=build, env=env, check=True)
 subprocess.run(
     [
         "make",

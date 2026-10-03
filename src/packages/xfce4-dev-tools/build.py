@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 source = archive_source(
     "xfce4-dev-tools", "xfce4-dev-tools-4.20.0.tar.bz2", "xfce4-dev-tools-4.20.0"
@@ -30,7 +30,7 @@ env.update(
 )
 for name in ("PKG_CONFIG_SYSROOT_DIR", "PKG_CONFIG_LIBDIR"):
     env.pop(name, None)
-subprocess.run(
+run_configure(
     [str(source / "configure"), "--prefix=" + str(tools)],
     cwd=source,
     env=env,

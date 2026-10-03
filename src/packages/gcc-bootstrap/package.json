@@ -3,7 +3,7 @@
   "version": "15.2.0",
   "order": 15,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/gcc/gcc-{version}/gcc-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/gcc/gcc-{version}/gcc-{version}.tar.xz",
   "archive": "gcc-15.2.0.tar.xz",
   "artifact": "artifacts/gcc-bootstrap.done"
 }

@@ -2,13 +2,13 @@ import os, sys, subprocess
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 prefix = str(Path(os.environ["LFS_WORKSPACE"]) / "tools")
 source = archive_source("mpc", "mpc-1.3.1.tar.gz", "mpc-1.3.1")
 env = os.environ.copy()
 env.update({"CC": "gcc", "CFLAGS": "-std=gnu89", "LDFLAGS": ""})
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--prefix=" + prefix,

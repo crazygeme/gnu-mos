@@ -2,13 +2,13 @@ import os, subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 source = archive_source("bison", "bison-3.8.2.tar.xz", "bison-3.8.2")
 prefix = str(Path(os.environ["LFS_WORKSPACE"]) / "tools")
 env = os.environ.copy()
 env.update({"CC": "gcc", "CFLAGS": "-std=gnu17", "LDFLAGS": ""})
-subprocess.run(
+run_configure(
     [str(source / "configure"), "--prefix=" + prefix], cwd=source, env=env, check=True
 )
 subprocess.run(["make", "-j4"], cwd=source, env=env, check=True)

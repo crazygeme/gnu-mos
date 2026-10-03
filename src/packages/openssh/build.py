@@ -2,7 +2,7 @@ import os, subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 root = Path(os.environ["LFS_SYSROOT"])
 src = archive_source("openssh", "openssh-10.0p1.tar.gz", "openssh-10.0p1")
@@ -18,7 +18,7 @@ env.update(
         "PATH": "/usr/bin:/bin:" + env.get("PATH", ""),
     }
 )
-subprocess.run(
+run_configure(
     [
         str(src / "configure"),
         "--build=x86_64-pc-linux-gnu",

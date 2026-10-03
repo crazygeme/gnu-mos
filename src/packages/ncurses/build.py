@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source, environment
+from package_lib import run_configure, archive_source, environment
 
 source = archive_source("ncurses", "ncurses-6.5.tar.gz", "ncurses-6.5")
 workspace = Path(os.environ["LFS_WORKSPACE"])
@@ -35,7 +35,7 @@ for name, extra in (
     if build.exists():
         shutil.rmtree(build)
     shutil.copytree(source, build)
-    subprocess.run(
+    run_configure(
         [
             str(source / "configure"),
             "--build=x86_64-pc-linux-gnu",

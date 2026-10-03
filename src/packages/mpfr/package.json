@@ -3,7 +3,7 @@
   "version": "4.2.2",
   "order": 12,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/mpfr/mpfr-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/mpfr/mpfr-{version}.tar.xz",
   "archive": "mpfr-4.2.2.tar.xz",
   "artifact": "artifacts/mpfr.done"
 }

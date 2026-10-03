@@ -3,7 +3,7 @@
   "version": "2.14",
   "order": 109.4,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/grub/grub-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/grub/grub-{version}.tar.xz",
   "archive": "grub-2.14.tar.xz",
   "artifact": "artifacts/grub.done"
 }
