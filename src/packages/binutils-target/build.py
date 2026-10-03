@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source, environment
+from package_lib import run_configure, archive_source, environment
 
 source = archive_source("binutils-target", "binutils-2.45.tar.xz", "binutils-2.45")
 subprocess.run(
@@ -20,7 +20,7 @@ build = workspace / "build/binutils-target"
 build.mkdir(parents=True, exist_ok=True)
 env = environment()
 env.update({"CC_FOR_BUILD": "gcc", "CXX_FOR_BUILD": "g++"})
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",

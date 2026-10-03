@@ -18,7 +18,7 @@ The desktop profile starts graphical login in runlevel 5. The console profile st
 
 The build recipes target an x86-64 Linux host. Image setup also executes installed i686 programs, so the host must support 32-bit x86 execution.
 
-Host tools include Bash, Python 3 with `tarfile` extraction-filter support, Git, a native C/C++ compiler, GNU Make, patch, archive utilities, and the build utilities required by individual package recipes. Host development dependencies depend on the selected packages; the command-line driver does not install distribution packages.
+Host tools include Bash, Python 3 with `tarfile` extraction-filter support, Git, a native C/C++ compiler, GNU Make, patch, archive utilities, and the build utilities required by individual package recipes. Host development dependencies depend on the selected packages. Before building a package with declared APT host dependencies, `./lfs build` installs missing distribution packages through `apt-get`, using `sudo` when required. Installed dependencies do not trigger installation or authentication.
 
 Image installation requires `sudo`, `qemu-img`, `sfdisk`, `losetup`, `mkfs.ext3`, and mount utilities. The console launcher requires the host `qemu-system-x86_64`. Both launch profiles require access to KVM, `ip`, `sysctl`, `iptables`, and `dnsmasq`. Privileged operations use `sudo` to manage loop devices, mounts, and host networking.
 
@@ -31,7 +31,7 @@ configuration and must include the required guest sound device. MOS exposes
 AC97 playback through `/dev/dsp`; the XFCE session defaults SDL applications to
 the `dsp` audio driver. An explicit `SDL_AUDIODRIVER` value overrides that default.
 
-The `qemu-host` recipe links against native host development libraries. On Debian or Ubuntu, install these dependencies before building the GUI profile:
+The `qemu-host` recipe links against native host development libraries. On Debian or Ubuntu, `./lfs build` checks and installs the following dependencies before preparing the QEMU source. Installation may require a sudo password. The equivalent manual command is:
 
 ```sh
 sudo apt install pkg-config libsdl2-dev libvirglrenderer-dev libgbm-dev libdrm-dev libepoxy-dev libglib2.0-dev libpixman-1-dev zlib1g-dev python3-venv
@@ -90,6 +90,24 @@ already present, and uses filename completion for QEMU arguments after
 Builds fetch missing sources automatically. Each package defines a positive integer build version in `src/packages/<package>/version`, independently of the upstream software version in `package.json`. Completion artifacts record this build version in their JSON `version` field. Both `status` and `build` consider a package built when its completion version is at least its configured build version. A missing artifact or an older completion version requires compilation. An existing artifact without a `version` field, including an empty artifact, is assigned the configured build version and remains built. Changes requiring recompilation must increment the affected package's build version. `--rebuild` deletes all `*.done` files recursively under `.workspace/artifacts/` without prompting, then follows the normal build flow. The deletion preserves all other files. Normal package selection and stopping rules apply: the default builds one package, `--all` builds all pending packages, and `--no-gui` builds all pending console packages. All completion markers are deleted even when `--no-gui` is selected.
 
 Each package build starts with an empty `.workspace/build/` directory. Package builds must run sequentially within a workspace. Build logs are written to `.workspace/logs/<package>.log`.
+
+Autoconf recipes retain successful configuration test results under
+`.workspace/configure-cache/<package>/`. Each configure invocation uses a cache
+selected by its command, build directory, configure script, package files,
+environment, compiler and tool metadata, explicit `CONFIG_SITE` contents, and
+other installed package completion records. Native and cross configurations
+use separate entries. A matching cache is restored into the fresh build tree;
+configure still runs to generate Makefiles and configuration headers. Only
+checks implemented with Autoconf cache variables reuse their results. Failed
+configure invocations do not replace the persistent cache.
+
+The configuration cache survives build-tree cleanup and `--rebuild`.
+Changes to cache inputs select a separate entry. Host header or library changes
+outside the package build workflow require removing
+`.workspace/configure-cache/` before configuration. Removing a package's cache
+directory forces fresh checks for that package on its next build. Build systems
+without Autoconf cache support, including QEMU and zlib, retain their own
+configuration behavior.
 
 ### Image and virtual machine configuration
 

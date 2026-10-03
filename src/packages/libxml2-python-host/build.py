@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source
+from package_lib import run_configure, archive_source
 
 source = archive_source(
     "libxml2-python-host", "libxml2-2.13.8.tar.xz", "libxml2-2.13.8"
@@ -28,7 +28,7 @@ for name in ("PKG_CONFIG_SYSROOT_DIR", "PKG_CONFIG_LIBDIR", "PKG_CONFIG_PATH"):
 env["PKG_CONFIG_PATH"] = ":".join(
     (str(tools / "lib/pkgconfig"), str(tools / "share/pkgconfig"))
 )
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--prefix=" + str(tools),

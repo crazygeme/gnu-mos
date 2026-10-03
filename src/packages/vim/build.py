@@ -1,5 +1,9 @@
 import os, subprocess, tarfile
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).parents[2]))
+from package_lib import run_configure
 
 w = Path(os.environ["LFS_WORKSPACE"])
 s = Path(os.environ["LFS_SOURCES"])
@@ -35,7 +39,7 @@ env["PKG_CONFIG_LIBDIR"] = (
     str(root / "usr/lib/pkgconfig") + ":" + str(root / "usr/share/pkgconfig")
 )
 env.pop("PKG_CONFIG_PATH", None)
-subprocess.run(
+run_configure(
     [
         str(src / "configure"),
         "--build=x86_64-pc-linux-gnu",

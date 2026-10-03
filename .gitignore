@@ -5,3 +5,5 @@ __pycache__
 *.avi
 *.mp3
 *.mp4
+.codex-data
+.codex

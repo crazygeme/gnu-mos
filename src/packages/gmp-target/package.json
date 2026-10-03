@@ -3,7 +3,7 @@
   "version": "6.3.0",
   "order": 25.1,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/gmp/gmp-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/gmp/gmp-{version}.tar.xz",
   "archive": "gmp-6.3.0.tar.xz",
   "artifact": "artifacts/gmp-target.done"
 }

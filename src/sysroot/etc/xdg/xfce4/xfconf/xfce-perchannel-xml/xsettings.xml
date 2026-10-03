@@ -18,7 +18,7 @@
     <property name="EnableInputFeedbackSounds" type="bool" value="false"/>
   </property>
   <property name="Xft" type="empty">
-    <property name="DPI" type="int" value="192"/>
+    <property name="DPI" type="int" value="96"/>
     <property name="Antialias" type="int" value="-1"/>
     <property name="Hinting" type="int" value="-1"/>
     <property name="HintStyle" type="string" value="hintnone"/>
@@ -35,13 +35,13 @@
     <property name="ButtonImages" type="bool" value="true"/>
     <property name="MenuBarAccel" type="string" value="F10"/>
     <property name="CursorThemeName" type="string" value="Adwaita"/>
-    <property name="CursorThemeSize" type="int" value="48"/>
+    <property name="CursorThemeSize" type="int" value="24"/>
     <property name="DecorationLayout" type="string" value="menu:minimize,maximize,close"/>
     <property name="DialogsUseHeader" type="bool" value="false"/>
     <property name="TitlebarMiddleClick" type="string" value="lower"/>
   </property>
   <property name="Gdk" type="empty">
-    <property name="WindowScalingFactor" type="int" value="2"/>
+    <property name="WindowScalingFactor" type="int" value="1"/>
     <property name="UnscaledDPI" type="int" value="98304"/>
   </property>
 </channel>

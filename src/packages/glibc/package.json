@@ -3,7 +3,7 @@
   "version": "2.42",
   "order": 20,
   "source": "archive",
-  "url": "https://mirrors.tuna.tsinghua.edu.cn/gnu/glibc/glibc-{version}.tar.xz",
+  "url": "https://mirrors.ustc.edu.cn/gnu/glibc/glibc-{version}.tar.xz",
   "archive": "glibc-2.42.tar.xz",
   "artifact": "artifacts/glibc.done"
 }

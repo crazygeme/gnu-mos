@@ -20,6 +20,13 @@ order, and artifact is inspectable.
 The `ninja` and `meson` source packages install host build tools into
 `.workspace/tools/bin/` before Meson-based packages are built.
 
+The optional `host-packages.apt` manifest list declares native distribution
+dependencies. Before preparing a pending package's source, `./lfs build`
+checks installation status with `dpkg-query` and installs missing packages
+through `apt-get install --yes`, using `sudo` when required. This declaration
+requires an APT-based host. Packages without this declaration do not invoke
+the host package manager. Status and image setup do not install host packages.
+
 Packages with `"profiles": ["gui"]` are included in the full build and
 excluded from `./lfs build --no-gui`, which builds all console packages. The
 console build uses `.workspace/sysroot/`, `.workspace/tools/`, and

@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source, environment
+from package_lib import run_configure, archive_source, environment
 
 source = archive_source("mpc-target", "mpc-1.3.1.tar.gz", "mpc-1.3.1")
 build = Path(os.environ["LFS_WORKSPACE"]) / "build/mpc-target"
@@ -14,7 +14,7 @@ env = environment()
 env.pop("LD_LIBRARY_PATH", None)
 for archive in ("libgmp.la", "libmpfr.la"):
     (sysroot / "usr/lib" / archive).unlink(missing_ok=True)
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",

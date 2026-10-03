@@ -1,4 +1,4 @@
-import os, shutil, subprocess, tarfile
+import hashlib, json, os, shlex, shutil, subprocess, tarfile
 from pathlib import Path
 
 GLIB_HOST_TOOLS = (
@@ -76,6 +76,73 @@ def host_tool_paths(env, names):
     return result
 
 
+def run_configure(command, *, cwd, env=None, check=True):
+    """Run Autoconf with a persistent cache isolated by build configuration."""
+    env = os.environ.copy() if env is None else env
+    command = [str(part) for part in command]
+    if any(arg in ("-C", "--config-cache", "--cache-file") or
+           arg.startswith("--cache-file=") for arg in command):
+        return subprocess.run(command, cwd=cwd, env=env, check=check)
+    workspace = Path(env["LFS_WORKSPACE"]).resolve()
+    directory = Path(env.get("LFS_PACKAGE_DIR", Path.cwd())).resolve()
+    build = Path(cwd).resolve()
+    script = next(Path(arg) for arg in command if Path(arg).name == "configure")
+    if not script.is_absolute():
+        script = build / script
+    digest = hashlib.sha256()
+
+    def record(value):
+        digest.update(json.dumps(value, sort_keys=True).encode())
+        digest.update(b"\0")
+
+    record(command)
+    record(str(build))
+    digest.update(script.read_bytes())
+    for path in sorted(directory.iterdir()):
+        if path.is_file():
+            record(path.name)
+            digest.update(path.read_bytes())
+    transient = {"PWD", "OLDPWD", "SHLVL", "_", "TERM", "LS_COLORS",
+                 "SSH_CLIENT", "SSH_CONNECTION", "SSH_TTY", "SSH_AUTH_SOCK",
+                 "DISPLAY", "WAYLAND_DISPLAY", "XAUTHORITY"}
+    record({name: value for name, value in env.items() if name not in transient})
+    for name, default in (("CC", "gcc cc clang"), ("CXX", "g++ c++ clang++"), ("AR", "ar"),
+                          ("AS", "as"), ("LD", "ld"), ("RANLIB", "ranlib"),
+                          ("PKG_CONFIG", "pkg-config")):
+        for word in shlex.split(env.get(name, default)):
+            executable = shutil.which(word, path=env.get("PATH"))
+            if executable:
+                path = Path(executable).resolve()
+                stat = path.stat()
+                record((str(path), stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns))
+    for site in shlex.split(env.get("CONFIG_SITE", "")):
+        path = Path(site)
+        if not path.is_absolute():
+            path = build / path
+        if path.is_file():
+            digest.update(path.read_bytes())
+    for marker in sorted((workspace / "artifacts").rglob("*.done")):
+        if marker.stem != directory.name:
+            record(str(marker.relative_to(workspace)))
+            digest.update(marker.read_bytes())
+    cache = workspace / "configure-cache" / directory.name / digest.hexdigest()
+    cache.mkdir(parents=True, exist_ok=True)
+    saved = cache / "config.cache"
+    local = build / "config.cache"
+    if saved.exists():
+        shutil.copyfile(saved, local)
+    else:
+        local.unlink(missing_ok=True)
+    result = subprocess.run(
+        [*command, "--cache-file=" + str(local)], cwd=build, env=env, check=check
+    )
+    if result.returncode == 0 and local.is_file():
+        temporary = saved.with_suffix(".tmp")
+        shutil.copyfile(local, temporary)
+        temporary.replace(saved)
+    return result
+
+
 def configure_make_install(
     source,
     prefix="/usr",
@@ -94,7 +161,7 @@ def configure_make_install(
         env.update(env_overrides)
     make_tools = [f"{name}={env[name]}" for name in tool_variables]
     target = env.get("LFS_TARGET", "i686-lfs-linux-gnu")
-    subprocess.run(
+    run_configure(
         [
             str(source / "configure"),
             "--build=x86_64-pc-linux-gnu",

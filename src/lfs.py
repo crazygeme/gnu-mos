@@ -295,8 +295,35 @@ def reset_archive_sources(info: dict) -> None:
             shutil.rmtree(extracted)
 
 
+def ensure_host_packages(info: dict) -> None:
+    packages = info.get("host-packages", {}).get("apt", [])
+    if not packages:
+        return
+    apt = shutil.which("apt-get", path="/usr/bin:/bin")
+    dpkg = shutil.which("dpkg-query", path="/usr/bin:/bin")
+    if not apt or not dpkg:
+        raise SystemExit(
+            f"host dependencies for {info['name']} require an APT-based host; "
+            f"install equivalent native development packages: {' '.join(packages)}"
+        )
+    missing = []
+    for package in packages:
+        result = subprocess.run(
+            [dpkg, "-W", "-f=${Status}", package],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode or result.stdout.strip() != "install ok installed":
+            missing.append(package)
+    if missing:
+        print(f"{CYAN}host dependencies{RESET} {info['name']}: {' '.join(missing)}")
+        sudo_run(apt, "install", "--yes", *missing)
+
+
 def build_package(directory: Path) -> None:
     info = metadata(directory)
+    ensure_host_packages(info)
     done = artifact(directory, info)
     # Package builds always start from an empty build tree. Downloaded source
     # archives, installed tools, the sysroot, and package artifacts are kept.
@@ -324,6 +351,7 @@ def build_package(directory: Path) -> None:
             "LFS_SYSROOT": str(SYSROOT),
             "LFS_SOURCES": str(SOURCES),
             "LFS_TARGET": "i686-lfs-linux-gnu",
+            "LFS_PACKAGE_DIR": str(directory.resolve()),
             # Host utilities must precede target binaries.  Target programs in the
             # sysroot are not runnable on the build host and must never satisfy
             # commands such as sh, install, or sed during package builds.

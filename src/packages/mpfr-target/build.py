@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source, environment
+from package_lib import run_configure, archive_source, environment
 
 source = archive_source("mpfr-target", "mpfr-4.2.2.tar.xz", "mpfr-4.2.2")
 build = Path(os.environ["LFS_WORKSPACE"]) / "build/mpfr-target"
@@ -13,7 +13,7 @@ sysroot = Path(os.environ["LFS_SYSROOT"])
 env = environment()
 env.pop("LD_LIBRARY_PATH", None)
 (sysroot / "usr/lib/libgmp.la").unlink(missing_ok=True)
-subprocess.run(
+run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",

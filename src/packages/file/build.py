@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
-from package_lib import archive_source, environment
+from package_lib import run_configure, archive_source, environment
 
 source = archive_source("file", "file-5.46.tar.gz", "file-5.46")
 native = source / "build-native"
@@ -21,12 +21,12 @@ host_env.update({
 })
 for variable in ("LD_LIBRARY_PATH", "PKG_CONFIG_SYSROOT_DIR", "PKG_CONFIG_LIBDIR"):
     host_env.pop(variable, None)
-subprocess.run([str(source / "configure")], cwd=native, env=host_env, check=True)
+run_configure([str(source / "configure")], cwd=native, env=host_env, check=True)
 subprocess.run(["make", "-j4"], cwd=native, env=host_env, check=True)
 
 env = environment()
 target = os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu")
-subprocess.run(
+run_configure(
     [str(source / "configure"), "--build=x86_64-pc-linux-gnu",
      "--host=" + target, "--prefix=/usr", "--enable-zlib",
      "--enable-bzlib", "--enable-xzlib"],

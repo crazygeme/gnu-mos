@@ -2,6 +2,12 @@
   "name": "iputils",
   "version": "20250605",
   "order": 68,
+  "host-packages": {
+    "apt": [
+      "xsltproc",
+      "docbook-xsl-ns"
+    ]
+  },
   "source": "archive",
   "url": "https://github.com/iputils/iputils/archive/refs/tags/{version}.tar.gz",
   "archive": "iputils-20250605.tar.gz",
