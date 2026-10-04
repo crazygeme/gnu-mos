@@ -26,8 +26,8 @@ def environment():
     env["PATH"] = ":".join(
         (str(tools / "bin"), "/usr/bin", "/bin", env.get("PATH", ""))
     )
-    env["CFLAGS"] = "-O2 -m32"
-    env["CXXFLAGS"] = "-O2 -m32"
+    env["CFLAGS"] = "-O2 -m" + env.get("LFS_BITS", "32")
+    env["CXXFLAGS"] = env["CFLAGS"]
     env["LDFLAGS"] = (
         "--sysroot=" + str(sysroot) + " -Wl,-rpath-link," + str(sysroot / "usr/lib")
     )
@@ -80,8 +80,11 @@ def run_configure(command, *, cwd, env=None, check=True):
     """Run Autoconf with a persistent cache isolated by build configuration."""
     env = os.environ.copy() if env is None else env
     command = [str(part) for part in command]
-    if any(arg in ("-C", "--config-cache", "--cache-file") or
-           arg.startswith("--cache-file=") for arg in command):
+    if any(
+        arg in ("-C", "--config-cache", "--cache-file")
+        or arg.startswith("--cache-file=")
+        for arg in command
+    ):
         return subprocess.run(command, cwd=cwd, env=env, check=check)
     workspace = Path(env["LFS_WORKSPACE"]).resolve()
     directory = Path(env.get("LFS_PACKAGE_DIR", Path.cwd())).resolve()
@@ -102,13 +105,31 @@ def run_configure(command, *, cwd, env=None, check=True):
         if path.is_file():
             record(path.name)
             digest.update(path.read_bytes())
-    transient = {"PWD", "OLDPWD", "SHLVL", "_", "TERM", "LS_COLORS",
-                 "SSH_CLIENT", "SSH_CONNECTION", "SSH_TTY", "SSH_AUTH_SOCK",
-                 "DISPLAY", "WAYLAND_DISPLAY", "XAUTHORITY"}
+    transient = {
+        "PWD",
+        "OLDPWD",
+        "SHLVL",
+        "_",
+        "TERM",
+        "LS_COLORS",
+        "SSH_CLIENT",
+        "SSH_CONNECTION",
+        "SSH_TTY",
+        "SSH_AUTH_SOCK",
+        "DISPLAY",
+        "WAYLAND_DISPLAY",
+        "XAUTHORITY",
+    }
     record({name: value for name, value in env.items() if name not in transient})
-    for name, default in (("CC", "gcc cc clang"), ("CXX", "g++ c++ clang++"), ("AR", "ar"),
-                          ("AS", "as"), ("LD", "ld"), ("RANLIB", "ranlib"),
-                          ("PKG_CONFIG", "pkg-config")):
+    for name, default in (
+        ("CC", "gcc cc clang"),
+        ("CXX", "g++ c++ clang++"),
+        ("AR", "ar"),
+        ("AS", "as"),
+        ("LD", "ld"),
+        ("RANLIB", "ranlib"),
+        ("PKG_CONFIG", "pkg-config"),
+    ):
         for word in shlex.split(env.get(name, default)):
             executable = shutil.which(word, path=env.get("PATH"))
             if executable:
@@ -209,8 +230,8 @@ def meson_install(source, name, options=(), host_tools=GLIB_HOST_TOOLS):
         f"strip = '{target}-strip'\n"
         "pkg-config = 'pkg-config'\n" + tool_entries + "\n[host_machine]\n"
         "system = 'linux'\n"
-        "cpu_family = 'x86'\n"
-        "cpu = 'i686'\n"
+        f"cpu_family = '{'x86_64' if env.get('LFS_ARCH') == 'x64' else 'x86'}'\n"
+        f"cpu = '{'x86_64' if env.get('LFS_ARCH') == 'x64' else 'i686'}'\n"
         "endian = 'little'\n"
         "\n[properties]\n"
         "needs_exe_wrapper = true\n",

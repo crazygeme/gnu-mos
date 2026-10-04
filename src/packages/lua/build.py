@@ -15,11 +15,11 @@ if not source.exists():
 environment = os.environ.copy()
 environment.update(
     {
-        "CC": "i686-lfs-linux-gnu-gcc",
-        "AR": "i686-lfs-linux-gnu-ar",
-        "RANLIB": "i686-lfs-linux-gnu-ranlib",
-        "MYCFLAGS": "-O2 -m32 -fPIC",
-        "MYLDFLAGS": "-m32",
+        "CC": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc",
+        "AR": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ar",
+        "RANLIB": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ranlib",
+        "MYCFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32") + " -fPIC",
+        "MYLDFLAGS": "-m" + os.environ.get("LFS_BITS", "32"),
     }
 )
 

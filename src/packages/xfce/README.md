@@ -99,4 +99,6 @@ building the MATE application help files.
 
 `./lfs build --no-gui` excludes the desktop and its GUI-only dependencies.
 `./lfs setup` runs the session package postscript to compile installed GSettings
-schemas before copying the sysroot into the bootable image.
+schemas before copying the sysroot into the bootable image. The postscript
+runs the installed schema compiler through the selected architecture's dynamic
+loader: `ld-linux.so.2` for x86 or `ld-linux-x86-64.so.2` for x64.

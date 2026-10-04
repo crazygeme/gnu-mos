@@ -13,12 +13,15 @@ archive into `.workspace/sources/` and the build recipe consumes that file.
 coordinates components without downloading a standalone source archive. It is
 not used as a substitute for missing source packages.
 
+Target compiler flags select `-m32` for `x86` and `-m64` for `x64`.
+Recipes access the configured width through the `LFS_BITS` environment variable.
+
 Every compiled userspace component must have its own manifest and build recipe.
 The package list is intentionally explicit so each download, version, build
 order, and artifact is inspectable.
 
 The `ninja` and `meson` source packages install host build tools into
-`.workspace/tools/bin/` before Meson-based packages are built.
+`.workspace/<arch>/tools/bin/` before Meson-based packages are built.
 
 The optional `host-packages.apt` manifest list declares native distribution
 dependencies. Before preparing a pending package's source, `./lfs build`
@@ -29,9 +32,9 @@ the host package manager. Status and image setup do not install host packages.
 
 Packages with `"profiles": ["gui"]` are included in the full build and
 excluded from `./lfs build --no-gui`, which builds all console packages. The
-console build uses `.workspace/sysroot/`, `.workspace/tools/`, and
-`.workspace/artifacts/`. Completed packages are shared between build modes.
-Both build modes use `.workspace/qemu-hd/lfs.img`. `./lfs setup` configures
+console build uses `.workspace/<arch>/sysroot/`, `.workspace/<arch>/tools/`, and
+`.workspace/<arch>/artifacts/`. Completed packages are shared between build modes within the selected architecture. Source downloads are shared between architectures; installed files and completion markers are isolated.
+Both build modes use `.workspace/<arch>/qemu-hd/lfs.img`. `./lfs setup` configures
 default runlevel 5; `./lfs setup --no-gui` configures default runlevel 3.
 `./lfs run` boots the configuration installed in the shared image.
 The GRUB entry `LFS on MOS (console)` passes `3` to `/sbin/init` and starts
@@ -41,8 +44,7 @@ argument takes precedence.
 `./lfs run` connects an e1000 adapter through `lfs-tap0`. The host provides
 DHCP, DNS, and IPv4 NAT on `10.0.6.0/24`; the guest uses `10.0.6.1` as its
 name server.
-`--rebuild` applies to the shared build state and cannot be combined with
-`--no-gui`.
+`--rebuild` removes completion markers only for the selected architecture and may be combined with `--no-gui`.
 
 FFmpeg 8.0.3 provides `ffmpeg`, `ffprobe`, and shared media libraries in both
 build profiles. `./lfs build --no-gui` includes these tools without SDL or X11
@@ -51,8 +53,16 @@ ALSA library support. FFplay is available in the application menu and accepts
 a filename with `ffplay -autoexit video.mp4`. FFmpeg can inspect media with
 `ffprobe video.mp4` or convert it with
 `ffmpeg -i input.mp4 -c:v mpeg4 -c:a aac output.mkv`.
-The FFmpeg and FFplay recipes use the same source release and common build
-configuration; the FFplay package installs only the player executable.
+The FFmpeg package configures, compiles, and installs the shared libraries
+and all selected programs in a single build. GUI builds enable FFmpeg,
+FFprobe, and FFplay together after SDL2. Console builds enable FFmpeg and
+FFprobe without SDL2. The manifest declares SDL2 under the GUI profile's
+`profile-dependencies`.
+
+Packages with `build-profiles` record `build_profile` in their completion
+artifact. A GUI completion satisfies both profile selections; a console
+completion satisfies only console selection. Selecting GUI after a console
+build requires one package build with the GUI configuration.
 
 The console system uses the MOS kernel, GRUB, and sysvinit. Sysvinit runs
 the shared `/etc/rc3.d` service scripts in runlevels 3 and 5, displays startup
@@ -66,9 +76,9 @@ MOS exposes kernel `printk()` records through `/dev/kmsg` and `/proc/kmsg`,
 using the same record buffer as `klogctl()`. Sysklogd reads `/dev/kmsg` and
 uses `/proc/kmsg` as a fallback. MOS diagnostic `klog()` output uses the serial
 port. The service does not receive or forward network syslog messages.
-The glibc postscript generates `C.utf8` locale data with the installed i686
+The glibc postscript generates `C.utf8` locale data with the installed target
 `localedef` and dynamic loader. Setup requires an x86 Linux host capable of
-running i686 executables. Login shells use `LANG=C.UTF-8` and
+running the selected target executables. Login shells use `LANG=C.UTF-8` and
 `LC_CTYPE=C.UTF-8`.
 Manual pages are searched in `/usr/share/man` and `/usr/local/share/man`.
 The target `groff` package formats manual pages, `gzip` reads compressed
@@ -118,7 +128,7 @@ disabled; the server layout selects the configured devices explicitly.
 Core X fonts use the server's `built-ins` font path. Desktop applications
 use the installed DejaVu fonts through Fontconfig. The desktop graphics path
 uses the `qemu-host` package (QEMU 10.2.1) and requires hardware-accelerated
-host OpenGL. The package installs into `.workspace/tools/qemu` and applies
+host OpenGL. The package installs into `.workspace/<arch>/tools/qemu` and applies
 `sdl-gl-scanout.patch` so SDL refresh preserves active OpenGL scanout.
 `sdl-relative-pointer.patch` forwards SDL relative motion without window scaling
 to preserve small PS/2 pointer movements.

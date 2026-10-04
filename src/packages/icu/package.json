@@ -1,14 +1,11 @@
 {
   "name": "icu",
   "version": "77.1",
-  "order": 176.5,
+  "order": 93,
   "source": "archive",
   "url": "https://github.com/unicode-org/icu/releases/download/release-77-1/icu4c-77_1-src.tgz",
   "archive": "icu4c-77_1-src.tgz",
   "artifact": "artifacts/icu.done",
-  "profiles": [
-    "gui"
-  ],
   "dependencies": [
     "gcc-target",
     "python-host"

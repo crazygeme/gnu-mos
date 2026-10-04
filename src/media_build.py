@@ -1,19 +1,18 @@
-"""Cross-build FFmpeg tools with separate console and graphical outputs."""
+"""Cross-build the FFmpeg package for the selected profile."""
 
 import os
-import shutil
 import subprocess
 from pathlib import Path
 
 from package_lib import archive_source, environment
 
 
-def build_ffmpeg(player=False):
+def build_ffmpeg():
+    player = os.environ.get("LFS_NO_GUI", "0") != "1"
     source = archive_source("ffmpeg", "ffmpeg-8.0.3.tar.xz", "ffmpeg-8.0.3")
     workspace = Path(os.environ["LFS_WORKSPACE"])
     sysroot = Path(os.environ["LFS_SYSROOT"])
-    name = "ffplay" if player else "ffmpeg"
-    build = workspace / "build" / (name + "-cross")
+    build = workspace / "build/ffmpeg-cross"
     build.mkdir(parents=True, exist_ok=True)
     env = environment()
     target = env.get("LFS_TARGET", "i686-lfs-linux-gnu")
@@ -22,8 +21,8 @@ def build_ffmpeg(player=False):
         "--libdir=/usr/lib",
         "--enable-cross-compile",
         "--cross-prefix=" + target + "-",
-        "--arch=x86",
-        "--cpu=i686",
+        "--arch=x86_64" if env.get("LFS_ARCH") == "x64" else "--arch=x86",
+        "--cpu=x86-64" if env.get("LFS_ARCH") == "x64" else "--cpu=i686",
         "--target-os=linux",
         "--sysroot=" + str(sysroot),
         "--cc=" + env["CC"],
@@ -48,8 +47,8 @@ def build_ffmpeg(player=False):
         options += [
             "--enable-sdl2",
             "--enable-ffplay",
-            "--disable-ffmpeg",
-            "--disable-ffprobe",
+            "--enable-ffmpeg",
+            "--enable-ffprobe",
         ]
     else:
         options += [
@@ -62,20 +61,14 @@ def build_ffmpeg(player=False):
         [str(source / "configure"), *options], cwd=build, env=env, check=True
     )
     subprocess.run(
-        ["make", "-j4", "ffplay" if player else "all"],
+        ["make", "-j4", "all"],
         cwd=build,
         env=env,
         check=True,
     )
-    if player:
-        # The console package owns the shared libraries and command-line tools.
-        destination = sysroot / "usr/bin/ffplay"
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(build / "ffplay", destination)
-    else:
-        subprocess.run(
-            ["make", "DESTDIR=" + str(sysroot), "install"],
-            cwd=build,
-            env=env,
-            check=True,
-        )
+    subprocess.run(
+        ["make", "DESTDIR=" + str(sysroot), "install"],
+        cwd=build,
+        env=env,
+        check=True,
+    )

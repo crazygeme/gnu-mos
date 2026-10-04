@@ -19,7 +19,7 @@ run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",
-        "--target=i686-lfs-linux-gnu",
+        "--target=" + os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu"),
         "--prefix=/",
         "--disable-nls",
         "--disable-werror",

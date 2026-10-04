@@ -16,11 +16,11 @@ config_site.write_text(
 )
 env.update(
     {
-        "CC": "i686-lfs-linux-gnu-gcc",
-        "CXX": "i686-lfs-linux-gnu-g++",
-        "AR": "i686-lfs-linux-gnu-ar",
-        "RANLIB": "i686-lfs-linux-gnu-ranlib",
-        "CFLAGS": "-O2 -m32",
+        "CC": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc",
+        "CXX": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-g++",
+        "AR": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ar",
+        "RANLIB": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ranlib",
+        "CFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32"),
         "LDFLAGS": "--sysroot=" + sysroot,
         "CONFIG_SITE": str(config_site),
     }
@@ -29,7 +29,7 @@ run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",
-        "--host=i686-lfs-linux-gnu",
+        "--host=" + os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu"),
         "--prefix=/usr",
         "--with-build-python="
         + str(Path(os.environ["LFS_WORKSPACE"]) / "tools/bin/python3.13"),

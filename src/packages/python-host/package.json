@@ -5,5 +5,12 @@
   "source": "archive",
   "url": "https://mirrors.ustc.edu.cn/python/{version}/Python-{version}.tar.xz",
   "archive": "Python-3.13.7.tar.xz",
-  "artifact": "artifacts/python-host.done"
+  "artifact": "artifacts/python-host.done",
+  "host-packages": {
+    "apt": [
+      "libbz2-dev",
+      "liblzma-dev",
+      "zlib1g-dev"
+    ]
+  }
 }

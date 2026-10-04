@@ -14,7 +14,7 @@ run_configure(
     [
         str(source / "configure"),
         "--build=x86_64-pc-linux-gnu",
-        "--host=i686-lfs-linux-gnu",
+        "--host=" + os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu"),
         "--prefix=/usr",
         "--without-x",
         "--with-uchardet=no",

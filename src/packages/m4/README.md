@@ -1,7 +1,7 @@
 # GNU M4
 
 The package builds GNU M4 1.4.19 as a native host tool and installs it into
-`.workspace/tools`.
+`.workspace/<arch>/tools`.
 
 The source archive is downloaded from
 <https://mirrors.ustc.edu.cn/gnu/m4/m4-1.4.19.tar.xz>.

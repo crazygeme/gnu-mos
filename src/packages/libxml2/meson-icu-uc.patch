@@ -1,0 +1,12 @@
+--- a/meson.build
++++ b/meson.build
+@@ -602,7 +602,8 @@
+ if icu_dep.found()
+     def_var = icu_dep.get_variable(pkgconfig: 'DEFS')
+     config_dir += include_directories(def_var)
+-    xml_deps += icu_dep
++    icu_uc_dep = dependency('icu-uc', method: 'pkg-config', required: true)
++    xml_deps += [icu_dep, icu_uc_dep]
+ endif
+ 
+ subdir('include/libxml')

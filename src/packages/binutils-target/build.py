@@ -8,8 +8,14 @@ from package_lib import run_configure, archive_source, environment
 
 source = archive_source("binutils-target", "binutils-2.45.tar.xz", "binutils-2.45")
 subprocess.run(
-    ["patch", "-p1", "--forward", "--batch", "-i",
-     str(Path(__file__).with_name("gprofng-glibc-strstr.patch"))],
+    [
+        "patch",
+        "-p1",
+        "--forward",
+        "--batch",
+        "-i",
+        str(Path(__file__).with_name("gprofng-glibc-strstr.patch")),
+    ],
     cwd=source,
     check=True,
 )

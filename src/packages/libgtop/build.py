@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -26,5 +27,7 @@ configure_make_install(
         "--disable-introspection",
         "--disable-gtk-doc",
     ),
-    env_overrides={"CFLAGS": "-O2 -m32 -std=gnu11"},
+    env_overrides={
+        "CFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32") + " -std=gnu11"
+    },
 )
