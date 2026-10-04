@@ -1,11 +1,11 @@
 # Host QEMU Build Requirements
 
 The `qemu-host` package builds QEMU 10.2.1 for the native x86-64 Linux host
-and installs it into `.workspace/tools/qemu`. SDL, OpenGL, VirGL, and Pixman
+and installs it into `.workspace/<arch>/tools/qemu`. SDL, OpenGL, VirGL, and Pixman
 support are required. The package depends on the `ninja` host build tool.
 
-The recipe uses native host development libraries. Target i686 libraries in
-`.workspace/sysroot` do not satisfy these requirements. Target compiler and
+The recipe uses native host development libraries. Target libraries in
+`.workspace/<arch>/sysroot` do not satisfy these requirements. Target compiler and
 pkg-config environment overrides are removed before dependency detection.
 
 On Debian and Ubuntu, `./lfs build` checks the manifest's `host-packages.apt`

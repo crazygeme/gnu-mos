@@ -15,11 +15,12 @@ env = os.environ.copy()
 env.update(
     {
         "GOOS": "linux",
-        "GOARCH": "386",
+        "GOARCH": "amd64" if os.environ.get("LFS_ARCH") == "x64" else "386",
         "CGO_ENABLED": "0",
         "GOTOOLCHAIN": "local",
         "GOPROXY": "https://goproxy.cn,direct",
         "GOPATH": str(workspace / "go-path"),
+        "GOMODCACHE": str(Path(os.environ["LFS_SOURCES"]) / "go-modules"),
         "GOCACHE": str(workspace / "go-cache"),
     }
 )

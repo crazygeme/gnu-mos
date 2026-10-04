@@ -10,10 +10,14 @@ env = os.environ.copy()
 env["I18NPATH"] = str(i18n)
 env["LC_ALL"] = "C"
 
+loader = (
+    "ld-linux-x86-64.so.2" if os.environ.get("LFS_ARCH") == "x64" else "ld-linux.so.2"
+)
+
 # Use the target loader and localedef to match the installed libc and ABI.
 subprocess.run(
     [
-        str(sysroot / "usr/lib/ld-linux.so.2"),
+        str(sysroot / "usr/lib" / loader),
         "--library-path",
         str(sysroot / "usr/lib") + ":" + str(sysroot / "lib"),
         str(sysroot / "usr/bin/localedef"),

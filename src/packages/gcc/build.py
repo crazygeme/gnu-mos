@@ -32,14 +32,16 @@ for name in (
     build_env.pop(name, None)
 configure = [
     str(source / "configure"),
-    "--target=i686-lfs-linux-gnu",
+    "--target=" + os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu"),
     "--prefix=/",
     "--with-sysroot=" + os.environ["LFS_SYSROOT"],
     "--with-gmp=" + str(tools),
     "--with-mpfr=" + str(tools),
     "--with-mpc=" + str(tools),
-    "--with-as=" + str(target_bin / "i686-lfs-linux-gnu-as"),
-    "--with-ld=" + str(target_bin / "i686-lfs-linux-gnu-ld"),
+    "--with-as="
+    + str(target_bin / (os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-as")),
+    "--with-ld="
+    + str(target_bin / (os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ld")),
     "--disable-nls",
     "--disable-multilib",
     "--enable-languages=c,c++",

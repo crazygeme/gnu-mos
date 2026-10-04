@@ -11,10 +11,10 @@ if not src.exists():
 env = os.environ.copy()
 env.update(
     {
-        "CC": "i686-lfs-linux-gnu-gcc",
-        "AR": "i686-lfs-linux-gnu-ar",
-        "RANLIB": "i686-lfs-linux-gnu-ranlib",
-        "CFLAGS": "-O2 -m32",
+        "CC": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc",
+        "AR": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ar",
+        "RANLIB": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ranlib",
+        "CFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32"),
         "PERL": "/usr/bin/perl",
         "PATH": "/usr/bin:/bin:" + env.get("PATH", ""),
     }
@@ -22,7 +22,8 @@ env.update(
 subprocess.run(
     [
         "./Configure",
-        "linux-generic32",
+        "linux-x86_64" if os.environ.get("LFS_ARCH") == "x64" else "linux-generic32",
+        *(["--libdir=lib"] if os.environ.get("LFS_ARCH") == "x64" else []),
         "--prefix=/usr",
         "--openssldir=/etc/ssl",
         "shared",

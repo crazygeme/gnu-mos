@@ -9,10 +9,10 @@ root = Path(os.environ["LFS_SYSROOT"])
 env = os.environ.copy()
 env.update(
     {
-        "CC": "i686-lfs-linux-gnu-gcc",
-        "AR": "i686-lfs-linux-gnu-ar",
-        "RANLIB": "i686-lfs-linux-gnu-ranlib",
-        "CFLAGS": "-O2 -m32 -fPIC",
+        "CC": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc",
+        "AR": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ar",
+        "RANLIB": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ranlib",
+        "CFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32") + " -fPIC",
     }
 )
 subprocess.run(

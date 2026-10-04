@@ -11,6 +11,7 @@ configure_make_install(
     options=(
         "--disable-shared",
         "--enable-static",
+        "--with-pic",
         "--disable-tcl",
     ),
 )

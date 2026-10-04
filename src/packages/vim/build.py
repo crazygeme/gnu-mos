@@ -15,8 +15,8 @@ if not src.exists():
 config_site = src / "config.site"
 config_site.write_text(
     "ac_cv_sizeof_int=4\n"
-    "ac_cv_sizeof_long=4\n"
-    "ac_cv_sizeof_time_t=4\n"
+    f"ac_cv_sizeof_long={8 if os.environ.get('LFS_ARCH') == 'x64' else 4}\n"
+    f"ac_cv_sizeof_time_t={8 if os.environ.get('LFS_ARCH') == 'x64' else 4}\n"
     "ac_cv_sizeof_off_t=8\n"
     "ac_cv_c_uint32_t=yes\n",
     encoding="ascii",
@@ -24,11 +24,11 @@ config_site.write_text(
 env = os.environ.copy()
 env.update(
     {
-        "CC": "i686-lfs-linux-gnu-gcc",
-        "AR": "i686-lfs-linux-gnu-ar",
-        "RANLIB": "i686-lfs-linux-gnu-ranlib",
-        "STRIP": "i686-lfs-linux-gnu-strip",
-        "CFLAGS": "-O2 -m32",
+        "CC": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc",
+        "AR": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ar",
+        "RANLIB": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ranlib",
+        "STRIP": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-strip",
+        "CFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32"),
         "LDFLAGS": "--sysroot=" + str(root),
         "CONFIG_SITE": str(config_site),
         "PATH": "/usr/bin:/bin:" + env.get("PATH", ""),
@@ -43,7 +43,7 @@ run_configure(
     [
         str(src / "configure"),
         "--build=x86_64-pc-linux-gnu",
-        "--host=i686-lfs-linux-gnu",
+        "--host=" + os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu"),
         "--prefix=/usr",
         "--with-features=normal",
         "--disable-nls",

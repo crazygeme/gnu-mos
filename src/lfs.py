@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import shutil
@@ -19,6 +20,8 @@ SOURCES = WORK / "sources"
 SYSROOT = WORK / "sysroot"
 IMAGE = WORK / "qemu-hd/lfs.img"
 BASE_WORK = WORK
+ARCH = "x64"
+TARGETS = {"x86": "i686-lfs-linux-gnu", "x64": "x86_64-lfs-linux-gnu"}
 NO_GUI = False
 TTY = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
 RESET = "\033[0m" if TTY else ""
@@ -86,13 +89,36 @@ def sudo_run(*cmd: str) -> None:
     run(*(cmd if os.geteuid() == 0 else ("sudo", *cmd)))
 
 
-def select_workspace(no_gui: bool) -> None:
-    global WORK, SOURCES, SYSROOT, IMAGE, NO_GUI
+@contextmanager
+def source_lock(directory: Path):
+    """Serialize access to shared source downloads."""
+    directory.mkdir(parents=True, exist_ok=True)
+    with (directory / ".workspace.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+def select_workspace(no_gui: bool, arch: str = "x64") -> None:
+    global WORK, SOURCES, SYSROOT, IMAGE, NO_GUI, ARCH
+    if arch not in TARGETS:
+        raise ValueError(f"unsupported architecture: {arch}")
+    ARCH = arch
     NO_GUI = no_gui
-    WORK = BASE_WORK
+    WORK = BASE_WORK / arch
     SOURCES = BASE_WORK / "sources"
     SYSROOT = WORK / "sysroot"
     IMAGE = WORK / "qemu-hd/lfs.img"
+
+
+def architecture_environment() -> dict[str, str]:
+    return {
+        "LFS_ARCH": ARCH,
+        "LFS_TARGET": TARGETS[ARCH],
+        "LFS_BITS": "64" if ARCH == "x64" else "32",
+    }
 
 
 def selected_packages(no_gui: bool) -> list[Path]:
@@ -132,6 +158,11 @@ def setup_workspace() -> None:
         link = SYSROOT / name
         if not link.exists():
             link.symlink_to(target)
+    if ARCH == "x64":
+        for path, target in (("lib64", "usr/lib"), ("usr/lib64", "lib")):
+            link = SYSROOT / path
+            if not link.exists() and not link.is_symlink():
+                link.symlink_to(target)
     shell = SYSROOT / "usr/bin/sh"
     if shell.is_symlink() and shell.readlink() != Path("bash"):
         shell.unlink()
@@ -171,6 +202,12 @@ def artifact_current(directory: Path, info: dict) -> bool:
     recorded_version = record["version"]
     if type(recorded_version) is not int or recorded_version < 1:
         raise ValueError(f"invalid build version in {done}: {recorded_version!r}")
+    if (
+        info.get("build-profiles")
+        and not NO_GUI
+        and record.get("build_profile") != "gui"
+    ):
+        return False
     return recorded_version >= version
 
 
@@ -206,7 +243,7 @@ def status(no_gui: bool = False) -> None:
     cyan, green, yellow, dim = (
         ("\033[36m", "\033[32m", "\033[33m", "\033[2m") if color else ("", "", "", "")
     )
-    print(f"{cyan}LFS / MOS{reset} {dim}build status{reset}")
+    print(f"{cyan}LFS / MOS{reset} {dim}{ARCH} build status{reset}")
     print(f"{dim}{'─' * 72}{reset}")
     print(f"{dim}workspace{reset}  {WORK}")
     print(
@@ -232,6 +269,13 @@ def status(no_gui: bool = False) -> None:
 
 
 def fetch_package(info: dict) -> None:
+    if info.get("source") == "meta":
+        return
+    with source_lock(SOURCES):
+        fetch_source(info)
+
+
+def fetch_source(info: dict) -> None:
     if info.get("source") == "git":
         checkout = SOURCES / info["name"]
         if not checkout.exists():
@@ -350,8 +394,9 @@ def build_package(directory: Path) -> None:
             "LFS_WORKSPACE": str(WORK),
             "LFS_SYSROOT": str(SYSROOT),
             "LFS_SOURCES": str(SOURCES),
-            "LFS_TARGET": "i686-lfs-linux-gnu",
+            **architecture_environment(),
             "LFS_PACKAGE_DIR": str(directory.resolve()),
+            "LFS_NO_GUI": "1" if NO_GUI else "0",
             # Host utilities must precede target binaries.  Target programs in the
             # sysroot are not runnable on the build host and must never satisfy
             # commands such as sh, install, or sed during package builds.
@@ -379,6 +424,11 @@ def build_package(directory: Path) -> None:
                 "name": info["name"],
                 "version": build_version(directory),
                 "source_version": info["version"],
+                **(
+                    {"build_profile": "console" if NO_GUI else "gui"}
+                    if info.get("build-profiles")
+                    else {}
+                ),
             }
         )
         + "\n"
@@ -400,7 +450,7 @@ def run_postscripts() -> None:
             "LFS_WORKSPACE": str(WORK),
             "LFS_SYSROOT": str(SYSROOT),
             "LFS_SOURCES": str(SOURCES),
-            "LFS_TARGET": "i686-lfs-linux-gnu",
+            **architecture_environment(),
             "LFS_NO_GUI": "1" if NO_GUI else "0",
         }
     )
@@ -417,6 +467,8 @@ def reset_build_state() -> None:
 
 
 def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> None:
+    global NO_GUI
+    NO_GUI = no_gui
     if rebuild_mode:
         reset_build_state()
     setup_workspace()
@@ -554,7 +606,7 @@ def qemu(extra: list[str]) -> None:
         "-cpu",
         "host",
         "-m",
-        os.environ.get("LFS_RAM", "4096"),
+        os.environ.get("LFS_RAM", "8192"),
         "-smp",
         "2",
         # The i686 kernel maps PCI MMIO only below 4 GiB.
@@ -756,19 +808,34 @@ def main(argv: list[str]) -> int:
         nargs=argparse.REMAINDER,
         help="additional QEMU arguments",
     )
-    status_parser = commands.add_parser("status", help="show package and image state")
+    status_parser = commands.add_parser(
+        "status", aliases=["stats"], help="show package and image state"
+    )
     status_parser.add_argument(
         "--no-gui", action="store_true", help="show console packages and image"
     )
+    parser.add_argument(
+        "--arch",
+        choices=TARGETS,
+        default="x64",
+        help="target architecture (default: x64)",
+    )
+    for command_parser in (setup_parser, build_parser, run_parser, status_parser):
+        command_parser.add_argument(
+            "--arch",
+            choices=TARGETS,
+            default=argparse.SUPPRESS,
+            help="target architecture (default: x64)",
+        )
     ns = parser.parse_args(argv)
-    select_workspace(getattr(ns, "no_gui", False))
+    select_workspace(getattr(ns, "no_gui", False), ns.arch)
     if ns.command == "setup":
         setup(ns.no_gui)
     elif ns.command == "build":
         build(ns.all_mode, ns.rebuild_mode, ns.no_gui)
     elif ns.command == "run":
         qemu(ns.args[1:] if ns.args[:1] == ["--"] else ns.args)
-    elif ns.command == "status":
+    elif ns.command in ("status", "stats"):
         status(ns.no_gui)
     return 0
 

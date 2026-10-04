@@ -33,11 +33,13 @@ for raw_path in paths:
     target = build / relative
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, target, follow_symlinks=False)
+arch = os.environ.get("LFS_ARCH", "x86")
 subprocess.run(
-    ["make", "-j4", "ARCH=x86", "BUILD=release"],
+    ["make", "-j4", "ARCH=" + arch, "BUILD=release"],
     cwd=build,
     check=True,
 )
 target = Path(os.environ["LFS_SYSROOT"]) / "boot/kernel"
 target.parent.mkdir(parents=True, exist_ok=True)
-shutil.copy2(build / "out/x86/release/kernel", target)
+kernel = "kernel.boot" if arch == "x64" else "kernel"
+shutil.copy2(build / "out" / arch / "release" / kernel, target)

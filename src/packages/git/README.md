@@ -1,6 +1,6 @@
 # Git Build Requirements
 
-The package builds Git 2.51.0 for the i686 target. Git's Makefile uses the
+The package builds Git 2.51.0 for the selected x86 or x64 target. Git's Makefile uses the
 native host `msgfmt` tool to compile translation catalogs from `po/*.po`
 into `po/build/locale/*/LC_MESSAGES/git.mo` when catalog generation is enabled.
 

@@ -9,11 +9,11 @@ src = archive_source("openssh", "openssh-10.0p1.tar.gz", "openssh-10.0p1")
 env = os.environ.copy()
 env.update(
     {
-        "CC": "i686-lfs-linux-gnu-gcc",
-        "AR": "i686-lfs-linux-gnu-ar",
-        "RANLIB": "i686-lfs-linux-gnu-ranlib",
-        "STRIP": "i686-lfs-linux-gnu-strip",
-        "CFLAGS": "-O2 -m32",
+        "CC": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc",
+        "AR": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ar",
+        "RANLIB": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ranlib",
+        "STRIP": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-strip",
+        "CFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32"),
         "LDFLAGS": "--sysroot=" + str(root) + " -no-pie",
         "PATH": "/usr/bin:/bin:" + env.get("PATH", ""),
     }
@@ -22,7 +22,7 @@ run_configure(
     [
         str(src / "configure"),
         "--build=x86_64-pc-linux-gnu",
-        "--host=i686-lfs-linux-gnu",
+        "--host=" + os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu"),
         "--prefix=/usr",
         "--sysconfdir=/etc/ssh",
         "--disable-strip",

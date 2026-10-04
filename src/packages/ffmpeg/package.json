@@ -1,7 +1,7 @@
 {
   "name": "ffmpeg",
   "version": "8.0.3",
-  "order": 175,
+  "order": 190,
   "source": "archive",
   "url": "https://ffmpeg.org/releases/ffmpeg-{version}.tar.xz",
   "archive": "ffmpeg-8.0.3.tar.xz",
@@ -13,5 +13,14 @@
     "bzip2",
     "xz",
     "openssl"
-  ]
+  ],
+  "build-profiles": [
+    "console",
+    "gui"
+  ],
+  "profile-dependencies": {
+    "gui": [
+      "sdl2"
+    ]
+  }
 }

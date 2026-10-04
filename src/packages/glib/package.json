@@ -9,5 +9,8 @@
   "source": "archive",
   "url": "https://download.gnome.org/sources/glib/2.88/glib-{version}.tar.xz",
   "archive": "glib-2.88.1.tar.xz",
-  "artifact": "artifacts/glib.done"
+  "artifact": "artifacts/glib.done",
+  "dependencies": [
+    "pcre2"
+  ]
 }

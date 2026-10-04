@@ -55,8 +55,8 @@ subprocess.run(
     [
         "make",
         "-j4",
-        "CFLAGS_FOR_TARGET=-O2 -m32",
-        "CXXFLAGS_FOR_TARGET=-O2 -m32",
+        "CFLAGS_FOR_TARGET=-O2 -m" + os.environ.get("LFS_BITS", "32"),
+        "CXXFLAGS_FOR_TARGET=-O2 -m" + os.environ.get("LFS_BITS", "32"),
         "all-target-libgcc",
         "all-target-libstdc++-v3",
         "all-gcc",

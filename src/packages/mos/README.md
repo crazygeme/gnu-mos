@@ -70,3 +70,51 @@ as symbolic links. Each lookup reflects the current directory, and `readlink`
 returns at most the supplied buffer length without a trailing null byte.
 Tmux uses the foreground process's link to populate `pane_current_path`,
 including the path displayed in window labels.
+
+The selected `--arch x86|x64` value is passed to the kernel build as `ARCH`.
+Build snapshots reside under `.workspace/<arch>/build/mos`. The x86 package
+installs `out/x86/release/kernel`; the x64 package installs
+`out/x64/release/kernel.boot`. Both are installed as `/boot/kernel` for
+BIOS GRUB Multiboot loading. The source checkout is shared between architectures.
+
+Native AMD64 `newfstatat` preserves the pathname lookup flags, including
+`AT_SYMLINK_NOFOLLOW` and `AT_EMPTY_PATH`. Native `select` and `pselect6`
+convert 64-bit time fields and descriptor-set words to the shared wait service.
+They support readiness notifications, finite timeouts, and interrupted waits.
+`pselect6` accepts an eight-byte signal mask and prevents blocking `SIGKILL`
+and `SIGSTOP`. Timeout seconds must fit a nonnegative signed 32-bit value;
+finite waits use millisecond resolution. Native `clock_nanosleep` supports
+relative and absolute waits for `CLOCK_REALTIME` and `CLOCK_MONOTONIC`.
+
+Native AMD64 `ftruncate` supports sizing shared-fence files for DRI3 rendering.
+The console ABI test checks truncation and shared mapping visibility for an
+unlinked file. The Bochs text console renders and scrolls in a RAM shadow,
+then copies the accumulated dirty pixel range to video memory per write.
+
+Native `ppoll` converts 64-bit timeouts to the shared poll wait service.
+`ppoll` and `pselect6` retain their temporary masks through signal delivery
+when interrupted and restore the original masks on signal return.
+
+`test/x64_console_abi.py` in the MOS source tree checks native pathname flags,
+descriptor readiness across word boundaries, timeout writeback, signal
+interruption, and libc sleep calls. It runs inside an AMD64 guest with Python 3.
+
+Native socket calls support binding, connection, listening, address queries,
+socket options, datagram I/O, shutdown, and socket pairs through the shared
+network services. Socket-pair creation and `accept4` preserve nonblocking and
+close-on-exec flags. The console ABI test also checks Unix-domain datagrams,
+IPv4 socket binding and options, stream socket pairs, and accepted descriptors.
+
+Native futex calls use the shared 64-bit timeout reader with the original
+userspace address. Relative and absolute timed waits preserve the AMD64
+timespec layout. The console ABI test checks both timeout modes.
+The network startup service checks the default lwIP interface, `e01`.
+
+The VirtIO GPU probe validates physical PCI BAR ranges against the
+architecture's device I/O window. On x64, this window spans `0xc0000000`
+through `0x100000000`, independently of the high kernel virtual I/O range.
+
+Virtual-terminal shell tasks set the privilege-entry stack to the full-width
+task address plus `KERNEL_TASK_BYTES`.
+Terminal hotkeys create shells on the selected text terminal. A terminal
+owned by a graphics session does not create a shell during activation.

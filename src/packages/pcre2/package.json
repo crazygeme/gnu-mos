@@ -1,0 +1,9 @@
+{
+  "name": "pcre2",
+  "version": "10.46",
+  "order": 99,
+  "source": "archive",
+  "url": "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-{version}/pcre2-{version}.tar.bz2",
+  "archive": "pcre2-10.46.tar.bz2",
+  "artifact": "artifacts/pcre2.done"
+}

@@ -10,8 +10,8 @@ source = archive_source("gmp-target", "gmp-6.3.0.tar.xz", "gmp-6.3.0")
 build = Path(os.environ["LFS_WORKSPACE"]) / "build/gmp-target"
 build.mkdir(parents=True, exist_ok=True)
 env = environment()
-env["CFLAGS"] = "-O2 -m32 -std=gnu11"
-env["ABI"] = "32"
+env["CFLAGS"] = "-O2 -m" + os.environ.get("LFS_BITS", "32") + " -std=gnu11"
+env["ABI"] = os.environ.get("LFS_BITS", "32")
 env.pop("LD_LIBRARY_PATH", None)
 run_configure(
     [

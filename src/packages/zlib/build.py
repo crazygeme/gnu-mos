@@ -7,6 +7,7 @@ from package_lib import archive_source, environment
 
 source = archive_source("zlib", "zlib-1.3.1.tar.gz", "zlib-1.3.1")
 env = environment()
+env["CFLAGS"] += " -fPIC"
 env["CHOST"] = env.get("LFS_TARGET", "i686-lfs-linux-gnu")
 subprocess.run(
     [str(source / "configure"), "--prefix=/usr", "--static"],
