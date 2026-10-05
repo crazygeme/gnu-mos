@@ -107,7 +107,8 @@ Session output is appended to `~/.xsession-errors`. XDMCP and X11 TCP
 listeners are disabled.
 
 Xorg 21.1.18 reads `/etc/X11/xorg.conf`. Its Meson cross configuration selects
-the `poll` event backend because MOS does not implement `epoll_create1`.
+the `epoll` event backend. MOS provides persistent readiness subscriptions
+for sockets, pipes, terminals, and PS/2 mouse input.
 The configured hostname is resolved through `/etc/hosts`, with the
 `files` name service preceding DNS in `/etc/nsswitch.conf`.
 The MOS configuration uses the Xorg modesetting driver, glamor, and Mesa

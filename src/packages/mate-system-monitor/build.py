@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -9,12 +10,26 @@ gettext_dirs = [str(Path(__file__).with_name("gettext").resolve())]
 if os.environ.get("GETTEXTDATADIRS"):
     gettext_dirs.append(os.environ["GETTEXTDATADIRS"])
 
+source = archive_source(
+    "mate-system-monitor",
+    "mate-system-monitor-1.28.1.tar.xz",
+    "mate-system-monitor-1.28.1",
+)
+subprocess.run(
+    [
+        "patch",
+        "-p1",
+        "--forward",
+        "--batch",
+        "-i",
+        str(Path(__file__).with_name("proc-map-private-dirty.patch").resolve()),
+    ],
+    cwd=source,
+    check=True,
+)
+
 configure_make_install(
-    archive_source(
-        "mate-system-monitor",
-        "mate-system-monitor-1.28.1.tar.xz",
-        "mate-system-monitor-1.28.1",
-    ),
+    source,
     options=(
         "--disable-static",
         "--disable-maintainer-mode",

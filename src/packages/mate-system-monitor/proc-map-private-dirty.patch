@@ -1,0 +1,12 @@
+--- a/src/proctable.cpp
++++ b/src/proctable.cpp
+@@ -640,7 +640,8 @@ static void get_process_memory_writable(ProcInfo *info)
+ 
+     for (unsigned i = 0; i < number; ++i) {
+ #ifdef __linux__
+-        memwritable += maps[i].private_dirty;
++        if (maps[i].flags & (G_GUINT64_CONSTANT(1) << GLIBTOP_MAP_ENTRY_PRIVATE_DIRTY))
++            memwritable += maps[i].private_dirty;
+ #else
+         if (maps[i].perm & GLIBTOP_MAP_PERM_WRITE)
+             memwritable += maps[i].size;

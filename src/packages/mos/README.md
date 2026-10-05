@@ -2,6 +2,19 @@ MOS is built as a kernel package. Its userspace is not copied from any
 distribution image. The package produces the generic `/boot/kernel` artifact
 consumed by GRUB; all userspace files are produced by the LFS package set.
 
+IPC circular buffers use contiguous copies across wrap boundaries. Pipe data
+notifications publish data and readiness before returning, and wake waiters
+without an immediate scheduler yield. Unix stream
+sockets allocate 256 KiB receive rings per endpoint; datagram receive rings
+allocate 4 KiB. Socket waits without a timeout do not sample the hardware clock.
+Unix socket I/O retains preemption protection and skips lwIP timer refreshes.
+Unix stream rings do not sample the packet timestamp clock, and `SIOCGSTAMP`
+returns `ENOTTY` for Unix stream sockets.
+`test/ipc_buffers.py` checks stream integrity, readiness, shutdown, datagram
+truncation, finite timeouts, and descriptor passing inside a MOS guest.
+[IPC performance](../../../docs/ipc-performance.md) defines benchmark modes,
+operation counts, and measurement procedures.
+
 The build copies tracked and non-ignored untracked files from the MOS working
 tree into a separate build directory, including uncommitted source edits.
 Compilation uses this copy and leaves the source working tree unchanged.
@@ -18,6 +31,24 @@ memory because cache and allocator counters are sampled independently.
 `MemAvailable` conservatively reports allocator-free memory; it does not include
 an estimate of reclaimable cache. The `Mem:` summary uses bytes, and the named
 `kB` fields use units of 1024 bytes.
+
+Numeric entries in `/proc` report `DT_DIR` through `getdents64` and native
+`getdents`. Per-process regular files and directories retain the effective UID
+and GID of the process at open time. These interfaces support libgtop process
+enumeration and the MATE System Monitor process ownership filter.
+PID 1 has parent PID 0, as reported by `getppid()`, `/proc/1/status`, and
+`/proc/1/stat`.
+Per-process virtual memory totals count mapped regions once. Resident totals
+count physical pages mapped within those regions; direct physical device
+mappings are excluded. Stack accounting uses each process's userspace address
+limit. `/proc/<pid>/stat`, `status`, and `statm` share 64-bit memory counters.
+The `statm` shared field reports resident pages in file-backed regions.
+`test/proc_memory.py` checks virtual size and residency across an anonymous
+reservation, page writes, and unmap, including agreement between the three
+per-process memory interfaces.
+`test/proc_processes.py` checks directory-entry types, ownership, parent
+identifiers, and libgtop process selection inside a MOS guest with libgtop
+installed.
 
 The VirtIO-GPU DRM connector represents scanout zero. The driver queries
 `VIRTIO_GPU_CMD_GET_DISPLAY_INFO` during initialization and on explicit
@@ -118,3 +149,15 @@ Virtual-terminal shell tasks set the privilege-entry stack to the full-width
 task address plus `KERNEL_TASK_BYTES`.
 Terminal hotkeys create shells on the selected text terminal. A terminal
 owned by a graphics session does not create a shell during activation.
+
+MOS provides `epoll_create`, `epoll_create1`, `epoll_ctl`, `epoll_wait`,
+`epoll_pwait`, and `epoll_pwait2` for i386 and AMD64. Persistent subscriptions
+and a ready queue avoid scanning idle interests during waits. Level and edge
+delivery, one-shot rearming, duplicate descriptor lifetime, signal masks, and
+bounded nesting are supported. The sysroot installs `posix_epoll.sh` in `/root`
+and `/home/ezheng` for manual interface and libevent backend validation with
+the configured LFS userspace toolchain. The script builds its probe under
+`${HOME}/tests/posix_epoll` and is excluded from the embedded kernel script
+suite. `test/epoll_qemu.py` runs isolated guest validation and compares syscall
+timings against Linux. The libevent and Xorg package configurations select
+their epoll backends.
