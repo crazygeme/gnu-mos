@@ -630,7 +630,7 @@ def qemu(extra: list[str]) -> None:
             ]
         )
     if not NO_GUI:
-        command.extend(["-vga", "none", "-device", "virtio-vga-gl,xres=2560,yres=1440"])
+        command.extend(["-vga", "none", "-device", "virtio-vga-gl"])
         if "-display" not in qemu_extra:
             command.extend(["-display", "sdl,gl=on,full-screen=on"])
     command.extend(["-serial", serial])
