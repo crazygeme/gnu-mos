@@ -108,6 +108,24 @@ installs `out/x86/release/kernel`; the x64 package installs
 `out/x64/release/kernel.boot`. Both are installed as `/boot/kernel` for
 BIOS GRUB Multiboot loading. The source checkout is shared between architectures.
 
+The x86 kernel accepts ELF32 images with machine type `EM_386`. The x64
+kernel accepts both ELF32/i386 and ELF64/AMD64 images. Executables and their
+interpreters must use the same ELF class. ELF preparation selects a format
+with header readers, a typed initial-stack builder, register initialization,
+and explicit address-space limits. Fork and clone preserve the user execution
+context and VM limits.
+
+Each syscall namespace selects its own wire adapters. Ptrace register and
+memory words, shared-memory metadata, and socket timestamps are serialized
+by the caller's adapter. Robust-list registration installs a typed list reader
+and records the registered head size. Cleanup uses that reader independently
+of subsequent syscall entry. Signal delivery and clone TLS interpretation
+use the saved code selector within the architecture backend.
+
+Page execute permissions follow the paging architecture. The x64 kernel
+enforces `PROT_EXEC` with NX page-table bits for both i386 and AMD64 processes.
+The x86 backend uses non-PAE page tables without NX support.
+
 Native AMD64 `newfstatat` preserves the pathname lookup flags, including
 `AT_SYMLINK_NOFOLLOW` and `AT_EMPTY_PATH`. Native `select` and `pselect6`
 convert 64-bit time fields and descriptor-set words to the shared wait service.
