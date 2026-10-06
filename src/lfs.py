@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 import shutil
@@ -76,10 +77,11 @@ def run(
             bufsize=1,
         )
         assert process.stdout is not None
-        for line in process.stdout:
-            print(line, end="")
-            log.write(line)
-            log.flush()
+        with process.stdout:
+            for line in process.stdout:
+                print(line, end="")
+                log.write(line)
+                log.flush()
         result = process.wait()
     if result:
         raise subprocess.CalledProcessError(result, cmd)
@@ -125,6 +127,9 @@ def selected_packages(no_gui: bool) -> list[Path]:
     directories = sorted(
         package_dirs(), key=lambda p: (metadata(p).get("order", 9999), p.name)
     )
+    directories = [
+        p for p in directories if ARCH in metadata(p).get("architectures", TARGETS)
+    ]
     if no_gui:
         directories = [
             p for p in directories if "gui" not in metadata(p).get("profiles", [])
@@ -216,7 +221,7 @@ def package_state(directory: Path, info: dict) -> str:
         return "built"
     if info.get("source") == "git" and (SOURCES / info["name"]).exists():
         return "fetched"
-    if info.get("source") == "archive" and (SOURCES / info["archive"]).exists():
+    if info.get("source") in ("archive", "deb") and (SOURCES / info["archive"]).exists():
         return "fetched"
     if info.get("source") == "meta":
         return "empty"
@@ -275,6 +280,15 @@ def fetch_package(info: dict) -> None:
         fetch_source(info)
 
 
+def verify_download(path: Path, info: dict) -> None:
+    expected = info.get("sha256")
+    if expected:
+        with path.open("rb") as downloaded:
+            actual = hashlib.file_digest(downloaded, "sha256").hexdigest()
+        if actual != expected.lower():
+            raise ValueError(f"SHA256 mismatch for {info['name']}: {path}")
+
+
 def fetch_source(info: dict) -> None:
     if info.get("source") == "git":
         checkout = SOURCES / info["name"]
@@ -289,7 +303,7 @@ def fetch_source(info: dict) -> None:
                 info["git"],
                 str(checkout),
             )
-    elif info.get("source") == "archive":
+    elif info.get("source") in ("archive", "deb"):
         if not info.get("url") or not info.get("archive"):
             raise SystemExit(f"invalid source definition for {info['name']}")
         archive = SOURCES / info["archive"]
@@ -302,9 +316,12 @@ def fetch_source(info: dict) -> None:
                     temporary,
                     reporthook=download_progress(info["name"]),
                 )
+                verify_download(temporary, info)
                 temporary.replace(archive)
             finally:
                 temporary.unlink(missing_ok=True)
+        else:
+            verify_download(archive, info)
     elif info.get("source") != "meta":
         raise SystemExit(f"invalid source type for {info['name']}")
 
@@ -367,6 +384,8 @@ def ensure_host_packages(info: dict) -> None:
 
 def build_package(directory: Path) -> None:
     info = metadata(directory)
+    if ARCH not in info.get("architectures", TARGETS):
+        raise SystemExit(f"package {info['name']} does not support {ARCH}")
     ensure_host_packages(info)
     done = artifact(directory, info)
     # Package builds always start from an empty build tree. Downloaded source
@@ -377,10 +396,14 @@ def build_package(directory: Path) -> None:
     if info.get("source") != "archive":
         fetch_package(info)
     reset_archive_sources(info)
-    script = directory / "build.py"
+    script = (
+        ROOT / "src/deb_package.py"
+        if info.get("source") == "deb"
+        else directory / "build.py"
+    )
     if not script.exists():
         raise SystemExit(f"package {info['name']} has no build.py")
-    if info.get("source") == "archive" and not (SOURCES / info["archive"]).exists():
+    if info.get("source") in ("archive", "deb") and not (SOURCES / info["archive"]).exists():
         raise SystemExit(
             f"source missing for {info['name']}; build cannot continue for {info['name']}"
         )

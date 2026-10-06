@@ -1,0 +1,14 @@
+{
+  "name": "microsoft-edge",
+  "version": "154.0.4258.62-1",
+  "order": 200,
+  "source": "deb",
+  "deb-package": "microsoft-edge-stable",
+  "architectures": ["x64"],
+  "profiles": ["gui"],
+  "url": "https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/microsoft-edge-stable_{version}_amd64.deb",
+  "archive": "microsoft-edge-stable_154.0.4258.62-1_amd64.deb",
+  "sha256": "f425dea59f0a8bac00201685a070e947543c57d135c130ba73e0863cf2c506b1",
+  "host-packages": {"apt": ["dpkg"]},
+  "dependencies": ["nspr", "nss", "cups"]
+}
