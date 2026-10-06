@@ -1,7 +1,9 @@
 # Package Layout
 
-Each package directory contains a `package.json` manifest and a `build.py`
-recipe.
+Each package directory contains a `package.json` manifest and an integer
+`version` file. Source and integration packages contain a `build.py` recipe.
+Debian binary packages use the shared extraction procedure in
+`src/deb_package.py` and do not require a `build.py` recipe.
 
 `source=archive` requires `url` and `archive`. The fetch stage downloads the
 archive into `.workspace/sources/` and the build recipe consumes that file.
@@ -13,10 +15,75 @@ archive into `.workspace/sources/` and the build recipe consumes that file.
 coordinates components without downloading a standalone source archive. It is
 not used as a substitute for missing source packages.
 
+`source=deb` requires `url`, `archive`, and the exact Debian package `version`,
+including its revision. The fetch stage downloads the `.deb` file into
+`.workspace/sources/`. The build stage validates the Debian package name,
+version, and architecture, then extracts the filesystem payload into
+`.workspace/<arch>/sysroot/` using host `dpkg-deb` and GNU tar. Filesystem modes,
+symbolic links, and hard links are preserved. Existing directory aliases such
+as `/bin` to `/usr/bin` remain in place. Extracted files use host filesystem
+ownership rather than the archive's numeric owner IDs. Boot initialization
+assigns target system ownership to the configured paths.
+Debian maintainer scripts and package-manager triggers are not executed, and
+the Debian package database is not modified. System integration belongs in a
+package `postscript.py` or the `src/sysroot` overlay.
+
+The optional `deb-package` field specifies the Debian control-file package name;
+its default is the manifest's `name`. The `architectures` list restricts build
+and status selection to the listed target architectures. Debian `amd64` maps to
+`x64`, `i386` maps to `x86`, and `all` is accepted for either target architecture.
+The download `url` supports a `{version}` placeholder. The `archive` field is
+the literal cache filename and must distinguish package versions and binary
+architectures. An optional `sha256` field validates downloaded and cached files.
+A checksum mismatch stops the build; an invalid cached file must be removed
+before retrying. A successful extraction records the package's configured
+integer build version in the architecture's completion artifact.
+
+The `microsoft-edge` and `vscode` manifests provide Debian binary package
+examples from Microsoft's official repositories. Microsoft Edge
+154.0.4258.62-1 and Visual Studio Code 1.140.0-1790759618 are included in the
+`x64` GUI build and excluded from `x86` and console builds. Their Debian package
+identities are `microsoft-edge-stable` and `code`. Both manifests pin archive
+filenames and SHA256 checksums and declare the host `dpkg` package dependency.
+
+The GUI profile builds NSPR 4.38.2, NSS 3.123, and the CUPS 2.4.20 client
+library before either Debian application package. Both binary manifests declare
+these runtime package dependencies. Shared libraries reside in `/usr/lib`,
+development headers in `/usr/include/nspr`, `/usr/include/nss`, and
+`/usr/include/cups`, and development metadata in `/usr/lib/pkgconfig`.
+NSPR supplies `libnspr4.so`, `libplc4.so`, and `libplds4.so`. NSS supplies
+`libnss3.so`, `libnssutil3.so`, `libsmime3.so`, `libssl3.so`, and its cryptographic
+modules. NSS uses the configured NSPR libraries, the position-independent
+SQLite archive, and zlib. Its link configuration places `libm` after the SQLite
+archive to resolve the archive's math-function dependencies and retains the
+configured zlib linker flags for compression consumers. Its `nsinstall`
+build utility uses the native host
+compiler; installed libraries and command-line tools use the target compiler.
+The cross build does not generate NSS FIPS module integrity signatures.
+CUPS supplies `libcups.so.2`, its development link and static archive, headers,
+`cups-config`, and locale data through the upstream `libcups` component. TLS
+uses OpenSSL. This component does not install a print scheduler or printer
+backends.
+The CUPS package applies `local-destination-state.patch` to define local-queue
+bookkeeping in both enumeration state layouts. Local destination records are
+copied during enumeration and freed during cleanup, including configurations
+without DNS-SD support.
+
+```sh
+./lfs build --arch x64 --all
+./lfs status --arch x64
+```
+
+Binary extraction does not resolve Debian runtime dependencies or establish
+application compatibility with MOS. Execution requires the libraries and
+kernel interfaces expected by the distributed binaries. A completion artifact
+indicates successful extraction; it does not certify application execution.
+
 Target compiler flags select `-m32` for `x86` and `-m64` for `x64`.
 Recipes access the configured width through the `LFS_BITS` environment variable.
 
 Every compiled userspace component must have its own manifest and build recipe.
+Every imported Debian binary package must have its own manifest.
 The package list is intentionally explicit so each download, version, build
 order, and artifact is inspectable.
 

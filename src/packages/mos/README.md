@@ -12,6 +12,100 @@ Unix stream rings do not sample the packet timestamp clock, and `SIOCGSTAMP`
 returns `ENOTTY` for Unix stream sockets.
 `test/ipc_buffers.py` checks stream integrity, readiness, shutdown, datagram
 truncation, finite timeouts, and descriptor passing inside a MOS guest.
+
+Unix `SOCK_SEQPACKET` sockets support socket pairs and named connections.
+Each send enqueues one complete record in a 256 KiB receive ring. Receives
+preserve record boundaries, discard truncated payload tails, and support
+`MSG_PEEK` and `MSG_TRUNC`. Queue exhaustion waits for space or returns
+`EAGAIN` for nonblocking operations. Shutdown and peer closure expose EOF
+after queued records are consumed. `FIONREAD` reports total queued payload
+bytes. `SCM_RIGHTS` supports up to 16 descriptors per message; `SO_PASSCRED`
+on sequenced-packet sockets returns the sending process's recorded credentials.
+These interfaces support Chromium's Unix IPC sockets. Individual record
+payloads are limited to 262127 bytes by the receive ring and record header.
+`test/unix_seqpacket.py` validates records, credentials, descriptor passing,
+queue exhaustion, socket flags, named connections, and shutdown in the guest.
+
+Devfs publishes `/dev/input` and `/dev/dri` as directories with separately
+enumerated child device nodes. Directory lookup supplies parent identities
+for inotify watches. Device opens do not fail when optional notification
+capture cannot allocate its state; notification queues report overflow.
+`test/input_device_open.py` validates the mouse parent hierarchy, Xorg's
+open flags, device metadata, and directory-watch notifications without
+consuming input packets or changing the mouse protocol.
+
+`/dev/fd` exposes the calling process's descriptor directory. Both `/dev/fd/N`
+and `/proc/<pid>/fd/N` can reopen anonymous pipes with independent access and
+status flags while retaining the shared pipe buffer. Reader and writer counts
+include reopened endpoints. Named files are reopened through their stored
+pathnames; unlinked files without a stored pathname cannot be reopened.
+These interfaces support Bash process substitution in the browser launcher.
+`test/dev_fd.py` validates descriptor reopening, endpoint lifetime, file
+positions, and input/output process substitution in the guest.
+
+`eventfd` and `eventfd2` provide shared 64-bit counters, semaphore reads,
+nonblocking operation, close-on-exec flags, and poll/epoll notifications.
+Reads return eight bytes and drain the counter or consume one semaphore unit.
+Writes accept eight-byte increments up to the maximum counter value of
+`UINT64_MAX - 1`. These descriptors support Crashpad shutdown notifications.
+`test/eventfd.py` validates counter transfers, overflow, readiness, descriptor
+flags, semaphore mode, and blocking operations across fork.
+
+Inotify provides inode watches and Linux-format event queues for both syscall
+namespaces. Filesystem access, modification, metadata changes, open, close,
+creation, deletion, linking, rename, and unmount operations generate events.
+Renames carry matching cookies, hard links share inode identity, and unlinked
+inode watches remain active until the final open reference closes. Watch
+masks support one-shot operation, mask addition and exclusive creation,
+directory-only lookup, symlink control, and exclusion of unlinked entries.
+Reads consume complete records; blocking and nonblocking modes, `FIONREAD`,
+`SIGIO`, and poll/select/epoll readiness are supported. Queues coalesce
+consecutive identical events and report overflow with `IN_Q_OVERFLOW`.
+
+Watch identity follows the opened backend. Virtual-entry aliases and sysfs
+mount views share canonical inode identity. With no active watches, file opens
+avoid notification metadata capture and allocation, and file I/O avoids the
+notification lock. Watch installation and namespace mutations capture retained
+open descriptions for subsequent events. Mount-root callbacks do not accept
+unmatched descendant paths.
+
+`/proc/sys/fs/inotify/max_user_watches`, `max_user_instances`, and
+`max_queued_events` expose the limits enforced by inotify. Defaults are 8192
+watches per real UID, 128 instances per real UID, and 16384 queued events per
+instance. Root may configure nonnegative decimal values up to `INT_MAX`.
+Queue capacity is captured at instance creation; watch and instance limits
+apply to subsequent allocations. Directory watches cover immediate children.
+Memory-mapped I/O does not generate notifications. `test/inotify.py` validates
+notification behavior and the proc controls. The root-only guest options
+`--guest --limits --mounts` additionally exercise quota enforcement, queue
+overflow, and unmount events. The test directory must support hard links and
+renames; `--directory PATH` selects an appropriate filesystem.
+
+Synchronous page faults deliver `SIGSEGV` with the exact address and processor
+context. Caught faults resume through the installed signal handler. Default
+fatal signals and worker-initiated `exit_group` terminate the entire thread
+group and retain the leader's wait status. `PTRACE_DETACH` clears a stopped
+tracee's tracing state and resumes it with an optional signal; `tkill` with
+signal zero performs a target and credential check.
+
+`clock_getres` exposes the microsecond clock core's 1000-nanosecond resolution
+for the supported realtime and boot-relative clock IDs. Both time layouts
+accept a null result pointer and reject unsupported IDs with `EINVAL`.
+`test/thread_faults.py` builds a target-system probe for fault recovery,
+group termination, clock resolution, and trace detachment.
+
+File-page cache lookup retains the returned physical page through buffered
+copying or mapping installation. Eviction and invalidation preserve active
+reader references. Ext4 page reads and writeback use independent operation
+cursors. `test/page_cache_reads.py` validates concurrent faults and descriptor
+offset preservation with deterministic file contents.
+
+Clone namespace isolation is unavailable. Recognized namespace flags,
+including `CLONE_NEWUSER`, return `EINVAL`, allowing Chromium's capability
+probe to report unavailable namespace support. Chromium's namespace sandbox
+cannot operate on MOS. `test/clone_namespaces.py` validates namespace-flag
+rejection inside the guest.
+
 [IPC performance](../../../docs/ipc-performance.md) defines benchmark modes,
 operation counts, and measurement procedures.
 
@@ -38,6 +132,15 @@ and GID of the process at open time. These interfaces support libgtop process
 enumeration and the MATE System Monitor process ownership filter.
 PID 1 has parent PID 0, as reported by `getppid()`, `/proc/1/status`, and
 `/proc/1/stat`.
+`/proc/self` selects the calling process's thread-group leader. The
+`/proc/<pid>/task` directory enumerates live threads in that process. Its link
+count is two plus the current number of threads, including when inspected
+through an open directory descriptor. `/proc/<pid>/task/<tid>` exposes the
+selected thread's files and links and rejects threads from other groups.
+Status records distinguish `Pid` from `Tgid` and report `Threads`; stat
+records report the current thread count. These interfaces support Chromium's
+single-thread checks. `test/proc_tasks.py` validates enumeration, directory
+metadata, thread identity, membership, and thread creation and termination.
 Per-process virtual memory totals count mapped regions once. Resident totals
 count physical pages mapped within those regions; direct physical device
 mappings are excluded. Stack accounting uses each process's userspace address
@@ -49,6 +152,15 @@ per-process memory interfaces.
 `test/proc_processes.py` checks directory-entry types, ownership, parent
 identifiers, and libgtop process selection inside a MOS guest with libgtop
 installed.
+
+`/proc/self/exe` and `/proc/<pid>/exe` expose the resolved pathname of the
+main executable. Fork and clone retain the executable reference, and rejected
+execution preserves it. Both syscall namespaces provide `readlinkat` for
+directory-relative and absolute paths. These interfaces support glibc's
+`$ORIGIN` library lookup, including libraries packaged beside VS Code's
+`/usr/share/code/code`. `test/proc_exe.py` validates the executable links and
+pathname operations inside the guest. Stored executable names are not
+reconstructed after rename or unlink and are not rebased for chroot callers.
 
 The VirtIO-GPU DRM connector represents scanout zero. The driver queries
 `VIRTIO_GPU_CMD_GET_DISPLAY_INFO` during initialization and on explicit

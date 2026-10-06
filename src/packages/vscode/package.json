@@ -1,0 +1,14 @@
+{
+  "name": "vscode",
+  "version": "1.140.0-1790759618",
+  "order": 201,
+  "source": "deb",
+  "deb-package": "code",
+  "architectures": ["x64"],
+  "profiles": ["gui"],
+  "url": "https://packages.microsoft.com/repos/code/pool/main/c/code/code_{version}_amd64.deb",
+  "archive": "code_1.140.0-1790759618_amd64.deb",
+  "sha256": "e5ddfa528d68ce907c92cba18ed4edd7420874fe828cbaaf8e4484aa33530c3b",
+  "host-packages": {"apt": ["dpkg"]},
+  "dependencies": ["nspr", "nss", "cups"]
+}

@@ -1,6 +1,6 @@
 # GNU/MOS
 
-GNU/MOS builds 32-bit x86 and 64-bit x86 operating systems with the [MOS kernel](https://github.com/crazygeme/mos), GNU userspace, and an Xfce desktop. Package recipes compile the toolchain, system utilities, libraries, and applications from source, assemble a target sysroot, and install it into a GRUB-bootable disk image for QEMU.
+GNU/MOS builds 32-bit x86 and 64-bit x86 operating systems with the [MOS kernel](https://github.com/crazygeme/mos), GNU userspace, and an Xfce desktop. Package procedures compile source packages or extract configured Debian binary packages, assemble a target sysroot, and install it into a GRUB-bootable disk image for QEMU.
 
 ![Xfce desktop running on GNU/MOS](docs/screen/xfce.png)
 
@@ -9,7 +9,7 @@ GNU/MOS builds 32-bit x86 and 64-bit x86 operating systems with the [MOS kernel]
 - **Architectures:** `x86` uses i686 userspace and `i686-lfs-linux-gnu`; `x64` uses x86-64 userspace and `x86_64-lfs-linux-gnu`. The default architecture is `x64`.
 - **Core system:** MOS, glibc, GNU utilities, Bash, SysV init, and GRUB.
 - **Desktop:** Xorg, XDM with PAM authentication, and Xfce with Thunar and xterm.
-- **Applications:** Mousepad, MATE System Monitor, MATE Calculator, and FFplay in the desktop profile; FFmpeg and FFprobe in both profiles.
+- **Applications:** Mousepad, MATE System Monitor, MATE Calculator, and FFplay in the desktop profile; FFmpeg and FFprobe in both profiles. The x64 desktop profile also extracts Microsoft Edge and Visual Studio Code Debian binary packages; application execution requires compatible runtime libraries and MOS interfaces.
 - **Networking:** an emulated e1000 adapter with host-provided DHCP, DNS, and IPv4 NAT.
 
 The desktop profile starts graphical login in runlevel 5. The console profile starts in runlevel 3. Package versions, source locations, and build order are defined in the individual `src/packages/*/package.json` manifests.
@@ -19,6 +19,15 @@ The desktop profile starts graphical login in runlevel 5. The console profile st
 The build recipes target an x86-64 Linux host. Image setup executes installed target programs. The x86 profile requires host support for 32-bit x86 execution; the x64 profile requires x86-64 execution.
 
 Host tools include Bash, Python 3 with `tarfile` extraction-filter support, Git, a native C/C++ compiler, GNU Make, patch, archive utilities, and the build utilities required by individual package recipes. Host development dependencies depend on the selected packages. Before building a package with declared APT host dependencies, `./lfs build` installs missing distribution packages through `apt-get`, using `sudo` when required. Installed dependencies do not trigger installation or authentication.
+
+Debian binary packages require host `dpkg-deb` and GNU tar. They use
+`source: "deb"` manifests and extract into `.workspace/<arch>/sysroot/` without
+compilation or Debian maintainer-script execution. Package identity, version,
+and architecture are checked before extraction. The Microsoft Edge and Visual
+Studio Code examples also verify pinned SHA256 checksums. The package procedure
+does not resolve Debian runtime dependencies. See
+[Package layout and system integration](src/packages/README.md) for manifest
+fields and extraction behavior.
 
 Image installation requires `sudo`, `qemu-img`, `sfdisk`, `losetup`, `mkfs.ext3`, and mount utilities. The console launcher requires the host `qemu-system-x86_64`. Both launch profiles require access to KVM, `ip`, `sysctl`, `iptables`, and `dnsmasq`. Privileged operations use `sudo` to manage loop devices, mounts, and host networking.
 
@@ -172,9 +181,10 @@ System logs are stored in `/var/log/messages`, `/var/log/auth.log`, and `/var/lo
 | `src/lfs.py` | Package orchestration, image installation, and QEMU launch logic. |
 | `src/packages/` | Package manifests, build recipes, patches, and postscripts. |
 | `src/package_lib.py` | Shared cross-compilation and package build helpers. |
+| `src/deb_package.py` | Debian binary package validation and filesystem extraction. |
 | `src/sysroot/` | System configuration and filesystem overlay. |
 | `docs/screen/` | System screenshots. |
-| `.workspace/sources/` | Shared source archives and checkouts. |
+| `.workspace/sources/` | Shared source archives, Debian binary archives, and checkouts. |
 | `.workspace/x86/`, `.workspace/x64/` | Architecture-specific build trees, host tools, sysroot, artifacts, caches, logs, and disk image. |
 
 ## Additional documentation

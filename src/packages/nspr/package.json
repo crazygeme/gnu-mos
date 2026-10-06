@@ -1,0 +1,11 @@
+{
+  "name": "nspr",
+  "version": "4.38.2",
+  "order": 193,
+  "source": "archive",
+  "url": "https://archive.mozilla.org/pub/nspr/releases/v{version}/src/nspr-{version}.tar.gz",
+  "archive": "nspr-4.38.2.tar.gz",
+  "sha256": "e4092faeab77bdc9b32db1113e4215948ee768e26c4666db3b5a60b35f2c9105",
+  "profiles": ["gui"],
+  "dependencies": ["glibc"]
+}
