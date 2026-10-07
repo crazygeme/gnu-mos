@@ -41,6 +41,8 @@ class FFmpegBuild(unittest.TestCase):
             self.assertIn("--enable-ffmpeg", commands[0])
             self.assertIn("--enable-ffprobe", commands[0])
             self.assertIn("--disable-ffplay" if console else "--enable-ffplay", commands[0])
+            self.assertIn("--disable-vaapi" if console else "--enable-vaapi", commands[0])
+            self.assertIn("--disable-libdrm" if console else "--enable-libdrm", commands[0])
             self.assertEqual(commands[1], ["make", "-j4", "all"])
             self.assertEqual(commands[2][-1], "install")
 
@@ -68,8 +70,14 @@ class FFmpegBuild(unittest.TestCase):
             self.assertNotIn("ffplay", packages)
             if console:
                 self.assertNotIn("sdl2", packages)
+                self.assertNotIn("libva", packages)
+                self.assertNotIn("virglrenderer-host", packages)
             else:
                 self.assertLess(packages.index("sdl2"), packages.index("ffmpeg"))
+                self.assertLess(packages.index("libdrm"), packages.index("libva"))
+                self.assertLess(packages.index("libva"), packages.index("mesa"))
+                self.assertLess(packages.index("mesa"), packages.index("ffmpeg"))
+                self.assertLess(packages.index("virglrenderer-host"), packages.index("qemu-host"))
 
 
 if __name__ == "__main__":

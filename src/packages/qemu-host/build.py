@@ -39,6 +39,8 @@ for key in (
     env.pop(key, None)
 env["PATH"] = f"{workspace / 'tools/bin'}:/usr/bin:/bin"
 env.update(CC="gcc", CXX="g++", CFLAGS="-O2", CXXFLAGS="-O2")
+virgl_prefix = workspace / "tools/virglrenderer"
+env["PKG_CONFIG_PATH"] = str(virgl_prefix / "lib/pkgconfig")
 subprocess.run(
     [
         "pkg-config",
@@ -49,7 +51,7 @@ subprocess.run(
         "pixman-1",
         "epoxy",
         "sdl2",
-        "virglrenderer",
+        "virglrenderer >= 1.3.0",
         "gbm",
         "libdrm",
         "zlib",
@@ -67,6 +69,7 @@ for patch_name in (
     "sdl-gl-scanout.patch",
     "sdl-relative-pointer.patch",
     "sdl-gl-context.patch",
+    "virgl-video.patch",
 ):
     patch = Path(__file__).with_name(patch_name)
     for options in (("--dry-run",), ()):
@@ -88,6 +91,7 @@ subprocess.run(
         "--enable-sdl",
         "--enable-opengl",
         "--enable-virglrenderer",
+        "--extra-ldflags=-Wl,-rpath," + str(virgl_prefix / "lib"),
         "--enable-pixman",
         "--disable-docs",
         "--disable-werror",

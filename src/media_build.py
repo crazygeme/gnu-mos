@@ -46,6 +46,8 @@ def build_ffmpeg():
     if player:
         options += [
             "--enable-sdl2",
+            "--enable-libdrm",
+            "--enable-vaapi",
             "--enable-ffplay",
             "--enable-ffmpeg",
             "--enable-ffprobe",
@@ -53,6 +55,8 @@ def build_ffmpeg():
     else:
         options += [
             "--disable-sdl2",
+            "--disable-libdrm",
+            "--disable-vaapi",
             "--disable-ffplay",
             "--enable-ffmpeg",
             "--enable-ffprobe",

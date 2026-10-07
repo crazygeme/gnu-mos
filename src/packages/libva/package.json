@@ -1,0 +1,24 @@
+{
+  "name": "libva",
+  "version": "2.22.0",
+  "order": 138,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://github.com/intel/libva/releases/download/{version}/libva-{version}.tar.bz2",
+  "archive": "libva-2.22.0.tar.bz2",
+  "sha256": "e3da2250654c8d52b3f59f8cb3f3d8e7fb1a2ee64378dbc400fbc5663de7edb8",
+  "artifact": "artifacts/libva.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "libdrm",
+    "libx11",
+    "libxext",
+    "libxfixes",
+    "libxcb"
+  ]
+}

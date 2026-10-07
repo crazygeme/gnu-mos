@@ -1,0 +1,95 @@
+--- a/include/hw/virtio/virtio-gpu.h
++++ b/include/hw/virtio/virtio-gpu.h
+@@ -245,6 +245,9 @@
+     struct VirtIOGPU parent_obj;
+ 
+     RenderState renderer_state;
++
++    char *video_rendernode;
++    int video_fd;
+ 
+     QEMUTimer *fence_poll;
+     QEMUTimer *print_stats;
+--- a/hw/display/virtio-gpu-gl.c
++++ b/hw/display/virtio-gpu-gl.c
+@@ -122,6 +122,9 @@
+ {
+     ERRP_GUARD();
+     VirtIOGPU *g = VIRTIO_GPU(qdev);
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(qdev);
++
++    gl->video_fd = -1;
+ 
+ #if HOST_BIG_ENDIAN
+     error_setg(errp, "virgl is not supported on bigendian platforms");
+@@ -155,6 +158,7 @@
+ }
+ 
+ static const Property virtio_gpu_gl_properties[] = {
++    DEFINE_PROP_STRING("video-rendernode", VirtIOGPUGL, video_rendernode),
+     DEFINE_PROP_BIT("stats", VirtIOGPU, parent_obj.conf.flags,
+                     VIRTIO_GPU_FLAG_STATS_ENABLED, false),
+     DEFINE_PROP_BIT("venus", VirtIOGPU, parent_obj.conf.flags,
+@@ -177,6 +181,11 @@
+         virgl_renderer_cleanup(NULL);
+     }
+ 
++    if (gl->video_fd >= 0) {
++        close(gl->video_fd);
++        gl->video_fd = -1;
++    }
++
+     gl->renderer_state = RS_START;
+ 
+     g_array_unref(g->capset_ids);
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -1071,6 +1071,13 @@
+                                    qctx);
+ }
+ 
++static int virgl_get_video_drm_fd(void *opaque)
++{
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(opaque);
++
++    return gl->video_fd;
++}
++
+ static struct virgl_renderer_callbacks virtio_gpu_3d_cbs = {
+ #if VIRGL_VERSION_MAJOR >= 1
+     .version             = 3,
+@@ -1081,6 +1088,7 @@
+     .create_gl_context   = virgl_create_context,
+     .destroy_gl_context  = virgl_destroy_context,
+     .make_current        = virgl_make_context_current,
++    .get_drm_fd          = virgl_get_video_drm_fd,
+ #if VIRGL_VERSION_MAJOR >= 1
+     .write_context_fence = virgl_write_context_fence,
+ #endif
+@@ -1162,9 +1170,26 @@
+     }
+ #endif
+ 
++    if (gl->video_rendernode) {
++        if (gl->video_fd < 0) {
++            gl->video_fd = open(gl->video_rendernode, O_RDWR | O_CLOEXEC);
++            if (gl->video_fd < 0) {
++                ret = -errno;
++                error_report("cannot open video render node %s: %s",
++                             gl->video_rendernode, strerror(-ret));
++                return ret;
++            }
++        }
++        flags |= VIRGL_RENDERER_USE_VIDEO;
++    }
++
+     ret = virgl_renderer_init(g, flags, &virtio_gpu_3d_cbs);
+     if (ret != 0) {
+         error_report("virgl could not be initialized: %d", ret);
++        if (gl->video_fd >= 0) {
++            close(gl->video_fd);
++            gl->video_fd = -1;
++        }
+         return ret;
+     }
+ 

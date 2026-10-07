@@ -20,6 +20,7 @@
     "libxcb",
     "xshmfence",
     "mako",
-    "python-packaging"
+    "python-packaging",
+    "libva"
   ]
 }

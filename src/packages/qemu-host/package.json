@@ -9,7 +9,6 @@
     "apt": [
       "pkg-config",
       "libsdl2-dev",
-      "libvirglrenderer-dev",
       "libgbm-dev",
       "libdrm-dev",
       "libepoxy-dev",
@@ -27,6 +26,7 @@
     "gui"
   ],
   "dependencies": [
-    "ninja"
+    "ninja",
+    "virglrenderer-host"
   ]
 }
