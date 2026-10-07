@@ -1,0 +1,26 @@
+{
+  "name": "wget",
+  "version": "1.25.0",
+  "order": 104,
+  "source": "archive",
+  "url": "https://ftp.gnu.org/gnu/wget/wget-{version}.tar.gz",
+  "archive": "wget-1.25.0.tar.gz",
+  "sha256": "766e48423e79359ea31e41db9e5c289675947a7fcf2efdcedb726ac9d0da3784",
+  "artifact": "artifacts/wget.done",
+  "dependencies": [
+    "gcc-target",
+    "openssl",
+    "zlib",
+    "libidn2",
+    "libpsl",
+    "libuuid",
+    "pcre2",
+    "ca-certificates"
+  ],
+  "host-packages": {
+    "apt": [
+      "gettext",
+      "perl"
+    ]
+  }
+}
