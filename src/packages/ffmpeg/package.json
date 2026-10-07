@@ -20,7 +20,10 @@
   ],
   "profile-dependencies": {
     "gui": [
-      "sdl2"
+      "sdl2",
+      "libva",
+      "mesa",
+      "libdrm"
     ]
   }
 }

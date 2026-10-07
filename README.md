@@ -40,13 +40,19 @@ configuration and must include the required guest sound device. MOS exposes
 AC97 playback through `/dev/dsp`; the XFCE session defaults SDL applications to
 the `dsp` audio driver. An explicit `SDL_AUDIODRIVER` value overrides that default.
 
-The `qemu-host` recipe links against native host development libraries. On Debian or Ubuntu, `./lfs build` checks and installs the following dependencies before preparing the QEMU source. Installation may require a sudo password. The equivalent manual command is:
+The `qemu-host` and `virglrenderer-host` recipes use native host development libraries. On Debian or Ubuntu, `./lfs build` checks and installs their declared dependencies before preparing each package source. Installation may require a sudo password. The equivalent manual command is:
 
 ```sh
-sudo apt install pkg-config libsdl2-dev libvirglrenderer-dev libgbm-dev libdrm-dev libepoxy-dev libglib2.0-dev libpixman-1-dev zlib1g-dev python3-venv
+sudo apt install pkg-config libsdl2-dev libgbm-dev libdrm-dev libepoxy-dev libglib2.0-dev libpixman-1-dev zlib1g-dev python3-venv libva-dev mesa-va-drivers
 ```
 
 The recipe requires SDL, OpenGL, and VirGL support during configuration. Host QEMU installation does not require copying files into the guest image.
+
+The `virglrenderer-host` package supplies virglrenderer 1.3.0 with VA-API video
+support. Graphical FFmpeg builds use the guest libva and Mesa VirGL video
+driver. Hardware codec operations require a compatible host Mesa VA-API driver
+and explicit FFmpeg acceleration options. Configuration and verification are
+documented in [FFmpeg Video Acceleration](src/packages/ffmpeg/README.md).
 
 ## Build and run
 

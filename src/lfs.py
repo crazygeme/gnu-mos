@@ -653,13 +653,21 @@ def qemu(extra: list[str]) -> None:
             ]
         )
     if not NO_GUI:
-        command.extend(["-vga", "none", "-device", "virtio-vga-gl"])
+        rendernode = os.environ.get("MOS_VIDEO_RENDER_NODE", "/dev/dri/renderD128")
+        command.extend([
+            "-vga", "none", "-device",
+            "virtio-vga-gl,video-rendernode=" + rendernode,
+        ])
         if "-display" not in qemu_extra:
             command.extend(["-display", "sdl,gl=on,full-screen=on"])
     command.extend(["-serial", serial])
     command.extend(qemu_extra)
+    env = os.environ.copy()
+    if not NO_GUI:
+        # VirGL video imports host VA surfaces through EGL images.
+        env["SDL_VIDEO_X11_FORCE_EGL"] = "1"
     with qemu_network():
-        run(*command)
+        run(*command, env=env)
 
 
 @contextmanager

@@ -123,8 +123,11 @@ a filename with `ffplay -autoexit video.mp4`. FFmpeg can inspect media with
 The FFmpeg package configures, compiles, and installs the shared libraries
 and all selected programs in a single build. GUI builds enable FFmpeg,
 FFprobe, and FFplay together after SDL2. Console builds enable FFmpeg and
-FFprobe without SDL2. The manifest declares SDL2 under the GUI profile's
-`profile-dependencies`.
+FFprobe without SDL2. The manifest declares SDL2, libva, Mesa, and libdrm under
+the GUI profile's `profile-dependencies`. Graphical builds enable VA-API
+encoding and decoding through Mesa VirGL and the host video renderer.
+Supported commands and host requirements are documented in
+[FFmpeg Video Acceleration](ffmpeg/README.md).
 
 Packages with `build-profiles` record `build_profile` in their completion
 artifact. A GUI completion satisfies both profile selections; a console

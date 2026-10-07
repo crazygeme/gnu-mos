@@ -9,8 +9,11 @@ meson_install(
     archive_source("mesa", "mesa-25.1.9.tar.xz", "mesa-25.1.9"),
     "mesa",
     (
+        "--libdir=lib",
         "-Dplatforms=x11",
         "-Dgallium-drivers=virgl",
+        "-Dgallium-va=enabled",
+        "-Dvideo-codecs=all",
         "-Dvulkan-drivers=",
         "-Dglx=dri",
         "-Degl=enabled",

@@ -113,6 +113,56 @@ The build copies tracked and non-ignored untracked files from the MOS working
 tree into a separate build directory, including uncommitted source edits.
 Compilation uses this copy and leaves the source working tree unchanged.
 
+On x86, tasks without an LDT retain an already-null hardware LDT selector
+across syscall returns, interrupt returns, and context switches. `SLDT`
+checks the CPU's selector; `LLDT` clears it when a nonzero selector is active.
+Tasks with an LDT install their descriptor and reload the selector normally.
+`test/ldt_context.sh` validates LDT data access across syscalls and task
+switches, fork isolation, descriptor clearing, and exec-time LDT reset in
+an x86 MOS guest with GCC installed.
+
+ELF preparation reads each executable's and interpreter's complete program
+header table in one operation. Format adapters expand wire headers backwards
+within the allocated normalized table, preserving overlapping ELF32 input
+bytes during conversion. Every header is validated before image replacement;
+incomplete tables return `ENOEXEC`. The `ElfTest` kernel suite checks ELF32
+and ELF64 conversion, table-read counts, and rejection of truncated tables.
+
+Read faults on cached file pages may populate neighboring cached pages within
+one aligned 64 KiB window. Population remains within the faulting VMA and
+does not read uncached pages from storage. Existing PTEs are preserved, and
+new entries retain read-only COW or shared-write accounting and architecture
+execute permissions. Cache references remain retained until each mapping is
+installed. Resident-file page counts include the populated neighboring pages.
+`test/file_fault_around.sh` checks cached contents, mapping offsets,
+private copies, fork and thread isolation, protected boundaries, and shared
+visibility and writeback inside a guest with GCC and pthread support.
+
+On x86, user page-table teardown stops after processing the recorded live
+entries. Empty trailing entries require no scan. The `mmap` kernel suite checks
+cached-range lookup without storage reads, reference retention through cache
+invalidation, and sparse cloned mappings spanning a complete page table.
+
+The RH9 process-launch comparison uses Bash 2.05b-20, glibc 2.3.2-11.9,
+and coreutils 4.5.3-19. Both guests use KVM, the host CPU model, two virtual
+CPUs, 8192 MiB RAM, and snapshot disks backed by the same RH9 image.
+The MOS kernel is the x86 release build; the Linux reference is 2.4.20-8.
+The guest's `/root/full.sh` times ten batches of 1000 `/bin/true` executions.
+
+For extended measurements, each batch runs `./test.sh` 100 times from `/root`
+inside an environment initialized with `PATH=/bin:/usr/bin:/sbin`,
+`HOME=/root`, `TERM=linux`, and `LANG=en_US.UTF-8`. Bash `TIMEFORMAT=%3R`
+reports elapsed seconds. Three measured batches produce the following results:
+
+| Kernel | Seconds per 100,000 executions | Median seconds |
+| --- | --- | --- |
+| MOS | 9.866, 9.836, 9.830 | 9.836 |
+| Linux 2.4.20-8 | 8.831, 8.891, 8.837 | 8.837 |
+
+The MOS median is 11.3% above the Linux median in this configuration.
+The elapsed interval includes Bash loop, script startup, fork, exec, dynamic
+loading, and wait overhead. These measurements do not isolate syscall latency.
+
 `prctl` supports `PR_SET_PDEATHSIG` and `PR_GET_PDEATHSIG` for the kernel's
 supported signal range. Parent exit queues the configured signal and wakes
 eligible recipients. Fork and clone clear the child's setting; effective or
@@ -291,3 +341,30 @@ the configured LFS userspace toolchain. The script builds its probe under
 suite. `test/epoll_qemu.py` runs isolated guest validation and compares syscall
 timings against Linux. The libevent and Xorg package configurations select
 their epoll backends.
+
+## CPU usage accounting
+
+MOS package version 74 uses timer-interrupt CPU sampling at 100 Hz. Samples
+charge the executing thread, its reference-counted thread group, and the
+receiving CPU. CPU accounting performs no clock reads at syscall or context
+switch boundaries. Sleeping and zombie tasks accrue no off-CPU usage.
+
+`times()`, `getrusage()`, `wait4()`, process and thread CPU clocks, and procfs
+CPU reporting consume cumulative counters. Process totals include exited
+threads; child totals include waited-for descendants. Native AMD64 `times()`
+retains 64-bit clock values. Per-CPU totals include kernel tasks and persist
+through task reaping. CPU clock resolution is 10 ms; sub-tick execution may
+receive no sample, and delayed timer delivery can undercount CPU usage.
+
+The CPU accounting and timekeeping suites pass on x86 and AMD64 KVM guests
+with two CPUs, including concurrent counter updates and the AMD64 clock-field
+width check. The RH9 guest probe passes all 14 accounting checks on both
+kernels. Detailed implementation and reproduction commands are defined in the
+MOS source document `doc/cpu-accounting.md`.
+
+The RH9 x86 IPC measurement configuration uses KVM, two host-model virtual CPUs,
+and 8192 MiB RAM. Medians of three default samples are 23.01 GB/s and 3.10 million
+64-byte writes/s for pipes, 26.62 GB/s and 2.54 million writes/s for socket pairs,
+and 26.82 GB/s and 2.46 million writes/s for named sockets. Default mean RTT
+medians are 1.303, 1.480, and 1.468 microseconds, respectively. Complete samples
+and the matching Linux baseline are recorded in `docs/ipc-performance.md`.
