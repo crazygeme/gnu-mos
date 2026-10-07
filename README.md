@@ -11,6 +11,8 @@ GNU/MOS builds 32-bit x86 and 64-bit x86 operating systems with the [MOS kernel]
 - **Desktop:** Xorg, XDM with PAM authentication, and Xfce with Thunar and xterm.
 - **Applications:** Mousepad, MATE System Monitor, MATE Calculator, and FFplay in the desktop profile; FFmpeg and FFprobe in both profiles. The x64 desktop profile also extracts Microsoft Edge and Visual Studio Code Debian binary packages; application execution requires compatible runtime libraries and MOS interfaces.
 - **Networking:** an emulated e1000 adapter with host-provided DHCP, DNS, and IPv4 NAT.
+- **Network and development tools:** GNU Make and GNU Wget in both
+  profiles, with a Mozilla-derived certificate trust store for HTTPS.
 
 The desktop profile starts graphical login in runlevel 5. The console profile starts in runlevel 3. Package versions, source locations, and build order are defined in the individual `src/packages/*/package.json` manifests.
 
@@ -197,4 +199,6 @@ System logs are stored in `/var/log/messages`, `/var/log/auth.log`, and `/var/lo
 
 - [Package layout and system integration](src/packages/README.md)
 - [MOS kernel package](src/packages/mos/README.md)
+- [GNU Wget and HTTPS](src/packages/wget/README.md)
+- [GNU Make](src/packages/make/README.md)
 - [Xfce desktop and applications](src/packages/xfce/README.md)

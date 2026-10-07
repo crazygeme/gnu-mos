@@ -1,0 +1,18 @@
+{
+  "name": "libunistring",
+  "version": "1.4",
+  "order": 100.1,
+  "source": "archive",
+  "url": "https://ftp.gnu.org/gnu/libunistring/libunistring-{version}.tar.xz",
+  "archive": "libunistring-1.4.tar.xz",
+  "sha256": "708571fce9965e805fee08b410aa8e886d391a492c387f75abb7be0e195337f5",
+  "artifact": "artifacts/libunistring.done",
+  "dependencies": [
+    "gcc-target"
+  ],
+  "host-packages": {
+    "apt": [
+      "gettext"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "ca-certificates",
+  "version": "20260816",
+  "order": 100.4,
+  "source": "archive",
+  "url": "https://deb.debian.org/debian/pool/main/c/ca-certificates/ca-certificates_{version}.tar.xz",
+  "archive": "ca-certificates_20260816.tar.xz",
+  "sha256": "d939bcdd0cb058712cf4175bac76997676eb8b68fe9473765e1b40fb3d5b186a",
+  "artifact": "artifacts/ca-certificates.done",
+  "dependencies": [],
+  "host-packages": {
+    "apt": [
+      "python3-cryptography"
+    ]
+  }
+}
