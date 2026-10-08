@@ -1,0 +1,28 @@
+{
+  "name": "pygobject",
+  "version": "3.50.0",
+  "order": 140.4,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/pygobject/3.50/pygobject-{version}.tar.xz",
+  "archive": "pygobject-3.50.0.tar.xz",
+  "sha256": "8d836e75b5a881d457ee1622cae4a32bcdba28a0ba562193adb3bbb472472212",
+  "artifact": "artifacts/pygobject.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "meson",
+    "ninja",
+    "python",
+    "python-host",
+    "glib",
+    "gobject-introspection",
+    "libffi",
+    "pycairo",
+    "gtk3"
+  ]
+}

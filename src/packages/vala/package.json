@@ -1,0 +1,23 @@
+{
+  "name": "vala",
+  "version": "0.56.18",
+  "order": 139.9,
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/vala/0.56/vala-{version}.tar.xz",
+  "archive": "vala-0.56.18.tar.xz",
+  "sha256": "f2affe7d40ab63db8e7b9ecc3f6bdc9c2fc7e3134c84ff2d795f482fe926a382",
+  "artifact": "artifacts/vala.done",
+  "dependencies": [
+    "glib",
+    "gobject-introspection",
+    "glib-introspection"
+  ],
+  "profiles": [
+    "gui"
+  ],
+  "host-packages": {
+    "apt": [
+      "valac"
+    ]
+  }
+}

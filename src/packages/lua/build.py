@@ -1,37 +1,27 @@
 import os
 import subprocess
-import tarfile
+import sys
 from pathlib import Path
 
-workspace = Path(os.environ["LFS_WORKSPACE"])
-sources = Path(os.environ["LFS_SOURCES"])
-sysroot = Path(os.environ["LFS_SYSROOT"])
-source = workspace / "build/lua-5.4.8"
+sys.path.insert(0, str(Path(__file__).parents[2]))
+from package_lib import archive_source, environment
 
-if not source.exists():
-    with tarfile.open(sources / "lua-5.4.8.tar.gz") as package:
-        package.extractall(workspace / "build", filter="data")
-
-environment = os.environ.copy()
-environment.update(
-    {
-        "CC": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-gcc",
-        "AR": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ar",
-        "RANLIB": os.environ.get("LFS_TARGET", "i686-lfs-linux-gnu") + "-ranlib",
-        "MYCFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32") + " -fPIC",
-        "MYLDFLAGS": "-m" + os.environ.get("LFS_BITS", "32"),
-    }
-)
-
+source = archive_source("lua", "lua-5.4.8.tar.gz", "lua-5.4.8")
+env = environment()
 subprocess.run(
-    ["make", "-j4", "linux"],
-    cwd=source,
-    env=environment,
-    check=True,
+    ["make", "-j4", "linux", "CC=" + env["CC"], "AR=" + env["AR"] + " rcu",
+     "RANLIB=" + env["RANLIB"], "MYCFLAGS=" + env["CFLAGS"] + " -fPIC -std=gnu17",
+     "MYLDFLAGS=" + env["LDFLAGS"]],
+    cwd=source, env=env, check=True,
 )
 subprocess.run(
-    ["make", "INSTALL_TOP=" + str(sysroot / "usr"), "install"],
-    cwd=source,
-    env=environment,
-    check=True,
+    ["make", "install", "INSTALL_TOP=" + str(Path(env["LFS_SYSROOT"]) / "usr")],
+    cwd=source, env=env, check=True,
+)
+metadata = Path(env["LFS_SYSROOT"]) / "usr/lib/pkgconfig/lua.pc"
+metadata.parent.mkdir(parents=True, exist_ok=True)
+metadata.write_text(
+    "prefix=/usr\nlibdir=${prefix}/lib\nincludedir=${prefix}/include\n\n"
+    "Name: Lua\nDescription: Lua language library\nVersion: 5.4.8\n"
+    "Libs: -L${libdir} -llua -lm -ldl\nCflags: -I${includedir}\n"
 )

@@ -1,0 +1,18 @@
+{
+  "name": "pkgconf",
+  "version": "2.5.1",
+  "order": 101.6,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/p/pkgconf/pkgconf_{version}.orig.tar.xz",
+  "archive": "pkgconf-2.5.1.tar.xz",
+  "sha256": "cd05c9589b9f86ecf044c10a2269822bc9eb001eced2582cfffd658b0a50c243",
+  "artifact": "artifacts/pkgconf.done",
+  "dependencies": [
+    "gcc-target",
+    "binutils-target",
+    "glibc",
+    "bash",
+    "coreutils",
+    "make"
+  ]
+}

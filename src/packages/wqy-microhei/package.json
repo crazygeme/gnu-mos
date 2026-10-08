@@ -1,0 +1,16 @@
+{
+  "name": "wqy-microhei",
+  "version": "0.2.0-beta",
+  "order": 140.8,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/f/fonts-wqy-microhei/fonts-wqy-microhei_{version}.orig.tar.gz",
+  "archive": "wqy-microhei-0.2.0-beta.tar.gz",
+  "sha256": "2802ac8023aa36a66ea6e7445854e3a078d377ffff42169341bd237871f7213e",
+  "artifact": "artifacts/wqy-microhei.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "fontconfig"
+  ]
+}

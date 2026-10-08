@@ -1,0 +1,19 @@
+{
+  "name": "patch",
+  "version": "2.8",
+  "order": 101.2,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/gnu/patch/patch-{version}.tar.xz",
+  "archive": "patch-2.8.tar.xz",
+  "sha256": "f87cee69eec2b4fcbf60a396b030ad6aa3415f192aa5f7ee84cad5e11f7f5ae3",
+  "artifact": "artifacts/patch.done",
+  "dependencies": [
+    "gcc-target",
+    "binutils-target",
+    "glibc",
+    "bash",
+    "coreutils",
+    "make",
+    "diffutils"
+  ]
+}

@@ -12,5 +12,9 @@
   "artifact": "artifacts/harfbuzz.done",
   "profiles": [
     "gui"
+  ],
+  "dependencies": [
+    "gobject-introspection",
+    "glib-introspection"
   ]
 }

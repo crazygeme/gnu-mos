@@ -17,6 +17,8 @@
     "glib",
     "dbus",
     "libxtst",
-    "libxml2"
+    "libxml2",
+    "gobject-introspection",
+    "glib-introspection"
   ]
 }

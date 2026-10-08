@@ -1,0 +1,32 @@
+{
+  "name": "ibus-pinyin",
+  "version": "1.5.0",
+  "order": 141.0,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/i/ibus-pinyin/ibus-pinyin_{version}.orig.tar.gz",
+  "archive": "ibus-pinyin-1.5.0.tar.gz",
+  "sha256": "a85d458dcc51ea9fd65849e63002428b3fcb3b39adcbea9214b5cb4a4cbdbc96",
+  "artifact": "artifacts/ibus-pinyin.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "ibus",
+    "pyzy",
+    "sqlite",
+    "lua",
+    "pygobject",
+    "pyxdg"
+  ],
+  "host-packages": {
+    "apt": [
+      "autoconf",
+      "automake",
+      "libtool",
+      "gettext",
+      "intltool",
+      "sqlite3",
+      "python3"
+    ]
+  }
+}

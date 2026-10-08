@@ -10,9 +10,10 @@ meson_install(
     options=(
         "-Dx11_backend=true",
         "-Dwayland_backend=false",
-        "-Dintrospection=false",
+        "-Dintrospection=true",
         "-Dtests=false",
         "-Dinstalled_tests=false",
         "-Dexamples=false",
     ),
+    introspection=True,
 )

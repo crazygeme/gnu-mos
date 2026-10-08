@@ -1,9 +1,12 @@
 {
   "name": "pyyaml",
   "version": "6.0.2",
-  "order": 102,
+  "order": 57.25,
   "source": "archive",
   "url": "https://files.pythonhosted.org/packages/54/ed/79a089b6be93607fa5cdaedf301d7dfb23af5f25c398d5ead2525b063e17/pyyaml-{version}.tar.gz",
   "archive": "pyyaml-6.0.2.tar.gz",
-  "artifact": "artifacts/pyyaml.done"
+  "artifact": "artifacts/pyyaml.done",
+  "dependencies": [
+    "python-host"
+  ]
 }

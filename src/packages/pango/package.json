@@ -17,6 +17,8 @@
     "glib",
     "harfbuzz",
     "fribidi",
-    "cairo"
+    "cairo",
+    "gobject-introspection",
+    "glib-introspection"
   ]
 }

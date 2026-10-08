@@ -5,5 +5,11 @@
   "source": "archive",
   "url": "https://www.lua.org/ftp/lua-{version}.tar.gz",
   "archive": "lua-5.4.8.tar.gz",
-  "artifact": "artifacts/lua.done"
+  "sha256": "4f18ddae154e793e46eeab727c59ef1c0c0c2b744e7b94219710d76f530629ae",
+  "artifact": "artifacts/lua.done",
+  "dependencies": [
+    "gcc-target",
+    "binutils-target",
+    "glibc"
+  ]
 }

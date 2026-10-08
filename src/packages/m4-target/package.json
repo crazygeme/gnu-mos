@@ -1,0 +1,18 @@
+{
+  "name": "m4-target",
+  "version": "1.4.19",
+  "order": 100.7,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/gnu/m4/m4-{version}.tar.xz",
+  "archive": "m4-1.4.19.tar.xz",
+  "sha256": "63aede5c6d33b6d9b13511cd0be2cac046f2e70fd0a07aa9573a04a82783af96",
+  "artifact": "artifacts/m4-target.done",
+  "dependencies": [
+    "gcc-target",
+    "binutils-target",
+    "glibc",
+    "bash",
+    "coreutils",
+    "make"
+  ]
+}

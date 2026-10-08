@@ -1,0 +1,14 @@
+[desktop/ibus/general]
+preload-engines=['xkb:us::eng', 'pinyin']
+engines-order=['xkb:us::eng', 'pinyin']
+use-system-keyboard-layout=true
+
+[desktop/ibus/general/hotkey]
+triggers=['<Control>space']
+trigger=['Control+space']
+
+[desktop/ibus/engine/pinyin]
+init-chinese=true
+init-full=false
+init-full-punct=true
+double-pinyin=false

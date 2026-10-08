@@ -1,0 +1,13 @@
+{
+  "name": "bash-completion",
+  "version": "2.16.0",
+  "order": 68.8,
+  "source": "archive",
+  "url": "https://github.com/scop/bash-completion/releases/download/{version}/bash-completion-{version}.tar.xz",
+  "archive": "bash-completion-2.16.0.tar.xz",
+  "sha256": "3369bd5e418a75fb990863925aed5b420398acebb320ec4c0306b3eae23f107a",
+  "artifact": "artifacts/bash-completion.done",
+  "dependencies": [
+    "bash"
+  ]
+}

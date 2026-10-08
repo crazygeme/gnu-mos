@@ -21,6 +21,7 @@ run_configure(
         "--prefix=/usr",
         "--disable-shared",
         "--enable-static",
+        "--with-pic",
         "--with-gmp-include=" + str(sysroot / "usr/include"),
         "--with-gmp-lib=" + str(sysroot / "usr/lib"),
     ],

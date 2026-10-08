@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Chinese input
+Comment=Start the IBus input method service.
+Exec=/usr/bin/ibus-daemon --daemonize --xim
+TryExec=/usr/bin/ibus-daemon
+OnlyShowIn=XFCE;
+Terminal=false
+X-GNOME-Autostart-enabled=true
