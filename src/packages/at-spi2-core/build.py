@@ -8,7 +8,8 @@ meson_install(
     archive_source("at-spi2-core", "at-spi2-core-2.56.2.tar.xz", "at-spi2-core-2.56.2"),
     "at-spi2-core",
     options=(
-        "-Dintrospection=disabled",
+        "-Dintrospection=enabled",
         "-Duse_systemd=false",
     ),
+    introspection=True,
 )

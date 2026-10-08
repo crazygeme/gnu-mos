@@ -1,0 +1,24 @@
+{
+  "name": "glib-introspection",
+  "version": "2.88.1",
+  "order": 107.3,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/glib/2.88/glib-{version}.tar.xz",
+  "archive": "glib-2.88.1.tar.xz",
+  "sha256": "51ab804c56f6eab3e5045c774d1290ac5e4c923d4f9a3d8e33123bee45c1840e",
+  "artifact": "artifacts/glib-introspection.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "pcre2",
+    "libffi",
+    "gobject-introspection",
+    "gobject-introspection-host"
+  ]
+}

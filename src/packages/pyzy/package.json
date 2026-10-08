@@ -1,0 +1,28 @@
+{
+  "name": "pyzy",
+  "version": "1.0.1",
+  "order": 140.7,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/libp/libpyzy/libpyzy_{version}.orig.tar.xz",
+  "archive": "libpyzy-1.0.1.tar.xz",
+  "sha256": "9533518eceb6d757079754352e6dd25e3b8ddea3934da97d6ae9b9da82f80582",
+  "artifact": "artifacts/pyzy.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "sqlite",
+    "libuuid"
+  ],
+  "host-packages": {
+    "apt": [
+      "autoconf",
+      "automake",
+      "libtool",
+      "gettext",
+      "sqlite3",
+      "python3"
+    ]
+  }
+}

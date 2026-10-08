@@ -1,0 +1,12 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parents[2]))
+from package_lib import archive_source, configure_make_install
+
+configure_make_install(
+    archive_source('automake', 'automake-1.18.1.tar.xz', 'automake-1.18.1'),
+    env_overrides={
+        'PERL': '/usr/bin/perl',
+    },
+)

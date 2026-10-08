@@ -17,6 +17,8 @@
     "glib",
     "libpng",
     "shared-mime-info",
-    "libjpeg"
+    "libjpeg",
+    "gobject-introspection",
+    "glib-introspection"
   ]
 }

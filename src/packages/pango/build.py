@@ -15,9 +15,10 @@ meson_install(
     archive_source("pango", "pango-1.56.3.tar.xz", "pango-1.56.3"),
     "pango",
     options=(
-        "-Dintrospection=disabled",
+        "-Dintrospection=enabled",
         "-Dbuild-testsuite=false",
         "-Dbuild-examples=false",
         "-Dc_link_args=" + json.dumps(link_args),
     ),
+    introspection=True,
 )

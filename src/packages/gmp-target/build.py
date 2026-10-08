@@ -21,6 +21,7 @@ run_configure(
         "--prefix=/usr",
         "--disable-shared",
         "--enable-static",
+        "--with-pic",
     ],
     cwd=build,
     env=env,

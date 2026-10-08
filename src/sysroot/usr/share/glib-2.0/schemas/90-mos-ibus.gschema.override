@@ -1,0 +1,8 @@
+[org.freedesktop.ibus.general]
+preload-engines=['xkb:us::eng', 'pinyin']
+engines-order=['xkb:us::eng', 'pinyin']
+use-system-keyboard-layout=true
+
+[org.freedesktop.ibus.general.hotkey]
+triggers=['<Control>space']
+trigger=['Control+space']

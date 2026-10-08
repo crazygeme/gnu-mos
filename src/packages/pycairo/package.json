@@ -1,0 +1,24 @@
+{
+  "name": "pycairo",
+  "version": "1.27.0",
+  "order": 140.3,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/pypi/packages/07/4a/42b26390181a7517718600fa7d98b951da20be982a50cd4afb3d46c2e603/pycairo-{version}.tar.gz",
+  "archive": "pycairo-1.27.0.tar.gz",
+  "sha256": "5cb21e7a00a2afcafea7f14390235be33497a2cce53a98a19389492a60628430",
+  "artifact": "artifacts/pycairo.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "meson",
+    "ninja",
+    "python",
+    "python-host",
+    "cairo"
+  ]
+}

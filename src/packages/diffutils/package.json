@@ -1,0 +1,18 @@
+{
+  "name": "diffutils",
+  "version": "3.12",
+  "order": 101.1,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/gnu/diffutils/diffutils-{version}.tar.xz",
+  "archive": "diffutils-3.12.tar.xz",
+  "sha256": "7c8b7f9fc8609141fdea9cece85249d308624391ff61dedaf528fcb337727dfd",
+  "artifact": "artifacts/diffutils.done",
+  "dependencies": [
+    "gcc-target",
+    "binutils-target",
+    "glibc",
+    "bash",
+    "coreutils",
+    "make"
+  ]
+}

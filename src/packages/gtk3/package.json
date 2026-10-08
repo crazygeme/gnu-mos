@@ -21,6 +21,8 @@
     "libxcomposite",
     "libxinerama",
     "libxcursor",
-    "libxrandr"
+    "libxrandr",
+    "gobject-introspection",
+    "glib-introspection"
   ]
 }

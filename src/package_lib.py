@@ -171,6 +171,8 @@ def configure_make_install(
     env_overrides=None,
     host_tools=(),
     install_options=(),
+    make_options=(),
+    build_options=(),
 ):
     env = environment()
     tool_variables = {
@@ -194,12 +196,16 @@ def configure_make_install(
         env=env,
         check=True,
     )
-    subprocess.run(["make", "-j4", *make_tools], cwd=source, env=env, check=True)
+    subprocess.run(
+        ["make", "-j4", *make_tools, *make_options, *build_options],
+        cwd=source, env=env, check=True,
+    )
     subprocess.run(
         [
             "make",
             "DESTDIR=" + os.environ["LFS_SYSROOT"],
             *make_tools,
+            *make_options,
             *install_options,
             "install",
         ],
@@ -213,14 +219,34 @@ def configure_make_install(
         archive.unlink()
 
 
-def meson_install(source, name, options=(), host_tools=GLIB_HOST_TOOLS):
+def meson_install(
+    source, name, options=(), host_tools=GLIB_HOST_TOOLS,
+    introspection=False, python_cross=False, env_overrides=None,
+):
     build = Path(os.environ["LFS_WORKSPACE"]) / "build" / (name + "-meson")
     build.mkdir(parents=True, exist_ok=True)
     env = environment()
+    if env_overrides:
+        env.update(env_overrides)
     target = env.get("LFS_TARGET", "i686-lfs-linux-gnu")
+    tools = Path(env["LFS_WORKSPACE"]) / "tools"
+    if python_cross:
+        python_lib = Path(env["LFS_SYSROOT"]) / "usr/lib/python3.13"
+        config_data = sorted(python_lib.glob("_sysconfigdata_*.py"))
+        if len(config_data) != 1:
+            raise RuntimeError("exactly one guest Python sysconfig module is required")
+        env["_PYTHON_SYSCONFIGDATA_NAME"] = config_data[0].stem
+        env["PYTHONPATH"] = str(python_lib)
     tool_entries = ""
     for tool, executable in host_tool_paths(env, host_tools).items():
         tool_entries += f"{tool} = '{executable}'\n"
+    introspection_entries = ""
+    if introspection:
+        for tool in ("g-ir-scanner", "g-ir-compiler"):
+            introspection_entries += f"{tool} = '{tools / 'bin' / (tool + '-cross')}'\n"
+        tool_entries += introspection_entries
+        tool_entries += f"exe_wrapper = '{tools / 'bin/lfs-run-target'}'\n"
+        env["GI_TYPELIB_PATH"] = str(Path(env["LFS_SYSROOT"]) / "usr/lib/girepository-1.0")
     cross = build / "cross-file.ini"
     cross.write_text(
         "[binaries]\n"
@@ -234,7 +260,9 @@ def meson_install(source, name, options=(), host_tools=GLIB_HOST_TOOLS):
         f"cpu = '{'x86_64' if env.get('LFS_ARCH') == 'x64' else 'i686'}'\n"
         "endian = 'little'\n"
         "\n[properties]\n"
-        "needs_exe_wrapper = true\n",
+        "needs_exe_wrapper = true\n"
+        f"pkg_config_libdir = ['{env['LFS_SYSROOT']}/usr/lib/pkgconfig', "
+        f"'{env['LFS_SYSROOT']}/usr/share/pkgconfig']\n",
         encoding="ascii",
     )
     # Native dependency discovery must not inherit target pkg-config paths.
@@ -243,7 +271,8 @@ def meson_install(source, name, options=(), host_tools=GLIB_HOST_TOOLS):
     tools = Path(env["LFS_WORKSPACE"]) / "tools"
     native.write_text(
         "[binaries]\n"
-        "pkg-config = ['/usr/bin/env', '-u', 'PKG_CONFIG_SYSROOT_DIR', "
+        + introspection_entries
+        + "pkg-config = ['/usr/bin/env', '-u', 'PKG_CONFIG_SYSROOT_DIR', "
         f"'-u', 'PKG_CONFIG_LIBDIR', '{pkg_config}']\n"
         "\n[built-in options]\n"
         f"pkg_config_path = ['{tools / 'lib/pkgconfig'}', '{tools / 'share/pkgconfig'}']\n",

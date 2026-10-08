@@ -5,5 +5,8 @@
   "source": "archive",
   "url": "https://mirrors.ustc.edu.cn/gnu/mpfr/mpfr-{version}.tar.xz",
   "archive": "mpfr-4.2.2.tar.xz",
-  "artifact": "artifacts/mpfr-target.done"
+  "artifact": "artifacts/mpfr-target.done",
+  "dependencies": [
+    "gmp-target"
+  ]
 }

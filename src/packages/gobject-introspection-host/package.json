@@ -1,0 +1,32 @@
+{
+  "name": "gobject-introspection-host",
+  "version": "1.84.0",
+  "order": 107.1,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/gobject-introspection/1.84/gobject-introspection-{version}.tar.xz",
+  "archive": "gobject-introspection-1.84.0.tar.xz",
+  "sha256": "945b57da7ec262e5c266b89e091d14be800cc424277d82a02872b7d794a84779",
+  "artifact": "artifacts/gobject-introspection-host.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "meson",
+    "ninja",
+    "flex",
+    "bison",
+    "python-host",
+    "python-setuptools"
+  ],
+  "host-packages": {
+    "apt": [
+      "libglib2.0-dev",
+      "libffi-dev",
+      "pkg-config"
+    ]
+  }
+}

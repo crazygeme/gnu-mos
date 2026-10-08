@@ -3,6 +3,9 @@ export XDG_CURRENT_DESKTOP=XFCE
 export XDG_SESSION_DESKTOP=xfce
 export XDG_SESSION_TYPE=x11
 export DESKTOP_SESSION=xfce
+export GTK_IM_MODULE=ibus
+export QT_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
 export SDL_AUDIODRIVER="${SDL_AUDIODRIVER:-dsp}"
 /usr/bin/mos-gpu-info || exit $?
 /usr/bin/xrdb -merge /etc/X11/Xresources

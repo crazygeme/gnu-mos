@@ -1,0 +1,39 @@
+{
+  "name": "ibus",
+  "version": "1.5.32",
+  "order": 140.9,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/i/ibus/ibus_{version}.orig.tar.gz",
+  "archive": "ibus-1.5.32.tar.gz",
+  "sha256": "b24f41ae38b236b254c09f1a8f53c2354b69b0789e89cea888d0494b09d15d67",
+  "artifact": "artifacts/ibus.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "dbus",
+    "glib",
+    "gtk3",
+    "dconf",
+    "libnotify",
+    "gobject-introspection",
+    "pygobject",
+    "pyxdg",
+    "iso-codes",
+    "xkeyboard-config",
+    "libx11",
+    "libxtst",
+    "libxfixes",
+    "wqy-microhei"
+  ],
+  "host-packages": {
+    "apt": [
+      "pkg-config",
+      "libglib2.0-dev",
+      "valac",
+      "gettext",
+      "intltool",
+      "gtk-doc-tools"
+    ]
+  }
+}

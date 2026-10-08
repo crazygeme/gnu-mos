@@ -1,0 +1,26 @@
+{
+  "name": "automake",
+  "version": "1.18.1",
+  "order": 101.4,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/gnu/automake/automake-{version}.tar.xz",
+  "archive": "automake-1.18.1.tar.xz",
+  "sha256": "168aa363278351b89af56684448f525a5bce5079d0b6842bd910fdd3f1646887",
+  "artifact": "artifacts/automake.done",
+  "dependencies": [
+    "gcc-target",
+    "binutils-target",
+    "glibc",
+    "bash",
+    "coreutils",
+    "make",
+    "autoconf",
+    "perl"
+  ],
+  "host-packages": {
+    "apt": [
+      "autoconf",
+      "perl"
+    ]
+  }
+}
