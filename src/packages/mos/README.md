@@ -106,6 +106,71 @@ probe to report unavailable namespace support. Chromium's namespace sandbox
 cannot operate on MOS. `test/clone_namespaces.py` validates namespace-flag
 rejection inside the guest.
 
+`madvise(MADV_DONTNEED)` discards resident pages while retaining the virtual
+mapping and its protections. Private anonymous pages fault back as zero-filled
+pages; private file mappings reload file contents. Shared file pages are written
+back before their mappings are discarded. Advice lengths use the syscall ABI's
+native width. `test/madvise.py` checks partial-page rounding, retained neighboring
+pages, fork isolation, file reloads, and lengths exceeding 4 GiB on x64.
+
+Protection changes traverse intersecting VM regions in address order and update
+every covered portion, including mappings split by earlier operations.
+`test/mprotect_ranges.py` validates writable access across split mappings.
+
+`AF_NETLINK` route sockets support `RTM_GETLINK` and `RTM_GETADDR` snapshots
+for the configured lwIP interfaces, including loopback and IPv4 addresses.
+Replies preserve request sequence numbers and bound port IDs and terminate
+multipart dumps with `NLMSG_DONE`. Datagram receive supports scatter buffers,
+`MSG_PEEK`, and `MSG_TRUNC`. Route changes, multicast notifications, and netlink
+protocols other than `NETLINK_ROUTE` are unavailable. Interface enumeration via
+glibc `getifaddrs` is supported. `test/netlink_interfaces.py` validates snapshots
+and interface enumeration.
+
+Following `/proc/<pid>/fd/<fd>` for path metadata retains the descriptor's file
+object, including unnamed pipes, sockets, and unlinked files.
+`test/proc_fd_stat.py` compares descriptor and proc-link metadata.
+
+Heap extension allocates physical memory outside the heap free-list lock so
+cache reclamation can release heap-backed metadata. Socket `readv` and `writev`
+use the socket scatter-buffer operations without allocating a contiguous kernel
+buffer for the complete payload. `test/socket_vector_large.py` verifies data
+integrity for a 4 MiB transfer through a Unix stream socket pair.
+
+Task enumeration retains each callback's task and selects subsequent tasks by
+ID under the scheduler lock. Detached tree nodes are not retained across
+unlocked callbacks. `test/proc_thread_churn.py` validates proc task enumeration
+during concurrent thread creation and exit.
+
+Packed proc directory buffers append records at the current buffer length and
+retain complete records across growth.
+
+Pipe `FIONBIO` updates the descriptor's nonblocking mode; `FIONREAD` reports
+queued bytes. Proc descriptor metadata uses a separate path handle and preserves
+the underlying descriptor's pathname and flags.
+`test/pipe_nonblocking_ioctl.py` validates these operations.
+
+`prlimit64` copies limit structures through the process-memory access helpers.
+Read-only output mappings return `EFAULT`; writable copy-on-write mappings retain
+fork isolation. `test/prlimit_protection.py` validates both cases.
+
+Unix stream `SCM_RIGHTS` descriptors accompany the first received byte of their
+payload, including partial reads. `MSG_CMSG_CLOEXEC` marks installed descriptors
+close-on-exec. Positive nonblocking short writes preserve receive-buffer lock
+ownership through ancillary-record completion. `test/unix_rights_partial.py`
+validates partial descriptor delivery and shared-memory access. Full ancillary
+queues block blocking sends and return `EAGAIN` for nonblocking sends. Writable
+readiness requires both payload capacity and an ancillary-record slot. Large
+descriptor-bearing payloads support partial sends. Receiver progress wakes
+senders. `test/unix_rights_backpressure.py` validates queue saturation,
+readiness notification, blocking wakeup, and partial sends.
+
+Tmpfs files retain reference-counted physical backing pages. Shared mappings,
+buffered reads and writes, and mappings created after file growth access the
+same backing storage. Private writable mappings copy pages on write. Mapping
+callbacks retain pages until page-table installation completes.
+`test/tmpfs_mapping_coherence.py` validates file growth, independent mappings,
+buffered I/O, private copies, and page discard.
+
 [IPC performance](../../../docs/ipc-performance.md) defines benchmark modes,
 operation counts, and measurement procedures.
 
@@ -344,7 +409,7 @@ their epoll backends.
 
 ## CPU usage accounting
 
-MOS package version 74 uses timer-interrupt CPU sampling at 100 Hz. Samples
+MOS uses timer-interrupt CPU sampling at 100 Hz. Samples
 charge the executing thread, its reference-counted thread group, and the
 receiving CPU. CPU accounting performs no clock reads at syscall or context
 switch boundaries. Sleeping and zombie tasks accrue no off-CPU usage.
@@ -368,3 +433,44 @@ and 8192 MiB RAM. Medians of three default samples are 23.01 GB/s and 3.10 milli
 and 26.82 GB/s and 2.46 million writes/s for named sockets. Default mean RTT
 medians are 1.303, 1.480, and 1.468 microseconds, respectively. Complete samples
 and the matching Linux baseline are recorded in `docs/ipc-performance.md`.
+
+AMD64 address-space cloning skips absent page-table subtrees in sparse virtual
+reservations. Resident private pages retain copy-on-write isolation.
+`test/sparse_fork.py` validates a 1 TiB reservation with three resident pages
+and a five-second bound on cloning and child completion.
+
+`creat()` resolves relative paths against the working directory and returns an
+open write-only descriptor after creating or truncating the file.
+`test/creat_descriptor.py` validates descriptor lifetime, buffered file content,
+relative pathname resolution, and truncation.
+
+Page-fault resolution and process-memory copying retain the address-space
+mapping lock across VMA lookup and page-table access. Mapping descriptors remain
+valid during concurrent protection changes, unmapping, and copy-on-write faults.
+`test/mapping_fault_race.py` validates concurrent page discard, write faults,
+and protection changes in neighboring ranges.
+
+AMD64 `sendfile()` copies regular-file data to writable descriptors using a
+bounded kernel buffer. Explicit 64-bit input offsets advance independently of
+the input descriptor position; null offsets advance that position. Output
+position, append restrictions, file-size limits, EOF, and partial transfers are
+preserved. `test/sendfile_copy.py` validates data and offset behavior.
+
+Unix socket I/O retains network-core ownership through readiness checks and
+waiter enrollment. Waits release ownership after publishing their waiter and
+restore it before checking readiness again. Ordinary Unix reads consume
+ancillary references without installing descriptors.
+`test/unix_wait_wakeup.py` validates concurrent request/reply wakeups;
+`test/unix_read_rights.py` validates rights disposal and subsequent stream data.
+
+`getrandom()`, `/dev/random`, and `/dev/urandom` use a common serialized byte
+source. RDRAND supplies bytes when advertised by the CPU; a clock-seeded
+64-bit mixed-state fallback supplies bytes when hardware random output is
+unavailable. The fallback does not provide cryptographic entropy. User-memory
+copies occur outside the random-source spinlock. The kernel's legacy `rand()`
+state advances atomically. `test/random_identifiers.c` validates concurrent
+identifier generation across eight threads and 80,000 requests.
+
+The IPv4 socket pools provide 128 TCP and 64 UDP control blocks.
+`test/internet_socket_capacity.py` validates simultaneous socket allocation
+and reuse after closure.

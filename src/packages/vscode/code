@@ -1,0 +1,5 @@
+#!/bin/sh
+if [ "${ELECTRON_RUN_AS_NODE:-}" = "1" ]; then
+    exec /usr/share/code/code.bin "$@" --no-sandbox
+fi
+exec /usr/share/code/code.bin --no-sandbox "$@"
