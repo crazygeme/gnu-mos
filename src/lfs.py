@@ -659,7 +659,7 @@ def qemu(extra: list[str]) -> None:
             "virtio-vga-gl,video-rendernode=" + rendernode,
         ])
         if "-display" not in qemu_extra:
-            command.extend(["-display", "sdl,gl=on,full-screen=on"])
+            command.extend(["-display", "sdl,gl=on,full-screen=off"])
     command.extend(["-serial", serial])
     command.extend(qemu_extra)
     env = os.environ.copy()
