@@ -474,3 +474,56 @@ identifier generation across eight threads and 80,000 requests.
 The IPv4 socket pools provide 128 TCP and 64 UDP control blocks.
 `test/internet_socket_capacity.py` validates simultaneous socket allocation
 and reuse after closure.
+
+Sparse virtual-memory operations traverse present page-table subtrees.
+`munmap`, `mprotect`, and `MADV_DONTNEED` skip absent subtrees while
+retaining page release, permission updates, and mapping boundaries.
+`test/sparse_vm.c` validates large reservations, page discard, and partial
+unmapping with retained boundary pages.
+
+The ATA block cache groups AMD64 reads into 32 KiB extents and retains 4 KiB
+extents on IA-32. DMA buffers use matching sizes and buddy alignment within
+a 64 KiB physical boundary. Cache storage prefers high physical memory;
+reclamation releases complete extents and accounts for every constituent
+page. Extent reads and write-back stop at the partition boundary.
+
+AMD64 page-table allocation uses the reserved page-table cache and allocates
+additional tables from kernel physical memory when the cache is empty.
+Additional tables return to the physical allocator on release. Page-table
+allocation therefore depends on available physical memory rather than the
+reserved cache capacity alone.
+`test/page_table_growth.c` validates more than 4096 populated page tables,
+COW fork isolation, and repeated allocation and release.
+
+Demand-faulted pages receive the mapping execution permission when their
+PTEs are installed. AMD64 permission updates retain unchanged PTEs without
+TLB invalidation. Permission changes and physical-page replacements retain
+synchronous invalidation.
+`test/page_execute.c` validates anonymous and cached file execution,
+non-executable mappings, and `mprotect` execution-permission transitions.
+
+`mremap` relocation retains mapping protections, file and shared-anonymous
+backing, and populated page references. Sparse ranges remain demand-paged.
+`MREMAP_FIXED` selects a non-overlapping destination with `MREMAP_MAYMOVE`.
+`test/mremap_move.sh` validates relocation of read-only, inaccessible, shared
+file, sparse, and copy-on-write mappings.
+`MAP_ANONYMOUS` ignores supplied file descriptors and file offsets and creates
+zero-initialized anonymous storage.
+
+Per-process procfs opens and symbolic-link reads retain their target task
+until content generation completes. Thread-path resolution retains the
+selected thread independently of its group leader. Task reaping waits for
+outstanding lookup references. `test/proc_exit_lookup.sh` validates concurrent
+status queries during process creation and reaping.
+
+Epoll serialization publishes critical-section ownership to thread-group
+termination. Group teardown waits for epoll operations to release ownership.
+`test/epoll_group_exit.sh` validates repeated group termination during epoll
+delivery with `clone` workers and subsequent epoll operations.
+
+Userspace ext4 writes copy input into kernel storage before filesystem
+serialization. Input page faults therefore occur outside the filesystem
+lock. Write storage and filesystem lock ownership remain protected until
+operations complete, including during thread-group termination.
+`test/ext4_write_fault.sh` validates concurrent file-backed input faults,
+page discard, full writes, and inaccessible input using a `clone` worker.
