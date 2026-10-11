@@ -1,0 +1,52 @@
+--- a/src/Pending.c
++++ b/src/Pending.c
+@@ -28,6 +28,9 @@
+ #include <config.h>
+ #endif
+ #include "Xlibint.h"
++#ifdef XTHREADS
++#include <pthread.h>
++#endif
+ 
+ /* Read in pending events if needed and return the number of queued events. */
+ 
+@@ -36,23 +39,39 @@
+     int mode)
+ {
+     int ret_val;
++#ifdef XTHREADS
++    int cancel_state;
++    /* Nonblocking event queries restore cancellation after releasing the lock. */
++    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cancel_state);
++#endif
+     LockDisplay(dpy);
+     if (dpy->qlen || (mode == QueuedAlready))
+ 	ret_val = dpy->qlen;
+     else
+ 	ret_val = _XEventsQueued (dpy, mode);
+     UnlockDisplay(dpy);
++#ifdef XTHREADS
++    pthread_setcancelstate(cancel_state, NULL);
++#endif
+     return ret_val;
+ }
+ 
+ int XPending (register Display *dpy)
+ {
+     int ret_val;
++#ifdef XTHREADS
++    int cancel_state;
++    /* Nonblocking event queries restore cancellation after releasing the lock. */
++    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cancel_state);
++#endif
+     LockDisplay(dpy);
+     if (dpy->qlen)
+ 	ret_val = dpy->qlen;
+     else
+ 	ret_val = _XEventsQueued (dpy, QueuedAfterFlush);
+     UnlockDisplay(dpy);
++#ifdef XTHREADS
++    pthread_setcancelstate(cancel_state, NULL);
++#endif
+     return ret_val;
+ }
