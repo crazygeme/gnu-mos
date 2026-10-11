@@ -91,9 +91,11 @@ The `ninja` and `meson` source packages install host build tools into
 `.workspace/<arch>/tools/bin/` before Meson-based packages are built.
 
 The optional `host-packages.apt` manifest list declares native distribution
-dependencies. Before preparing a pending package's source, `./lfs build`
-checks installation status with `dpkg-query` and installs missing packages
-through `apt-get install --yes`, using `sudo` when required. This declaration
+dependencies. Before source downloads and compilation, `./lfs build` collects
+and deduplicates the dependencies of all packages to be built, checks installation
+status with `dpkg-query`, and installs missing packages in one invocation of
+`apt-get install --yes`, using `sudo` when required. Source preparation uses
+four concurrent workers and completes before sequential compilation begins. This declaration
 requires an APT-based host. Packages without this declaration do not invoke
 the host package manager. Status and image setup do not install host packages.
 

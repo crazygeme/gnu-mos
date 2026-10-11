@@ -10,7 +10,10 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import threading
+import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -48,11 +51,69 @@ def progress(
         print()
 
 
-def download_progress(name: str):
-    def report(blocks: int, block_size: int, total: int) -> None:
-        progress(f"download {name}", min(blocks * block_size, total), total)
+class DownloadLog:
+    """Render concurrent downloads on separate terminal lines."""
 
-    return report
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.rows = {}
+
+    def interactive(self) -> bool:
+        return sys.stdout.isatty() and os.environ.get("TERM") != "dumb"
+
+    def write(self, message: str = "", *, task=None, finished: bool = False) -> None:
+        with self.lock:
+            if task is None and not self.rows:
+                print(message, flush=True)
+                return
+            if not self.interactive():
+                if task is None or finished or task not in self.rows:
+                    print(message, flush=True)
+                if task is not None:
+                    if finished:
+                        self.rows.pop(task, None)
+                    else:
+                        self.rows[task] = message
+                return
+            output = "\r\033[J"
+            if task is None or finished:
+                output += message + "\n"
+                self.rows.pop(task, None)
+            else:
+                self.rows[task] = message
+            width = max(1, shutil.get_terminal_size().columns - 1)
+            output += "".join(line[:width] + "\n" for line in self.rows.values())
+            if self.rows:
+                output += f"\033[{len(self.rows)}A"
+            sys.stdout.write(output)
+            sys.stdout.flush()
+
+
+DOWNLOAD_LOG = DownloadLog()
+
+
+class DownloadProgress:
+    def __init__(self, name: str):
+        self.label = f"download {name}"
+        self.last_update = 0.0
+        DOWNLOAD_LOG.write(f"{self.label}: starting", task=self)
+
+    def __call__(self, blocks: int, block_size: int, total: int) -> None:
+        now = time.monotonic()
+        if now - self.last_update < 0.1:
+            return
+        self.last_update = now
+        current = max(0, blocks * block_size)
+        if total > 0:
+            ratio = min(current, total) / total
+            filled = int(28 * ratio)
+            message = f"{self.label:24} [{('#' * filled) + ('.' * (28 - filled))}] {ratio * 100:6.2f}%"
+        else:
+            message = f"{self.label}: {current} bytes"
+        DOWNLOAD_LOG.write(message, task=self)
+
+    def finish(self, status: str) -> None:
+        DOWNLOAD_LOG.write(f"{self.label}: {status}", task=self, finished=True)
 
 
 def run(
@@ -61,7 +122,7 @@ def run(
     env: dict[str, str] | None = None,
     log_path: Path | None = None,
 ) -> None:
-    print(f"{BLUE}→{RESET} " + " ".join(cmd))
+    DOWNLOAD_LOG.write(f"{BLUE}→{RESET} " + " ".join(cmd))
     if log_path is None:
         subprocess.run(cmd, cwd=cwd, env=env, check=True)
         return
@@ -79,7 +140,7 @@ def run(
         assert process.stdout is not None
         with process.stdout:
             for line in process.stdout:
-                print(line, end="")
+                DOWNLOAD_LOG.write(line.rstrip("\n"))
                 log.write(line)
                 log.flush()
         result = process.wait()
@@ -92,10 +153,12 @@ def sudo_run(*cmd: str) -> None:
 
 
 @contextmanager
-def source_lock(directory: Path):
-    """Serialize access to shared source downloads."""
-    directory.mkdir(parents=True, exist_ok=True)
-    with (directory / ".workspace.lock").open("a") as lock:
+def source_lock(directory: Path, key: str):
+    """Serialize access to each shared source download."""
+    locks = directory / ".locks"
+    locks.mkdir(parents=True, exist_ok=True)
+    filename = hashlib.sha256(key.encode()).hexdigest() + ".lock"
+    with (locks / filename).open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         try:
             yield
@@ -276,7 +339,7 @@ def status(no_gui: bool = False) -> None:
 def fetch_package(info: dict) -> None:
     if info.get("source") == "meta":
         return
-    with source_lock(SOURCES):
+    with source_lock(SOURCES, info.get("archive", info["name"])):
         fetch_source(info)
 
 
@@ -302,6 +365,7 @@ def fetch_source(info: dict) -> None:
                 info["version"],
                 info["git"],
                 str(checkout),
+                log_path=WORK / "logs" / f"{info['name']}-download.log",
             )
     elif info.get("source") in ("archive", "deb"):
         if not info.get("url") or not info.get("archive"):
@@ -309,15 +373,20 @@ def fetch_source(info: dict) -> None:
         archive = SOURCES / info["archive"]
         if not archive.exists():
             temporary = archive.with_suffix(archive.suffix + ".part")
-            print(f"download {info['name']} {info['version']}")
+            reporter = DownloadProgress(f"{info['name']} {info['version']}")
             try:
                 urllib.request.urlretrieve(
                     info["url"].format(version=info["version"]),
                     temporary,
-                    reporthook=download_progress(info["name"]),
+                    reporthook=reporter,
                 )
                 verify_download(temporary, info)
                 temporary.replace(archive)
+            except BaseException:
+                reporter.finish("failed")
+                raise
+            else:
+                reporter.finish("complete")
             finally:
                 temporary.unlink(missing_ok=True)
         else:
@@ -330,14 +399,45 @@ def ensure_archive(info: dict) -> None:
     if info.get("source") != "archive":
         return
     archive = SOURCES / info["archive"]
-    fetch_package(info)
-    try:
-        with tarfile.open(archive):
-            pass
-    except (OSError, tarfile.TarError) as error:
-        print(f"{YELLOW}warning{RESET}: invalid archive for {info['name']}: {error}")
-        archive.unlink(missing_ok=True)
+    with source_lock(SOURCES, info["archive"]):
+        fetch_source(info)
+        try:
+            with tarfile.open(archive):
+                pass
+        except (OSError, tarfile.TarError) as error:
+            DOWNLOAD_LOG.write(f"warning: invalid archive for {info['name']}: {error}")
+            archive.unlink(missing_ok=True)
+            fetch_source(info)
+            with tarfile.open(archive):
+                pass
+
+
+def prepare_source(info: dict) -> None:
+    if info.get("source") == "archive":
+        ensure_archive(info)
+    else:
         fetch_package(info)
+
+
+def prepare_packages(directories: list[Path]) -> None:
+    if not directories:
+        return
+    infos = [metadata(directory) for directory in directories]
+    packages = list(dict.fromkeys(
+        package
+        for info in infos
+        for package in info.get("host-packages", {}).get("apt", [])
+    ))
+    ensure_host_packages({"name": "build", "host-packages": {"apt": packages}})
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(prepare_source, info) for info in infos]
+        try:
+            for future in futures:
+                future.result()
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            raise
 
 
 def reset_archive_sources(info: dict) -> None:
@@ -382,19 +482,19 @@ def ensure_host_packages(info: dict) -> None:
         sudo_run(apt, "install", "--yes", *missing)
 
 
-def build_package(directory: Path) -> None:
+def build_package(directory: Path, *, prepared: bool = False) -> None:
     info = metadata(directory)
     if ARCH not in info.get("architectures", TARGETS):
         raise SystemExit(f"package {info['name']} does not support {ARCH}")
-    ensure_host_packages(info)
+    if not prepared:
+        ensure_host_packages(info)
     done = artifact(directory, info)
     # Package builds always start from an empty build tree. Downloaded source
     # archives, installed tools, the sysroot, and package artifacts are kept.
     shutil.rmtree(WORK / "build", ignore_errors=True)
     (WORK / "build").mkdir(parents=True, exist_ok=True)
-    ensure_archive(info)
-    if info.get("source") != "archive":
-        fetch_package(info)
+    if not prepared:
+        prepare_source(info)
     reset_archive_sources(info)
     script = (
         ROOT / "src/deb_package.py"
@@ -501,11 +601,14 @@ def build(all_mode: bool, rebuild_mode: bool = False, no_gui: bool = False) -> N
         for directory in directories
         if package_state(directory, metadata(directory)) != "built"
     ]
+    if not (all_mode or no_gui):
+        pending = pending[:1]
+    prepare_packages(pending)
     total = len(pending)
     for index, directory in enumerate(pending, 1):
         info = metadata(directory)
         print(f"{YELLOW}package {index}/{total}{RESET} {info['name']}")
-        build_package(directory)
+        build_package(directory, prepared=True)
         progress("build packages", index, total, newline=True)
         if not (all_mode or no_gui):
             sync_sysroot()

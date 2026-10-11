@@ -20,7 +20,7 @@ The desktop profile starts graphical login in runlevel 5. The console profile st
 
 The build recipes target an x86-64 Linux host. Image setup executes installed target programs. The x86 profile requires host support for 32-bit x86 execution; the x64 profile requires x86-64 execution.
 
-Host tools include Bash, Python 3 with `tarfile` extraction-filter support, Git, a native C/C++ compiler, GNU Make, patch, archive utilities, and the build utilities required by individual package recipes. Host development dependencies depend on the selected packages. Before building a package with declared APT host dependencies, `./lfs build` installs missing distribution packages through `apt-get`, using `sudo` when required. Installed dependencies do not trigger installation or authentication.
+Host tools include Bash, Python 3 with `tarfile` extraction-filter support, Git, a native C/C++ compiler, GNU Make, patch, archive utilities, and the build utilities required by individual package recipes. Host development dependencies depend on the selected packages. Before downloading sources or compiling, `./lfs build` collects the declared APT host dependencies of all packages to be built and installs missing distribution packages in one `apt-get` invocation, using `sudo` when required. Installed dependencies do not trigger installation or authentication.
 
 Debian binary packages require host `dpkg-deb` and GNU tar. They use
 `source: "deb"` manifests and extract into `.workspace/<arch>/sysroot/` without
@@ -42,7 +42,7 @@ configuration and must include the required guest sound device. MOS exposes
 AC97 playback through `/dev/dsp`; the XFCE session defaults SDL applications to
 the `dsp` audio driver. An explicit `SDL_AUDIODRIVER` value overrides that default.
 
-The `qemu-host` and `virglrenderer-host` recipes use native host development libraries. On Debian or Ubuntu, `./lfs build` checks and installs their declared dependencies before preparing each package source. Installation may require a sudo password. The equivalent manual command is:
+The `qemu-host` and `virglrenderer-host` recipes use native host development libraries. On Debian or Ubuntu, `./lfs build` checks and installs their declared dependencies during build preparation when these packages are pending. Installation may require a sudo password. The equivalent manual command is:
 
 ```sh
 sudo apt install pkg-config libsdl2-dev libgbm-dev libdrm-dev libepoxy-dev libglib2.0-dev libpixman-1-dev zlib1g-dev python3-venv libva-dev mesa-va-drivers
@@ -84,7 +84,7 @@ Within each architecture, both profiles share `.workspace/<arch>/sysroot/`, buil
 `run`. Commands without `--arch` select `x64`; `--arch x86` selects the x86 workspace. The option is accepted before or after the subcommand. Source archives
 and the MOS checkout are shared under `.workspace/sources/`; each architecture
 has its own sysroot, tools, completion records, caches, logs, mount directory,
-and disk image under `.workspace/<arch>/`. Source fetching uses a shared lock, preventing duplicate downloads during
+and disk image under `.workspace/<arch>/`. Source fetching uses a shared lock for each source file or checkout, preventing duplicate downloads during
 concurrent architecture builds. Go module sources use `.workspace/sources/go-modules/`.
 
 ```sh
@@ -129,7 +129,7 @@ already present, and uses filename completion for QEMU arguments after
 | `./lfs setup` | Copy system configuration, run postscripts for completed packages, and install the sysroot into the image. |
 | `./lfs run` | Boot the image with QEMU and configure host networking for the session. |
 
-Builds fetch missing sources automatically. Each package defines a positive integer build version in `src/packages/<package>/version`, independently of the upstream software version in `package.json`. Completion artifacts record this build version in their JSON `version` field. Both `status` and `build` consider a package built when its completion version is at least its configured build version. A missing artifact or an older completion version requires compilation. An existing artifact without a `version` field, including an empty artifact, is assigned the configured build version and remains built. Changes requiring recompilation must increment the affected package's build version. `--rebuild` deletes all `*.done` files recursively under `.workspace/<arch>/artifacts/` without prompting, then follows the normal build flow. The deletion preserves all other files. Normal package selection and stopping rules apply: the default builds one package, `--all` builds all pending packages, and `--no-gui` builds all pending console packages. All completion markers for the selected architecture are deleted even when `--no-gui` is selected.
+Before compilation, builds fetch and validate sources for all packages to be built, using four concurrent download workers. Compilation starts only after all source preparation succeeds. The default command prepares the next pending package; `--all` and `--no-gui` prepare all pending packages in their selected profile. Cached sources are reused. Interactive terminals display each active download on a separate progress line and retain completion or failure messages. Redirected output records download start and completion or failure on separate lines. Git clone output is recorded in `.workspace/<arch>/logs/<package>-download.log`. Each package defines a positive integer build version in `src/packages/<package>/version`, independently of the upstream software version in `package.json`. Completion artifacts record this build version in their JSON `version` field. Both `status` and `build` consider a package built when its completion version is at least its configured build version. A missing artifact or an older completion version requires compilation. An existing artifact without a `version` field, including an empty artifact, is assigned the configured build version and remains built. Changes requiring recompilation must increment the affected package's build version. `--rebuild` deletes all `*.done` files recursively under `.workspace/<arch>/artifacts/` without prompting, then follows the normal build flow. The deletion preserves all other files. Normal package selection and stopping rules apply: the default builds one package, `--all` builds all pending packages, and `--no-gui` builds all pending console packages. All completion markers for the selected architecture are deleted even when `--no-gui` is selected.
 
 FFmpeg, FFprobe, and FFplay are outputs of the single `ffmpeg` package.
 The GUI profile builds all three together; the console profile omits FFplay.
