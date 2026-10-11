@@ -1,0 +1,19 @@
+--- a/ui/sdl2.c
++++ b/ui/sdl2.c
+@@ -340,6 +340,8 @@
+ 
+ static void toggle_full_screen(struct sdl2_console *scon)
+ {
++    /* Window transitions must not retain keys whose releases go to the host. */
++    sdl2_release_modifiers(scon);
+     gui_fullscreen = !gui_fullscreen;
+     if (gui_fullscreen) {
+         SDL_SetWindowFullscreen(scon->real_window,
+@@ -618,6 +620,7 @@
+         scon->ignore_hotkeys = get_mod_state();
+         break;
+     case SDL_WINDOWEVENT_FOCUS_LOST:
++        sdl2_release_modifiers(scon);
+         if (gui_grab && !gui_fullscreen) {
+             sdl_grab_end(scon);
+         }

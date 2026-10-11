@@ -60,5 +60,21 @@ On X11, the graphical launcher sets `SDL_VIDEO_X11_FORCE_EGL=1` because video
 surface transfer uses EGL images. The host VA-API device must permit surface
 sharing with the GPU used by the display backend.
 
+The SDL frontend releases all guest keys before fullscreen transitions and
+when the window loses keyboard focus. Releases received after the transition
+are filtered when the corresponding key is already released. This preserves
+modifier state when keyboard focus moves between the guest and host.
+
+SDL text input is enabled when a text console receives keyboard focus and
+stopped when a graphical console receives keyboard focus.
+Graphical consoles forward physical key events to the guest, where the guest
+input method performs text composition. Host input methods do not consume
+graphical console keys through SDL text composition.
+
+Graphical consoles synchronize Caps Lock and Num Lock with the host state
+on keyboard focus and before key presses. Guest keyboard LED feedback records
+lock state changes, including initialization by the guest display server.
+Physical lock key events apply each host state transition once.
+
 Guest configuration and verification commands are documented in
 [FFmpeg Video Acceleration](../ffmpeg/README.md).

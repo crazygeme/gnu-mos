@@ -2,6 +2,13 @@ MOS is built as a kernel package. Its userspace is not copied from any
 distribution image. The package produces the generic `/boot/kernel` artifact
 consumed by GRUB; all userspace files are produced by the LFS package set.
 
+`KDSETLED` sends keyboard LED state through the PS/2 controller. Keyboard and
+auxiliary command transactions share controller serialization. Keyboard LED
+commands consume acknowledgments and resend replies separately from scancodes,
+preserving input bytes received during the transaction.
+`test/test_keyboard_leds_host.py` validates LED commands, retries, timeouts,
+and scancode preservation.
+
 IPC circular buffers use contiguous copies across wrap boundaries. Pipe data
 notifications publish data and readiness before returning, and wake waiters
 without an immediate scheduler yield. Unix stream
@@ -283,6 +290,19 @@ connector probes by the DRM master. The reported dimensions become the
 preferred resolution. Missing, disabled, or out-of-range display information
 selects a 1024 × 768 fallback. A failed runtime probe returns an error and
 preserves the cached mode list.
+
+VirtIO-GPU command completion uses PCI INTx notifications when the device
+provides an ISR capability and a usable interrupt line. Completion waits use
+a 50-microsecond polling interval before blocking with the command deadline.
+The interrupt wakes the waiting task and requests scheduling at interrupt exit.
+Devices without an interrupt handler use one-millisecond timer polling.
+Initialization and contexts that cannot sleep poll the completion ring.
+Shared IRQ dispatch preserves other handlers on the interrupt line. Commands
+have a five-second timeout and reset the device on expiry. Nonblocking
+resource waits return `EBUSY` while completion is pending.
+`test/test_gpu_completion_host.py` validates wakeup enrollment, deadline
+handling, task lifetime protection, timer fallback, and shared interrupt
+handler registration.
 
 The connector provides the preferred resolution and common resolutions from
 640 × 480 through 3840 × 2160 with nominal 60 Hz and 120 Hz timings. The

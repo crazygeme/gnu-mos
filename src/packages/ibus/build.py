@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -7,8 +8,14 @@ from package_lib import archive_source, configure_make_install
 
 tools = Path(os.environ["LFS_WORKSPACE"]) / "tools"
 sysroot = Path(os.environ["LFS_SYSROOT"])
+source = archive_source("ibus", "ibus-1.5.32.tar.gz", "ibus-1.5.32")
+subprocess.run(
+    ["patch", "-p1", "--batch", "--forward", "-i",
+     str(Path(__file__).with_name("candidate-panel-visibility.patch"))],
+    cwd=source, check=True,
+)
 configure_make_install(
-    archive_source("ibus", "ibus-1.5.32.tar.gz", "ibus-1.5.32"),
+    source,
     options=(
         "--sysconfdir=/etc", "--libexecdir=/usr/libexec",
         "--disable-systemd-services", "--disable-python2",

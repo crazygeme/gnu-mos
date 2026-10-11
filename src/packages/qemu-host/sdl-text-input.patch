@@ -1,0 +1,23 @@
+--- a/ui/sdl2.c
++++ b/ui/sdl2.c
+@@ -603,6 +603,11 @@
+         sdl2_redraw(scon);
+         break;
+     case SDL_WINDOWEVENT_FOCUS_GAINED:
++        if (qemu_console_is_graphic(scon->dcl.con)) {
++            SDL_StopTextInput();
++        } else {
++            SDL_StartTextInput();
++        }
+         /* fall through */
+     case SDL_WINDOWEVENT_ENTER:
+         if (!gui_grab && (qemu_input_is_absolute(scon->dcl.con) || absolute_enabled)) {
+@@ -854,6 +859,8 @@
+                 SDL_GetError());
+         exit(1);
+     }
++    /* Graphical consoles receive physical keys through the guest input path. */
++    SDL_StopTextInput();
+ #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR /* only available since SDL 2.0.8 */
+     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+ #endif

@@ -13,6 +13,11 @@
     "gui"
   ],
   "dependencies": [
-    "glib"
-  ]
+    "glib",
+    "gobject-introspection",
+    "glib-introspection"
+  ],
+  "host-packages": {
+    "apt": ["valac"]
+  }
 }

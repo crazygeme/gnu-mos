@@ -69,6 +69,9 @@ for patch_name in (
     "sdl-gl-scanout.patch",
     "sdl-relative-pointer.patch",
     "sdl-gl-context.patch",
+    "sdl-keyboard-release.patch",
+    "sdl-text-input.patch",
+    "sdl-lock-sync.patch",
     "virgl-video.patch",
 ):
     patch = Path(__file__).with_name(patch_name)

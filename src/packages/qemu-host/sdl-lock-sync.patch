@@ -1,0 +1,91 @@
+--- a/ui/sdl2-input.c
++++ b/ui/sdl2-input.c
+@@ -29,6 +29,44 @@
+ #include "ui/sdl2.h"
+ #include "trace.h"
+ 
++static int sdl2_guest_leds;
++
++static void sdl2_guest_led_change(void *opaque, int leds)
++{
++    sdl2_guest_leds = leds;
++}
++
++void sdl2_keyboard_init(void)
++{
++    qemu_add_led_event_handler(sdl2_guest_led_change, NULL);
++}
++
++void sdl2_sync_locks(struct sdl2_console *scon, SDL_Keymod mods)
++{
++    static const struct {
++        SDL_Keymod host;
++        int guest;
++        QKeyCode key;
++    } locks[] = {
++        { KMOD_CAPS, QEMU_CAPS_LOCK_LED, Q_KEY_CODE_CAPS_LOCK },
++        { KMOD_NUM, QEMU_NUM_LOCK_LED, Q_KEY_CODE_NUM_LOCK },
++    };
++    size_t i;
++
++    if (!qemu_console_is_graphic(scon->dcl.con)) {
++        return;
++    }
++    for (i = 0; i < G_N_ELEMENTS(locks); i++) {
++        if (!!(mods & locks[i].host) == !!(sdl2_guest_leds & locks[i].guest)) {
++            continue;
++        }
++        qkbd_state_key_event(scon->kbd, locks[i].key, true);
++        qkbd_state_key_event(scon->kbd, locks[i].key, false);
++        /* Keep events in one SDL batch consistent before guest LED feedback. */
++        sdl2_guest_leds ^= locks[i].guest;
++    }
++}
++
+ void sdl2_process_key(struct sdl2_console *scon,
+                       SDL_KeyboardEvent *ev)
+ {
+@@ -39,6 +77,15 @@
+         return;
+     }
+     qcode = qemu_input_map_usb_to_qcode[ev->keysym.scancode];
++    if (qemu_console_is_graphic(con)) {
++        if (ev->type == SDL_KEYDOWN) {
++            sdl2_sync_locks(scon, ev->keysym.mod);
++        }
++        /* Lock transitions are delivered by synchronization exactly once. */
++        if (qcode == Q_KEY_CODE_CAPS_LOCK || qcode == Q_KEY_CODE_NUM_LOCK) {
++            return;
++        }
++    }
+     trace_sdl2_process_key(ev->keysym.scancode, qcode,
+                            ev->type == SDL_KEYDOWN ? "down" : "up");
+     qkbd_state_key_event(scon->kbd, qcode, ev->type == SDL_KEYDOWN);
+--- a/ui/sdl2.c
++++ b/ui/sdl2.c
+@@ -607,3 +607,6 @@
+     case SDL_WINDOWEVENT_ENTER:
++        if (SDL_GetKeyboardFocus() == scon->real_window) {
++            sdl2_sync_locks(scon, SDL_GetModState());
++        }
+         if (!gui_grab && (qemu_input_is_absolute(scon->dcl.con) || absolute_enabled)) {
+             absolute_mouse_grab(scon);
+@@ -882,6 +883,7 @@
+             break;
+         }
+     }
++    sdl2_keyboard_init();
+     sdl2_num_outputs = i;
+     if (sdl2_num_outputs == 0) {
+         return;
+--- a/include/ui/sdl2.h
++++ b/include/ui/sdl2.h
+@@ -62,6 +62,8 @@
+ void sdl2_process_key(struct sdl2_console *scon,
+                       SDL_KeyboardEvent *ev);
+ void sdl2_release_modifiers(struct sdl2_console *scon);
++void sdl2_keyboard_init(void);
++void sdl2_sync_locks(struct sdl2_console *scon, SDL_Keymod mods);
+ 
+ void sdl2_2d_update(DisplayChangeListener *dcl,
+                     int x, int y, int w, int h);

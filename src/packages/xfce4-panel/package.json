@@ -12,6 +12,11 @@
   "dependencies": [
     "exo",
     "garcon",
-    "libxfce4windowing"
-  ]
+    "libxfce4windowing",
+    "libxfce4util",
+    "gobject-introspection"
+  ],
+  "host-packages": {
+    "apt": ["valac"]
+  }
 }
