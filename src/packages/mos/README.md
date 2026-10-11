@@ -553,3 +553,26 @@ lock. Write storage and filesystem lock ownership remain protected until
 operations complete, including during thread-group termination.
 `test/ext4_write_fault.sh` validates concurrent file-backed input faults,
 page discard, full writes, and inaccessible input using a `clone` worker.
+
+# Kernel identity
+
+`uname -s` reports `MOS`. The Makefile selects the latest reachable Git tag;
+the configured tag is `0.6_alpha`. `uname -r` reports
+`2.4.20-mos-0.6_alpha`, and `uname -v` reports `#1 MOS 0.6_alpha`.
+The numeric release prefix supports the RH9 glibc 2.3.2 minimum-kernel
+check. `KERNEL_ABI_RELEASE` configures that prefix, with a default of
+`2.4.20`. `KERNEL_RELEASE` overrides the tag selected by the Makefile.
+Source trees without Git metadata use `0.6_alpha` as the fallback tag.
+The package recipe passes the checkout's tag to the source snapshot through
+`KERNEL_RELEASE`.
+
+`/proc/<pid>/comm`, `/proc/self/comm`, and
+`/proc/<pid>/task/<tid>/comm` expose a read-only command-name snapshot.
+The name is the basename of the first command-line argument, truncated to
+15 bytes and followed by a newline. Directory listings include `comm`.
+The interface supports partial reads, seeking, and EOF. It does not provide
+task renaming through writes.
+
+ATA cache reads retain the partition cache lock until the selected sector
+has been copied to the caller. Cache eviction, reuse, and reclamation cannot
+replace or release the selected cache buffer during that copy.

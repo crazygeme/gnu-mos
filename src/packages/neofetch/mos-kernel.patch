@@ -1,0 +1,89 @@
+--- a/neofetch
++++ b/neofetch
+@@ -930,7 +930,7 @@
+         IRIX*)    os=IRIX ;;
+         FreeMiNT) os=FreeMiNT ;;
+ 
+-        Linux|GNU*)
++        Linux|GNU*|MOS)
+             os=Linux
+         ;;
+ 
+@@ -955,7 +955,10 @@
+ 
+     case $os in
+         Linux|BSD|MINIX)
+-            if [[ -f /bedrock/etc/bedrock-release && $PATH == */bedrock/cross/* ]]; then
++            if [[ $kernel_name == MOS ]]; then
++                distro="MOS"
++
++            elif [[ -f /bedrock/etc/bedrock-release && $PATH == */bedrock/cross/* ]]; then
+                 case $distro_shorthand in
+                     on|tiny) distro="Bedrock Linux" ;;
+                     *) distro=$(< /bedrock/etc/bedrock-release)
+@@ -3164,9 +3167,11 @@
+     [[ "$WT_SESSION" ]]     && term="Windows Terminal"
+ 
+     # Check $PPID for terminal emulator.
++    local parent_seen=" "
+     while [[ -z "$term" ]]; do
+         parent="$(get_ppid "$parent")"
+-        [[ -z "$parent" ]] && break
++        [[ -z $parent || $parent == 0 || $parent_seen == *" $parent "* ]] && break
++        parent_seen+="$parent "
+         name="$(get_process_name "$parent")"
+ 
+         case ${name// } in
+@@ -3199,6 +3204,8 @@
+             ;;
+         esac
+     done
++
++    [[ $term ]] || term="${TERM:-unknown}"
+ 
+     # Log that the function was run.
+     term_run=1
+@@ -4721,7 +4728,12 @@
+         ;;
+ 
+         "Linux")
+-            name="$(< "/proc/${1:-$PPID}/comm")"
++            if [[ -r /proc/${1:-$PPID}/comm ]]; then
++                name="$(< "/proc/${1:-$PPID}/comm")"
++            else
++                name="$(grep -m1 '^Name:' "/proc/${1:-$PPID}/status")"
++                name="$(trim "${name#Name:}")"
++            fi
+         ;;
+ 
+         *)
+@@ -5288,6 +5300,17 @@
+     #
+     # $ascii_distro is the same as $distro.
+     case $(trim "$ascii_distro") in
++        "MOS"*)
++            set_colors 6 7
++            read -rd '' ascii_data <<'EOF'
++${c1} __  __  ___  ____
++${c1}|  \/  |/ _ \/ ___|
++${c1}| |\/| | | | \___ \
++${c1}| |  | | |_| |___) |
++${c1}|_|  |_|\___/|____/
++EOF
++        ;;
++
+         "AIX"*)
+             set_colors 2 7
+             read -rd '' ascii_data <<'EOF'
+@@ -10426,6 +10449,11 @@
+ EOF
+                 ;;
+ 
++                "MOS")
++                    ascii_distro="MOS"
++                    get_distro_ascii
++                ;;
++
+                 "Linux")
+                     set_colors fg 8 3
+                     read -rd '' ascii_data <<'EOF'

@@ -34,9 +34,15 @@ for raw_path in paths:
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, target, follow_symlinks=False)
 arch = os.environ.get("LFS_ARCH", "x86")
+env = os.environ.copy()
+env["KERNEL_RELEASE"] = subprocess.check_output(
+    ["git", "-C", str(mos), "describe", "--tags", "--abbrev=0"],
+    text=True,
+).strip()
 subprocess.run(
     ["make", "-j4", "ARCH=" + arch, "BUILD=release"],
     cwd=build,
+    env=env,
     check=True,
 )
 target = Path(os.environ["LFS_SYSROOT"]) / "boot/kernel"
