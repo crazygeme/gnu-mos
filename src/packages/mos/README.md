@@ -138,7 +138,13 @@ object, including unnamed pipes, sockets, and unlinked files.
 `test/proc_fd_stat.py` compares descriptor and proc-link metadata.
 
 Heap extension allocates physical memory outside the heap free-list lock so
-cache reclamation can release heap-backed metadata. Socket `readv` and `writev`
+cache reclamation can release heap-backed metadata. Free blocks with total sizes
+through 1024 bytes use separate bins for each 8-byte-aligned size. A bitmap
+selects occupied bins, so small allocations do not traverse undersized free
+blocks. Larger allocations use power-of-two size ranges and may search their
+initial range before selecting a higher bin. The `malloc` kernel suite checks
+fragmented small-block reuse, bitmap boundaries, alignment, and allocation
+accounting. Socket `readv` and `writev`
 use the socket scatter-buffer operations without allocating a contiguous kernel
 buffer for the complete payload. `test/socket_vector_large.py` verifies data
 integrity for a 4 MiB transfer through a Unix stream socket pair.
