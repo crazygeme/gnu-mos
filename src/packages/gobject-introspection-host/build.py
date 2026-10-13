@@ -21,7 +21,11 @@ for variable in (
     "PKG_CONFIG_PATH", "PKG_CONFIG_LIBDIR", "PKG_CONFIG_SYSROOT_DIR", "PYTHONPATH", "DESTDIR",
 ):
     env.pop(variable, None)
-env.update(PATH=f"{tools / 'bin'}:/usr/bin:/bin", CC="gcc", CXX="g++", CFLAGS="-O2")
+env.update(
+    PATH=f"{tools / 'bin'}:/usr/bin:/bin", CC="gcc", CXX="g++", CFLAGS="-O2",
+    PKG_CONFIG_PATH=f"{tools / 'lib/pkgconfig'}:{tools / 'share/pkgconfig'}",
+    LD_LIBRARY_PATH=str(tools / "lib"),
+)
 subprocess.run(
     ["meson", "setup", str(build), str(source), "--prefix=" + str(tools), "--libdir=lib",
      "--wrap-mode=nofallback", "-Dpython=" + str(tools / "bin/python3.13"), "-Dtests=false",

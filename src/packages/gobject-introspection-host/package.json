@@ -19,12 +19,12 @@
     "ninja",
     "flex",
     "bison",
+    "glib-host",
     "python-host",
     "python-setuptools"
   ],
   "host-packages": {
     "apt": [
-      "libglib2.0-dev",
       "libffi-dev",
       "pkg-config"
     ]

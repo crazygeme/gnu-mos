@@ -9,9 +9,13 @@ from package_lib import archive_source, environment
 
 source = archive_source("nss", "nss-3.123.tar.gz", "nss-3.123") / "nss"
 env = environment()
+# Recursive object-list queries require output without make diagnostics.
+for variable in ("MAKE", "MAKEFLAGS", "MFLAGS", "MAKELEVEL", "GNUMAKEFLAGS", "MAKEOVERRIDES"):
+    env.pop(variable, None)
 root = Path(env["LFS_SYSROOT"])
 dist = Path(env["LFS_WORKSPACE"]) / "build/nss-dist"
 common = [
+    "MAKE=make --no-print-directory",
     "BUILD_OPT=1",
     "OBJDIR_NAME=lfs.OBJ",
     "SOURCE_PREFIX=" + str(dist),
@@ -20,10 +24,12 @@ common = [
 
 # Build nsinstall with the native ABI before target headers enter the build.
 native = os.environ.copy()
+for variable in ("MAKE", "MAKEFLAGS", "MFLAGS", "MAKELEVEL", "GNUMAKEFLAGS", "MAKEOVERRIDES"):
+    native.pop(variable, None)
 native.update(PATH="/usr/bin:/bin", CFLAGS="", CXXFLAGS="", LDFLAGS="")
 subprocess.run(
     [
-        "make", "-C", str(source / "coreconf/nsinstall"), "program", *common,
+        "make", "--no-print-directory", "-C", str(source / "coreconf/nsinstall"), "program", *common,
         "CC=/usr/bin/gcc", "CCC=/usr/bin/g++", "LD=/usr/bin/ld",
         "AR=/usr/bin/ar cr $@", "RANLIB=/usr/bin/ranlib", "USE_64=1",
     ],
@@ -31,7 +37,7 @@ subprocess.run(
 )
 subprocess.run(
     [
-        "make", "-j4", "all", *common,
+        "make", "--no-print-directory", "-j4", "all", *common,
         "CC=" + env["CC"] + " --sysroot=" + str(root),
         "CCC=" + env["CXX"] + " --sysroot=" + str(root),
         "LD=" + env["LD"], "AR=" + env["AR"] + " cr $@",

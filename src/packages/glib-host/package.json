@@ -1,0 +1,30 @@
+{
+  "name": "glib-host",
+  "version": "2.88.1",
+  "order": 107.05,
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "source": "archive",
+  "url": "https://download.gnome.org/sources/glib/2.88/glib-{version}.tar.xz",
+  "archive": "glib-2.88.1.tar.xz",
+  "artifact": "artifacts/glib-host.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "meson",
+    "ninja",
+    "python-host"
+  ],
+  "host-packages": {
+    "apt": [
+      "libpcre2-dev",
+      "libffi-dev",
+      "zlib1g-dev",
+      "gettext",
+      "pkg-config"
+    ]
+  }
+}

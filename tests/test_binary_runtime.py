@@ -110,6 +110,29 @@ class BinaryRuntime(unittest.TestCase):
                 self.assertIn("-lz", libraries)
                 self.assertLess(libraries.index("-lsqlite3"), libraries.index("-lm"))
                 self.assertIn("-lpthread", libraries)
+                # Diagnostic output from recursive make must not enter prerequisites.
+                child = base / "child"
+                child.mkdir()
+                (child / "Makefile").write_text("get_objs:\n\t@echo module.o\n")
+                query = base / "object-query.mk"
+                query.write_text(
+                    "OBJECTS := $(shell $(MAKE) --no-print-directory -C " + str(child) + " get_objs)\n"
+                    "library: $(OBJECTS)\n"
+                    "inspect:\n\t@printf '%s\\n' '$(OBJECTS)'\n"
+                )
+                noisy_env = os.environ.copy()
+                noisy_env["MAKE"] = "make --trace"
+                failure = subprocess.run(
+                    ["make", "--no-print-directory", "-f", str(query), "inspect"],
+                    env=noisy_env, capture_output=True, text=True,
+                )
+                self.assertNotEqual(failure.returncode, 0)
+                recursive_make = next(arg for arg in target_build.args[0] if arg.startswith("MAKE="))
+                result = subprocess.run(
+                    ["make", "--no-print-directory", "-f", str(query), "inspect", recursive_make],
+                    env=target_build.kwargs["env"], capture_output=True, text=True, check=True,
+                )
+                self.assertEqual(result.stdout.strip(), "module.o")
 
     def test_cups_requires_shared_client_library_and_target_tls(self):
         with patch.object(package_lib, "archive_source", return_value=Path("source")), \

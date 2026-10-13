@@ -15,7 +15,9 @@
   "dependencies": [
     "glib",
     "gobject-introspection",
-    "glib-introspection"
+    "glib-introspection",
+    "vala",
+    "vala-host"
   ],
   "host-packages": {
     "apt": ["valac"]

@@ -20,6 +20,7 @@ configure_make_install(
         "--disable-static",
     ),
     env_overrides={
+        "VALAC": str(tools / "bin/valac"),
         "PKG_CONFIG_FDO_SYSROOT_RULES": "1",
         "GI_TYPELIB_PATH": str(sysroot / "usr/lib/girepository-1.0"),
     },
@@ -29,8 +30,8 @@ configure_make_install(
         "INTROSPECTION_MAKEFILE=" + str(tools / "share/gobject-introspection-1.0/Makefile.introspection"),
         "Libxfce4util_1_0_gir_LIBS=xfce4util",
         "Libxfce4util_1_0_gir_LDFLAGS=-L" + str(build_libdir),
-        "VAPIGEN=/usr/bin/vapigen",
-        "VAPIGEN_MAKEFILE=/usr/share/vala/Makefile.vapigen",
+        "VAPIGEN=" + str(tools / "bin/vapigen"),
+        "VAPIGEN_MAKEFILE=" + str(tools / "share/vala/Makefile.vapigen"),
         "VAPIGEN_GIRDIRS=" + str(sysroot / "usr/share/gir-1.0"),
     ),
 )

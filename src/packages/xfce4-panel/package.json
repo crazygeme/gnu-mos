@@ -14,7 +14,9 @@
     "garcon",
     "libxfce4windowing",
     "libxfce4util",
-    "gobject-introspection"
+    "gobject-introspection",
+    "vala",
+    "vala-host"
   ],
   "host-packages": {
     "apt": ["valac"]

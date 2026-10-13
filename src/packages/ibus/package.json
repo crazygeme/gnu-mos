@@ -21,6 +21,8 @@
     "pyxdg",
     "iso-codes",
     "xkeyboard-config",
+    "vala",
+    "vala-host",
     "libx11",
     "libxtst",
     "libxfixes",

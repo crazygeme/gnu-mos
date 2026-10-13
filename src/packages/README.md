@@ -59,6 +59,8 @@ archive to resolve the archive's math-function dependencies and retains the
 configured zlib linker flags for compression consumers. Its `nsinstall`
 build utility uses the native host
 compiler; installed libraries and command-line tools use the target compiler.
+The NSS recipe isolates GNU Make options from the invoking environment and
+suppresses directory messages in recursive object-list queries.
 The cross build does not generate NSS FIPS module integrity signatures.
 CUPS supplies `libcups.so.2`, its development link and static archive, headers,
 `cups-config`, and locale data through the upstream `libcups` component. TLS
@@ -89,6 +91,22 @@ order, and artifact is inspectable.
 
 The `ninja` and `meson` source packages install host build tools into
 `.workspace/<arch>/tools/bin/` before Meson-based packages are built.
+
+The GUI profile builds native GLib 2.88.1 through `glib-host` before
+`gobject-introspection-host` 1.84.0. Native GLib libraries and development
+metadata are installed under `.workspace/<arch>/tools/lib/`; host build
+dependencies include PCRE2, libffi, zlib, gettext, and pkg-config. The
+introspection host recipe searches the tools prefix for native dependencies
+and runtime libraries. Host GLib omits introspection data generation because
+the scanner depends on its libraries. Target GLib is supplied by the separate
+`glib` package in the sysroot.
+
+The GUI profile builds native Vala 0.56.18 through `vala-host` and installs
+`valac`, `vapigen`, and their support files in `.workspace/<arch>/tools/`.
+IBus, libxfce4util, and xfce4-panel use these host tools to generate Vala bindings from GIR metadata,
+including repositories containing `doc:format` elements. The distribution
+Vala compiler bootstraps `vala-host`; the separate `vala` package supplies
+target libraries and development metadata in the sysroot.
 
 The optional `host-packages.apt` manifest list declares native distribution
 dependencies. Before source downloads and compilation, `./lfs build` collects
