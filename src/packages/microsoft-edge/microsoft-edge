@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /opt/microsoft/msedge/microsoft-edge.vendor --no-sandbox "$@"
+exec /opt/microsoft/msedge/microsoft-edge.vendor "$@"

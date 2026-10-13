@@ -7,7 +7,7 @@ sysroot = Path(os.environ["LFS_SYSROOT"])
 directory = sysroot / "opt/microsoft/msedge"
 launcher = directory / "microsoft-edge"
 wrapper = Path(__file__).with_name("microsoft-edge")
-if launcher.read_bytes() != wrapper.read_bytes():
+if b"exec /opt/microsoft/msedge/microsoft-edge.vendor" not in launcher.read_bytes():
     shutil.copy2(launcher, directory / "microsoft-edge.vendor")
 shutil.copyfile(wrapper, launcher)
 launcher.chmod(0o755)

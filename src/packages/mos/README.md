@@ -113,6 +113,23 @@ probe to report unavailable namespace support. Chromium's namespace sandbox
 cannot operate on MOS. `test/clone_namespaces.py` validates namespace-flag
 rejection inside the guest.
 
+The Chromium SUID sandbox uses shared `CLONE_FS` state across `exec` to apply
+the helper's chroot to its child. Proc directory aliases retain the selected
+process identity when used as a chroot root. Directory-relative `openat`
+accepts `.` and repeated `./` prefixes for open directory descriptors.
+
+`PR_SET_DUMPABLE` accepts zero and one. Dumpability is shared with the address
+space, inherited by fork, and reset by executable credential transitions and
+effective or filesystem credential changes. Cross-process inspection of
+protected proc entries requires matching credentials and a dumpable image or
+root credentials with effective `CAP_SYS_PTRACE`.
+
+Resource limits use 64-bit internal storage. Native and `prlimit64` calls retain
+limits exceeding 4 GiB; the 32-bit interface reports values exceeding its range
+as `UINT32_MAX`. Wait status copying occurs outside the scheduler lock. Proc
+memory statistics retain the sampled address space through concurrent `exec`.
+`test/suid_sandbox.sh` validates these sandbox prerequisites in the guest.
+
 `madvise(MADV_DONTNEED)` discards resident pages while retaining the virtual
 mapping and its protections. Private anonymous pages fault back as zero-filled
 pages; private file mappings reload file contents. Shared file pages are written
