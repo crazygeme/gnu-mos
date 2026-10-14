@@ -1,0 +1,22 @@
+{
+  "name": "libnftnl11",
+  "version": "1.2.4-2",
+  "order": 181.2,
+  "source": "deb",
+  "deb-package": "libnftnl11",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/libn/libnftnl/libnftnl11_1.2.4-2_amd64.deb",
+  "archive": "libnftnl11_1.2.4-2_amd64.deb",
+  "sha256": "9e619e1470a1915264e906020f3bfc046fd8458043b1342686d997b5078213af",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libmnl0"
+  ]
+}

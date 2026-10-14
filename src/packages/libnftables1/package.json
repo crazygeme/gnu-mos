@@ -1,0 +1,26 @@
+{
+  "name": "libnftables1",
+  "version": "1.0.6-2+deb12u2",
+  "order": 181.5,
+  "source": "deb",
+  "deb-package": "libnftables1",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/n/nftables/libnftables1_1.0.6-2+deb12u2_amd64.deb",
+  "archive": "libnftables1_1.0.6-2+deb12u2_amd64.deb",
+  "sha256": "3a8223f9bfba99d97bf25296ac83de307ab036e1df63e5965f88809266851947",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "gmp",
+    "libjansson4",
+    "libmnl0",
+    "libnftnl11",
+    "libxtables12"
+  ]
+}

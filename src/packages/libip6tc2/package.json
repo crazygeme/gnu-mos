@@ -1,0 +1,21 @@
+{
+  "name": "libip6tc2",
+  "version": "1.8.9-2",
+  "order": 181.0,
+  "source": "deb",
+  "deb-package": "libip6tc2",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/i/iptables/libip6tc2_1.8.9-2_amd64.deb",
+  "archive": "libip6tc2_1.8.9-2_amd64.deb",
+  "sha256": "be88db3dfa2fe3345ea343207f7c75345602686121e579023d021c348b9b4f4d",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

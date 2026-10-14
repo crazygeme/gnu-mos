@@ -1,0 +1,21 @@
+{
+  "name": "libmnl0",
+  "version": "1.0.4-3",
+  "order": 180.6,
+  "source": "deb",
+  "deb-package": "libmnl0",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/libm/libmnl/libmnl0_1.0.4-3_amd64.deb",
+  "archive": "libmnl0_1.0.4-3_amd64.deb",
+  "sha256": "4581f42e3373cb72f9ea4e88163b17873afca614a6c6f54637e95aa75983ea7c",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

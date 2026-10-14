@@ -1,7 +1,7 @@
 {
   "name": "libedit2",
   "version": "3.1-20250104-1",
-  "order": 210,
+  "order": 181.4,
   "source": "deb",
   "deb-package": "libedit2",
   "architectures": [

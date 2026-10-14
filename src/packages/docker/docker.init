@@ -1,0 +1,57 @@
+#!/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+read_pid()
+{
+    [ -r /run/docker.pid ] || return 1
+    read -r docker_pid < /run/docker.pid
+    case "$docker_pid" in ''|*[!0-9]*) return 1 ;; esac
+    [ "$docker_pid" -gt 1 ] || return 1
+    [ "$(cat "/proc/$docker_pid/comm" 2>/dev/null)" = dockerd ] || return 1
+    kill -0 "$docker_pid" 2>/dev/null
+}
+case "$1" in
+start)
+    mkdir -p /sys/fs/cgroup /var/lib/docker /var/log /run/docker || exit 1
+    if ! grep -q ' /sys/fs/cgroup ' /proc/mounts; then
+        mount -t tmpfs -o mode=755 tmpfs /sys/fs/cgroup || exit 1
+    fi
+    for controller in pids devices; do
+        mkdir -p "/sys/fs/cgroup/$controller" || exit 1
+        if ! grep -q " /sys/fs/cgroup/$controller " /proc/mounts; then
+            mount -t cgroup -o "$controller" "$controller" "/sys/fs/cgroup/$controller" || exit 1
+        fi
+    done
+    if read_pid; then
+        exit 0
+    fi
+    /usr/bin/dockerd >>/var/log/docker.log 2>&1 &
+    docker_pid=$!
+    elapsed=0
+    while [ "$elapsed" -lt 30 ]; do
+        kill -0 "$docker_pid" 2>/dev/null || exit 1
+        /usr/bin/docker info >/dev/null 2>&1 && exit 0
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    printf '%s\n' 'Docker startup timed out. Inspect /var/log/docker.log.' >&2
+    exit 1
+    ;;
+stop)
+    read_pid || exit 0
+    kill "$docker_pid" || exit 1
+    elapsed=0
+    while kill -0 "$docker_pid" 2>/dev/null; do
+        [ "$elapsed" -lt 30 ] || { printf '%s\n' 'Docker shutdown timed out.' >&2; exit 1; }
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    ;;
+restart)
+    "$0" stop || exit 1
+    "$0" start
+    ;;
+*)
+    printf '%s\n' 'Usage: /etc/init.d/docker {start|stop|restart}' >&2
+    exit 2
+    ;;
+esac

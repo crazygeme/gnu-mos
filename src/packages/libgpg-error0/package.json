@@ -1,0 +1,21 @@
+{
+  "name": "libgpg-error0",
+  "version": "1.46-1",
+  "order": 180.0,
+  "source": "deb",
+  "deb-package": "libgpg-error0",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/libg/libgpg-error/libgpg-error0_1.46-1_amd64.deb",
+  "archive": "libgpg-error0_1.46-1_amd64.deb",
+  "sha256": "89944ee11d7370ce6ef46fc52f094c4a6512eff8943ec4c6ebefeae6360ceada",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

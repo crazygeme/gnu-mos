@@ -625,3 +625,35 @@ base-level image size. Texture rows
 use the supplied stride or a 256-byte alignment. Allocation limits apply to
 depth and array dimensions. PRIME metadata and seek-to-end expose the allocated
 backing size for video-plane bounds validation.
+
+## Container interfaces
+
+MOS provides mount, UTS, PID, shared-memory IPC, and cgroup namespace objects.
+`clone`, `unshare`, `setns`, namespace descriptors, and namespace type queries
+use these objects. PID and thread identifiers are translated in process calls,
+procfs, wait results, and delivered signal information. Mount namespaces retain
+independent mount trees with bind mounts, recursive bind views, private/slave
+operations, mount moves, and read-only mount flags. Shared mount propagation,
+user namespace creation, network namespace creation, and `pivot_root` are
+unsupported.
+
+The mount interface accepts the Linux `MS_MGC_VAL` flag prefix. Block
+filesystem factories reject occupied mount points with `EBUSY`; bind views
+and pseudo-filesystems support stacked mounts. Procfs path and namespace
+directory buffers use dynamic storage within the x86 kernel stack limit.
+
+Cgroup v1 mounts provide the `pids` and `devices` controllers. Process and thread
+creation observes hierarchical `pids.max`; device opens and creation observe
+inherited device rules. Cgroup namespaces expose paths relative to the selected
+hierarchy roots. CPU, memory, cpuset, I/O controllers, and cgroup v2 are
+unsupported.
+
+The AMD64 signal interface supports 64 signals, thread-directed delivery, and
+signalfd records. Process subreapers adopt orphaned descendants. Exec by a
+process leader ends sibling threads. FIFO descriptors can be reopened after
+unlink or a root mount move, and poll/epoll report peer closure. Capability
+bounding sets and `no_new_privs` are retained across process transitions.
+Seccomp filtering and complete Linux capability enforcement are unsupported.
+
+The x64 Docker package uses these interfaces with the configured
+[Docker runtime](../docker/README.md).
