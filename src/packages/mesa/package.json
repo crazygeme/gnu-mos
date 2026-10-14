@@ -21,6 +21,9 @@
     "xshmfence",
     "mako",
     "python-packaging",
-    "libva"
+    "libva",
+    "vulkan-loader",
+    "expat",
+    "spirv-headers"
   ]
 }

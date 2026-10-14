@@ -3,7 +3,7 @@
 The `qemu-host` package builds QEMU 10.2.1 for the native x86-64 Linux host
 and installs it into `.workspace/<arch>/tools/qemu`. SDL, OpenGL, VirGL, and Pixman
 support are required. The package depends on `ninja` and `virglrenderer-host`.
-The latter builds virglrenderer 1.3.0 with video support and installs it into
+The latter builds virglrenderer 1.3.0 with video and Venus support and installs it into
 `.workspace/<arch>/tools/virglrenderer`. QEMU uses this library through its
 pkg-config metadata and embedded runtime library search path.
 
@@ -52,8 +52,8 @@ flag. The descriptor remains open until renderer cleanup.
 
 The graphical launcher sets `video-rendernode` to `/dev/dri/renderD128`.
 `MOS_VIDEO_RENDER_NODE` selects another host DRM render node. The host account
-must have read and write access to this node. Virglrenderer requires a Mesa
-Gallium VA-API driver with video codec support. Codec capabilities are
+must have read and write access to this node. Virglrenderer requires a VA-API driver with video codec support and DRM
+PRIME surface export. Codec capabilities are
 negotiated with the guest through the VirGL2 capability set.
 
 On X11, the graphical launcher sets `SDL_VIDEO_X11_FORCE_EGL=1` because video
@@ -78,3 +78,27 @@ Physical lock key events apply each host state transition once.
 
 Guest configuration and verification commands are documented in
 [FFmpeg Video Acceleration](../ffmpeg/README.md).
+
+The graphical device uses `hostmem=256M,blob=true,venus=true`. Guest RAM uses
+`memory-backend-memfd` with shared mappings. The host renderer builds the Venus
+render server and requires host Vulkan development headers and a compatible
+Vulkan driver. The QEMU build selects host system executables before the tools
+prefix so that D-Bus code generation matches the host GLib library.
+
+The `vaapi-surface-export.patch` renderer patch tests YUV420 DRM PRIME surface
+export independently of the driver vendor. Intel iHD and AMD Mesa Gallium
+provide this interface. File descriptors shared by multiple exported planes
+are closed once. Codec capabilities are queried through the host VA-API driver.
+
+The `blob-ram-cpr.patch` patch limits checkpoint file-descriptor deletion to
+named memory regions. Anonymous blob mappings have no checkpoint name and
+are released without a named-descriptor lookup.
+
+The renderer's `vaapi-encoding-entrypoints.patch` exposes standard and
+low-power slice encoding capabilities. Codec creation selects the standard
+entrypoint when available and otherwise selects the supported low-power
+entrypoint. H.264 and HEVC encoding use the selected host entrypoint.
+
+The renderer's `vaapi-upload-sync.patch` completes OpenGL surface writes
+before the VA-API engine reads the exported encoding input. The synchronization
+applies independently of the host GPU vendor.

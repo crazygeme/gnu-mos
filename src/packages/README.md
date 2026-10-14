@@ -144,7 +144,8 @@ The FFmpeg package configures, compiles, and installs the shared libraries
 and all selected programs in a single build. GUI builds enable FFmpeg,
 FFprobe, and FFplay together after SDL2. Console builds enable FFmpeg and
 FFprobe without SDL2. The manifest declares SDL2, libva, Mesa, and libdrm under
-the GUI profile's `profile-dependencies`. Graphical builds enable VA-API
+the GUI profile's `profile-dependencies`, together with Vulkan Loader,
+libplacebo, and glslang. Graphical builds enable Vulkan rendering and VA-API
 encoding and decoding through Mesa VirGL and the host video renderer.
 Supported commands and host requirements are documented in
 [FFmpeg Video Acceleration](ffmpeg/README.md).

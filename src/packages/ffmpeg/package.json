@@ -23,7 +23,10 @@
       "sdl2",
       "libva",
       "mesa",
-      "libdrm"
+      "libdrm",
+      "vulkan-loader",
+      "libplacebo",
+      "glslang"
     ]
   }
 }

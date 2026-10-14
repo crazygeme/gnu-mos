@@ -1,0 +1,13 @@
+--- a/system/physmem.c
++++ b/system/physmem.c
+@@ -2625,7 +2625,9 @@
+ 
+     qemu_mutex_lock_ramlist();
+     name = cpr_name(block->mr);
+-    cpr_delete_fd(name, 0);
++    if (name) {
++        cpr_delete_fd(name, 0);
++    }
+     QLIST_REMOVE_RCU(block, next);
+     ram_list.mru_block = NULL;
+     /* Write list before version */

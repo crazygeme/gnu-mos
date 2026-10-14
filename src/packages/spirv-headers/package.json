@@ -1,0 +1,19 @@
+{
+  "name": "spirv-headers",
+  "version": "ulkan-sdk-1.4.309.0",
+  "order": 131,
+  "source": "archive",
+  "url": "https://codeload.github.com/KhronosGroup/SPIRV-Headers/tar.gz/refs/tags/vulkan-sdk-1.4.309.0",
+  "archive": "spirv-headers-vulkan-sdk-1.4.309.0.tar.gz",
+  "sha256": "a96f8b4f2dfb18f7432e5c523e220ab0075372a9509e0c25fbff21c76af0de7c",
+  "artifact": "artifacts/spirv-headers.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [],
+  "host-packages": {
+    "apt": [
+      "cmake"
+    ]
+  }
+}

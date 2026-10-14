@@ -759,10 +759,16 @@ def qemu(extra: list[str]) -> None:
         rendernode = os.environ.get("MOS_VIDEO_RENDER_NODE", "/dev/dri/renderD128")
         command.extend([
             "-vga", "none", "-device",
-            "virtio-vga-gl,video-rendernode=" + rendernode,
+            "virtio-vga-gl,hostmem=256M,blob=true,venus=true,video-rendernode=" + rendernode,
         ])
         if "-display" not in qemu_extra:
             command.extend(["-display", "sdl,gl=on,full-screen=off"])
+    if not NO_GUI:
+        memory = os.environ.get("LFS_RAM", "8192")
+        command.extend([
+            "-object", f"memory-backend-memfd,id=mos-memory,size={memory}M,share=on",
+            "-machine", "memory-backend=mos-memory",
+        ])
     command.extend(["-serial", serial])
     command.extend(qemu_extra)
     env = os.environ.copy()

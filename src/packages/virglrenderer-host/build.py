@@ -21,13 +21,13 @@ for key in (
 ):
     env.pop(key, None)
 env["PATH"] = f"{workspace / 'tools/bin'}:/usr/bin:/bin"
-env.update(CC="gcc", CXX="g++", CFLAGS="-O2", CXXFLAGS="-O2")
+env.update(CC="gcc", CXX="g++", CFLAGS="-O2 -fno-strict-aliasing", CXXFLAGS="-O2 -fno-strict-aliasing")
 subprocess.run(
     [
         "meson", "setup", str(build), str(source),
         "--prefix=" + str(prefix), "--libdir=lib",
         "--buildtype=release", "-Dplatforms=egl,glx", "-Dvideo=true",
-        "-Dunstable-apis=true",
+        "-Dunstable-apis=true", "-Dvenus=true",
     ],
     env=env,
     check=True,

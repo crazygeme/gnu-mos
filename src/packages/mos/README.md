@@ -593,3 +593,27 @@ task renaming through writes.
 ATA cache reads retain the partition cache lock until the selected sector
 has been copied to the caller. Cache eviction, reuse, and reclamation cannot
 replace or release the selected cache buffer during that copy.
+
+## Vulkan VirtIO GPU Interfaces
+
+The DRM render node supports Venus capset queries, context initialization with
+up to 64 command rings, and guest or host blob resources. Host-visible blobs
+use non-overlapping intervals in the PCI shared-memory aperture. Mappings
+retain resource ownership and enforce allocation bounds. Cached host memory
+uses write-back mappings; other host cache policies use uncached mappings.
+Individual resources are limited to 64 MiB. PRIME descriptors share resource
+ownership across DRM clients. Legacy VirGL resources cannot be imported as
+Venus external memory; PRIME import returns `EOPNOTSUPP` for these resources.
+
+Output fence descriptors are published after the selected host ring completes
+and are readable through `poll`. Descriptor metadata is available through
+`fstat` and `/proc/self/fd` links. Input fence descriptors, DRM syncobjs, and
+polling-ring events are unsupported. Context selection is rejected after a
+client uses resources or submits commands.
+
+GPU-only R8, RG8, and supported four-byte color textures receive complete
+linear guest backing when their creation request specifies less than the
+base-level image size. Texture rows
+use the supplied stride or a 256-byte alignment. Allocation limits apply to
+depth and array dimensions. PRIME metadata and seek-to-end expose the allocated
+backing size for video-plane bounds validation.

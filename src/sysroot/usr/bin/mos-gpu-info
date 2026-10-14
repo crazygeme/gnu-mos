@@ -1,5 +1,5 @@
 #!/bin/sh
-# Report the active OpenGL renderer and require hardware-backed VirGL.
+# Report hardware OpenGL rendering and Vulkan devices.
 LC_ALL=C
 export LC_ALL
 if ! report=$(glxinfo -B 2>&1); then
@@ -22,3 +22,5 @@ case "$report" in
     *'direct rendering: Yes'*) ;;
     *) printf '%s\n' 'Direct rendering is unavailable.' >&2; exit 1 ;;
 esac
+printf '\n%s\n' 'Vulkan devices:'
+vulkaninfo --summary

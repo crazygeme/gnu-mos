@@ -34,7 +34,7 @@ class BinaryRuntime(unittest.TestCase):
                 if arch == "x64":
                     for name in ("vscode", "microsoft-edge"):
                         info = lfs.metadata(ROOT / "src/packages" / name)
-                        self.assertEqual(set(info["dependencies"]), {"nspr", "nss", "cups"})
+                        self.assertEqual(set(info["dependencies"]), {"nspr", "nss", "cups", "mesa"})
                         for dependency in info["dependencies"]:
                             self.assertLess(positions[dependency], positions[name])
 

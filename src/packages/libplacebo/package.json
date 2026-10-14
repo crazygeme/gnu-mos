@@ -1,0 +1,23 @@
+{
+  "name": "libplacebo",
+  "version": "7.349.0",
+  "order": 142,
+  "source": "archive",
+  "url": "https://codeload.github.com/haasn/libplacebo/tar.gz/refs/tags/v7.349.0",
+  "archive": "libplacebo-v7.349.0.tar.gz",
+  "sha256": "627e32439a0b3d2b90368ead7e919f470ee7446c87cc0f7841bbe319b23aa8b1",
+  "artifact": "artifacts/libplacebo.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "vulkan-loader",
+    "glslang",
+    "libepoxy",
+    "glad-host"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}

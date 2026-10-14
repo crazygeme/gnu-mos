@@ -1,0 +1,22 @@
+{
+  "name": "spirv-tools",
+  "version": "ulkan-sdk-1.4.309.0",
+  "order": 132,
+  "source": "archive",
+  "url": "https://codeload.github.com/KhronosGroup/SPIRV-Tools/tar.gz/refs/tags/vulkan-sdk-1.4.309.0",
+  "archive": "spirv-tools-vulkan-sdk-1.4.309.0.tar.gz",
+  "sha256": "6b8577054c575573ead3ad71cb6a2c0b3397b64c746cc3c99e48cc5e324c1b55",
+  "artifact": "artifacts/spirv-tools.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "spirv-headers",
+    "python-host"
+  ],
+  "host-packages": {
+    "apt": [
+      "cmake"
+    ]
+  }
+}

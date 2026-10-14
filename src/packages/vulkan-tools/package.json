@@ -1,0 +1,22 @@
+{
+  "name": "vulkan-tools",
+  "version": "1.4.309",
+  "order": 141,
+  "source": "archive",
+  "url": "https://codeload.github.com/KhronosGroup/Vulkan-Tools/tar.gz/refs/tags/v1.4.309",
+  "archive": "vulkan-tools-v1.4.309.tar.gz",
+  "sha256": "dba9f4e514cd09dd120dde4a63c50a28a9a5063cb990082c2e5c0c235e1605c6",
+  "artifact": "artifacts/vulkan-tools.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "vulkan-loader",
+    "volk"
+  ],
+  "host-packages": {
+    "apt": [
+      "cmake"
+    ]
+  }
+}

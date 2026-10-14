@@ -1,0 +1,10 @@
+--- a/src/include/libplacebo/utils/libav.h
++++ b/src/include/libplacebo/utils/libav.h
+@@ -39,6 +39,7 @@
+ PL_API_BEGIN
+ 
+ #include <libavformat/avformat.h>
++#include <libavformat/version.h>
+ #include <libavutil/frame.h>
+ #include <libavutil/version.h>
+ #include <libavcodec/avcodec.h>

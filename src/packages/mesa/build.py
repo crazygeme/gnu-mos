@@ -5,8 +5,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[2]))
 from package_lib import archive_source, meson_install
 
+source = archive_source("mesa", "mesa-25.1.9.tar.xz", "mesa-25.1.9")
 meson_install(
-    archive_source("mesa", "mesa-25.1.9.tar.xz", "mesa-25.1.9"),
+    source,
     "mesa",
     (
         "--libdir=lib",
@@ -14,7 +15,7 @@ meson_install(
         "-Dgallium-drivers=virgl",
         "-Dgallium-va=enabled",
         "-Dvideo-codecs=all",
-        "-Dvulkan-drivers=",
+        "-Dvulkan-drivers=virtio",
         "-Dglx=dri",
         "-Degl=enabled",
         "-Dgbm=enabled",
@@ -23,6 +24,11 @@ meson_install(
         "-Dgles1=enabled",
         "-Dgles2=enabled",
     ),
+    env_overrides={
+        # Vulkan pNext chains share headers across distinct structure types.
+        "CFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32") + " -fno-strict-aliasing -g",
+        "CXXFLAGS": "-O2 -m" + os.environ.get("LFS_BITS", "32") + " -fno-strict-aliasing -g",
+    },
 )
 
 pkgconfig = Path(os.environ["LFS_SYSROOT"]) / "usr/lib/pkgconfig"

@@ -1,0 +1,36 @@
+--- a/fftools/ffplay_renderer.c
++++ b/fftools/ffplay_renderer.c
+@@ -696,6 +696,7 @@
+ 
+ static int convert_frame(VkRenderer *renderer, AVFrame *frame)
+ {
++    RendererContext *ctx = (RendererContext *)renderer;
+     int ret;
+ 
+     if (!frame->hw_frames_ctx)
+@@ -703,6 +704,25 @@
+ 
+     if (frame->format == AV_PIX_FMT_VULKAN)
+         return 0;
++
++    if (frame->format == AV_PIX_FMT_VAAPI) {
++        VkPhysicalDeviceDriverProperties driver = {
++            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES,
++        };
++        VkPhysicalDeviceProperties2 properties = {
++            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
++            .pNext = &driver,
++        };
++        PFN_vkGetPhysicalDeviceProperties2 get_properties =
++            (PFN_vkGetPhysicalDeviceProperties2)ctx->get_proc_addr(
++                ctx->inst, "vkGetPhysicalDeviceProperties2");
++        if (get_properties) {
++            get_properties(ctx->placebo_vulkan->phys_device, &properties);
++            /* Venus cannot import legacy VirGL video surfaces. */
++            if (driver.driverID == VK_DRIVER_ID_MESA_VENUS)
++                return transfer_frame(renderer, frame, 0);
++        }
++    }
+ 
+     ret = create_hw_frame(renderer, frame);
+     if (ret < 0)

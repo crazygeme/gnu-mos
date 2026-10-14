@@ -11,7 +11,9 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-import media_build
+MEDIA_SPEC = importlib.util.spec_from_file_location("ffmpeg_build", ROOT / "src/packages/ffmpeg/build.py")
+ffmpeg_build = importlib.util.module_from_spec(MEDIA_SPEC)
+MEDIA_SPEC.loader.exec_module(ffmpeg_build)
 
 SPEC = importlib.util.spec_from_file_location("media_lfs", ROOT / "src/lfs.py")
 lfs = importlib.util.module_from_spec(SPEC)
@@ -32,16 +34,18 @@ class FFmpegBuild(unittest.TestCase):
             configured = {"CC": "target-gcc", "CXX": "target-g++",
                           "CFLAGS": "-O2", "LDFLAGS": ""}
             with patch.dict(os.environ, env), \
-                 patch.object(media_build, "archive_source", return_value=self.workspace / "source"), \
-                 patch.object(media_build, "environment", return_value=configured), \
-                 patch.object(media_build.subprocess, "run") as execute:
-                media_build.build_ffmpeg()
+                 patch.object(ffmpeg_build, "archive_source", return_value=self.workspace / "source"), \
+                 patch.object(ffmpeg_build, "environment", return_value=configured), \
+                 patch.object(ffmpeg_build.subprocess, "run") as execute:
+                ffmpeg_build.build_ffmpeg()
             commands = [call.args[0] for call in execute.call_args_list]
+            commands = [command for command in commands if command[0] != "patch"]
             self.assertEqual(len(commands), 3)
             self.assertIn("--enable-ffmpeg", commands[0])
             self.assertIn("--enable-ffprobe", commands[0])
             self.assertIn("--disable-ffplay" if console else "--enable-ffplay", commands[0])
             self.assertIn("--disable-vaapi" if console else "--enable-vaapi", commands[0])
+            self.assertIn("--disable-vulkan" if console else "--enable-vulkan", commands[0])
             self.assertIn("--disable-libdrm" if console else "--enable-libdrm", commands[0])
             self.assertEqual(commands[1], ["make", "-j4", "all"])
             self.assertEqual(commands[2][-1], "install")

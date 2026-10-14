@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Vulkan Cube
+Comment=Display a Vulkan rendered cube
+Exec=vkcube
+TryExec=vkcube
+Icon=video-display
+Terminal=false
+Categories=System;Monitor;

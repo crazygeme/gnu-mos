@@ -37,7 +37,7 @@ for key in (
     "DESTDIR",
 ):
     env.pop(key, None)
-env["PATH"] = f"{workspace / 'tools/bin'}:/usr/bin:/bin"
+env["PATH"] = f"/usr/bin:/bin:{workspace / 'tools/bin'}"
 env.update(CC="gcc", CXX="g++", CFLAGS="-O2", CXXFLAGS="-O2")
 virgl_prefix = workspace / "tools/virglrenderer"
 env["PKG_CONFIG_PATH"] = str(virgl_prefix / "lib/pkgconfig")
@@ -73,6 +73,7 @@ for patch_name in (
     "sdl-text-input.patch",
     "sdl-lock-sync.patch",
     "virgl-video.patch",
+    "blob-ram-cpr.patch",
 ):
     patch = Path(__file__).with_name(patch_name)
     for options in (("--dry-run",), ()):

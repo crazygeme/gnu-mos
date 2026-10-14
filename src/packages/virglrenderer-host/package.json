@@ -13,7 +13,10 @@
       "libgbm-dev",
       "libdrm-dev",
       "libva-dev",
-      "mesa-va-drivers"
+      "mesa-va-drivers",
+      "libvulkan-dev",
+      "mesa-vulkan-drivers",
+      "vulkan-tools"
     ]
   },
   "source": "archive",

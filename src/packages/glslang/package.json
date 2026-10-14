@@ -1,0 +1,21 @@
+{
+  "name": "glslang",
+  "version": "15.1.0",
+  "order": 133,
+  "source": "archive",
+  "url": "https://codeload.github.com/KhronosGroup/glslang/tar.gz/refs/tags/15.1.0",
+  "archive": "glslang-15.1.0.tar.gz",
+  "sha256": "4bdcd8cdb330313f0d4deed7be527b0ac1c115ff272e492853a6e98add61b4bc",
+  "artifact": "artifacts/glslang.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "spirv-tools"
+  ],
+  "host-packages": {
+    "apt": [
+      "cmake"
+    ]
+  }
+}

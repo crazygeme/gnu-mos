@@ -1,2 +1,10 @@
 #!/bin/sh
-exec /usr/share/code/code.bin "$@"
+if [ "${ELECTRON_RUN_AS_NODE:-0}" = 1 ]; then
+    exec /usr/share/code/code.bin "$@"
+fi
+exec /usr/share/code/code.bin \
+    --use-gl=angle --use-angle=gl \
+    --hardware-video-device-path=/dev/dri/renderD128 \
+    --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy \
+    --enable-features=AcceleratedVideoDecoder,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoEncoder,VaapiIgnoreDriverChecks \
+    "$@"

@@ -16,3 +16,13 @@ sandbox therefore provides filesystem isolation without these additional layers.
 The configured desktop account uses a 60-second shell environment resolution
 timeout through `application.shellEnvironmentResolutionTimeout` in
 `~/.config/Code/User/settings.json`.
+
+The package launcher selects ANGLE with the OpenGL backend and enables GPU
+rasterization and zero-copy rendering. It enables the Chromium features
+`AcceleratedVideoDecoder`, `AcceleratedVideoDecodeLinuxGL`,
+`AcceleratedVideoEncoder`, and `VaapiIgnoreDriverChecks`. GPU blocklist checks
+are bypassed for the virtual GPU. The application sandbox remains enabled.
+The hardware video device is `/dev/dri/renderD128`, selected explicitly with
+`--hardware-video-device-path`. Video codec availability depends on the VirGL
+VA-API driver and host GPU.
+Additional command-line arguments are passed to the application.

@@ -1,0 +1,7 @@
+#!/bin/sh
+exec /usr/share/code/bin/code.vendor \
+    --use-gl=angle --use-angle=gl \
+    --hardware-video-device-path=/dev/dri/renderD128 \
+    --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy \
+    --enable-features=AcceleratedVideoDecoder,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoEncoder,VaapiIgnoreDriverChecks \
+    "$@"

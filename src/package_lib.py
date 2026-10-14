@@ -300,3 +300,30 @@ def meson_install(
         env=env,
         check=True,
     )
+
+
+def cmake_install(name, archive, directory, options=()):
+    source = archive_source(name, archive, directory)
+    env = environment()
+    sysroot = Path(env["LFS_SYSROOT"])
+    build = Path(env["LFS_WORKSPACE"]) / "build" / name
+    command = [
+        "/usr/bin/cmake", "-S", str(source), "-B", str(build),
+        "-DCMAKE_SYSTEM_NAME=Linux",
+        "-DCMAKE_SYSTEM_PROCESSOR=" + ("x86_64" if env["LFS_ARCH"] == "x64" else "i686"),
+        "-DCMAKE_C_COMPILER=" + env["CC"],
+        "-DCMAKE_CXX_COMPILER=" + env["CXX"],
+        "-DCMAKE_SYSROOT=" + str(sysroot),
+        "-DCMAKE_FIND_ROOT_PATH=" + str(sysroot),
+        "-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER",
+        "-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY",
+        "-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY",
+        "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY",
+        "-DCMAKE_INSTALL_PREFIX=/usr", "-DCMAKE_INSTALL_LIBDIR=lib",
+        "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
+        "-DBUILD_TESTING=OFF", *options,
+    ]
+    subprocess.run(command, env=env, check=True)
+    subprocess.run(["/usr/bin/cmake", "--build", str(build), "-j4"], env=env, check=True)
+    subprocess.run(["/usr/bin/cmake", "--install", str(build)],
+                   env={**env, "DESTDIR": str(sysroot)}, check=True)
