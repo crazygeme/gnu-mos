@@ -1,0 +1,22 @@
+{
+  "name": "containerd.io",
+  "version": "2.4.1-2~debian.12~bookworm",
+  "order": 182.0,
+  "source": "deb",
+  "deb-package": "containerd.io",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/dists/bookworm/pool/stable/amd64/containerd.io_2.4.1-2~debian.12~bookworm_amd64.deb",
+  "archive": "containerd.io_2.4.1-2~debian.12~bookworm_amd64.deb",
+  "sha256": "ab9bdca98878897666f5941359f8c379993ef81bf7c154954ee7d7e672210588",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libseccomp2"
+  ]
+}

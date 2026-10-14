@@ -1,0 +1,21 @@
+{
+  "name": "libseccomp2",
+  "version": "2.5.4-1+deb12u1",
+  "order": 180.5,
+  "source": "deb",
+  "deb-package": "libseccomp2",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/libs/libseccomp/libseccomp2_2.5.4-1+deb12u1_amd64.deb",
+  "archive": "libseccomp2_2.5.4-1+deb12u1_amd64.deb",
+  "sha256": "108fe67957ca7cf9ba51d801118a1b37d404bea7b6e365025cd00779e9eca38d",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

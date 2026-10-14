@@ -1,0 +1,21 @@
+{
+  "name": "libxtables12",
+  "version": "1.8.9-2",
+  "order": 181.1,
+  "source": "deb",
+  "deb-package": "libxtables12",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/i/iptables/libxtables12_1.8.9-2_amd64.deb",
+  "archive": "libxtables12_1.8.9-2_amd64.deb",
+  "sha256": "cb841d66950a43af4a398625313d2f3da9065299c9738538de6c2c3495857040",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "libjansson4",
+  "version": "2.14-2",
+  "order": 181.3,
+  "source": "deb",
+  "deb-package": "libjansson4",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/j/jansson/libjansson4_2.14-2_amd64.deb",
+  "archive": "libjansson4_2.14-2_amd64.deb",
+  "sha256": "3fc9742f9f1a37bcb9931df6074b4d1483419ef832ad5349f47323e75fc27864",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

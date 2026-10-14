@@ -1,0 +1,21 @@
+{
+  "name": "liblz4-1",
+  "version": "1.9.4-1",
+  "order": 180.2,
+  "source": "deb",
+  "deb-package": "liblz4-1",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/l/lz4/liblz4-1_1.9.4-1_amd64.deb",
+  "archive": "liblz4-1_1.9.4-1_amd64.deb",
+  "sha256": "64cde86cef1deaf828bd60297839b59710b5cd8dc50efd4f12643caaee9389d3",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

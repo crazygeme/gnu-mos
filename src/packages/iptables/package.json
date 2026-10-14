@@ -1,0 +1,29 @@
+{
+  "name": "iptables",
+  "version": "1.8.9-2",
+  "order": 181.7,
+  "source": "deb",
+  "deb-package": "iptables",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/i/iptables/iptables_1.8.9-2_amd64.deb",
+  "archive": "iptables_1.8.9-2_amd64.deb",
+  "sha256": "2928d3ca6ca8a3dc3f423f6752822b1f3614a5ba609ff7806bcba4449ffe90e1",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libip4tc2",
+    "libip6tc2",
+    "libxtables12",
+    "netbase",
+    "libmnl0",
+    "libnetfilter-conntrack3",
+    "libnfnetlink0",
+    "libnftnl11"
+  ]
+}

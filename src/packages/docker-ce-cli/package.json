@@ -1,0 +1,21 @@
+{
+  "name": "docker-ce-cli",
+  "version": "5:29.9.0-1~debian.12~bookworm",
+  "order": 181.9,
+  "source": "deb",
+  "deb-package": "docker-ce-cli",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/dists/bookworm/pool/stable/amd64/docker-ce-cli_29.9.0-1~debian.12~bookworm_amd64.deb",
+  "archive": "docker-ce-cli_29.9.0-1~debian.12~bookworm_amd64.deb",
+  "sha256": "69764da811eb76d1714894b1dc7aadb5413d8139174b89ddce54f66cd47baba0",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

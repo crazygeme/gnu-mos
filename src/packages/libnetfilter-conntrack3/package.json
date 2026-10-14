@@ -1,0 +1,23 @@
+{
+  "name": "libnetfilter-conntrack3",
+  "version": "1.0.9-3",
+  "order": 180.8,
+  "source": "deb",
+  "deb-package": "libnetfilter-conntrack3",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/libn/libnetfilter-conntrack/libnetfilter-conntrack3_1.0.9-3_amd64.deb",
+  "archive": "libnetfilter-conntrack3_1.0.9-3_amd64.deb",
+  "sha256": "65f1539238f60fcc85d115acd640474f45c77bfddcf402eb7d75965a783c2bc8",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libnfnetlink0",
+    "libmnl0"
+  ]
+}

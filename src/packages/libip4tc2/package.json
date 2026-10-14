@@ -1,0 +1,21 @@
+{
+  "name": "libip4tc2",
+  "version": "1.8.9-2",
+  "order": 180.9,
+  "source": "deb",
+  "deb-package": "libip4tc2",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/i/iptables/libip4tc2_1.8.9-2_amd64.deb",
+  "archive": "libip4tc2_1.8.9-2_amd64.deb",
+  "sha256": "f2c48b367f9ec13f9aa577e7ccf81b371ce5d5fe22dddf9d7aa99f1e0bb7cfc4",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}
