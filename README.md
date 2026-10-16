@@ -31,21 +31,25 @@ does not resolve Debian runtime dependencies. See
 [Package layout and system integration](src/packages/README.md) for manifest
 fields and extraction behavior.
 
-Image installation requires `sudo`, `qemu-img`, `sfdisk`, `losetup`, `mkfs.ext3`, and mount utilities. The console launcher requires the host `qemu-system-x86_64`. Both launch profiles require access to KVM, `ip`, `sysctl`, `iptables`, and `dnsmasq`. Privileged operations use `sudo` to manage loop devices, mounts, and host networking.
+Image installation requires `sudo`, `qemu-img`, `sfdisk`, `losetup`, `mkfs.ext3`, `debugfs`, and mount utilities. The console launcher requires the host `qemu-system-x86_64`. Both launch profiles require access to KVM, `ip`, `sysctl`, `iptables`, and `dnsmasq`. Privileged operations use `sudo` to manage loop devices, mounts, and host networking.
 
-The GUI profile builds QEMU 10.2.1 through `qemu-host`, installs it in `.workspace/<arch>/tools/qemu`, and uses that executable for desktop launches. Its SDL refresh path preserves active OpenGL scanout. The desktop launcher uses `virtio-vga-gl` with `-display sdl,gl=on,full-screen=on`. The window starts in borderless desktop fullscreen mode at the host desktop resolution. PS/2 relative-pointer movement is forwarded without window scaling, preserving small movements in both windowed and fullscreen modes. `Ctrl+Alt+F` toggles fullscreen mode. The host graphics driver must provide hardware-accelerated OpenGL. An explicit `-display` argument overrides the default display backend and fullscreen setting.
+The GUI profile builds QEMU 10.2.1 through `qemu-host`, installs it in `.workspace/<arch>/tools/qemu`, and uses that executable for desktop launches. Its SDL refresh path preserves active OpenGL scanout. The desktop launcher uses `virtio-vga-gl` with `-display sdl,gl=on,full-screen=on`. The window starts in borderless desktop fullscreen mode at the host desktop resolution. Relative-pointer movement is forwarded without window scaling, preserving small movements in both windowed and fullscreen modes. `Ctrl+Alt+F` toggles fullscreen mode. The host graphics driver must provide hardware-accelerated OpenGL. An explicit `-display` argument overrides the default display backend and fullscreen setting.
 
-The launcher provides an AC97 sound card using QEMU's SDL audio backend.
+The launcher provides USB Audio playback using QEMU's SDL audio backend.
 `MOS_AUDIO_BACKEND` selects another backend supported by the configured QEMU
 executable. Explicit `-audio` or `-audiodev` arguments replace the default audio
-configuration and must include the required guest sound device. MOS exposes
-AC97 playback through `/dev/dsp`; the XFCE session defaults SDL applications to
-the `dsp` audio driver. An explicit `SDL_AUDIODRIVER` value overrides that default.
+configuration and must include the required guest sound device. The USB Audio
+Class 1 driver exposes stereo 48 kHz signed 16-bit little-endian PCM through
+`/dev/dsp`, `/dev/audio`, and `/dev/mixer`. The ALSA default device uses the OSS
+plugin and converts application sample rates and formats to this PCM format.
+The Xfce session defaults SDL applications to the `dsp` audio driver. An explicit
+`SDL_AUDIODRIVER` value overrides that default. USB microphone capture, UAC2,
+and asynchronous feedback endpoints are not supported.
 
 The `qemu-host` and `virglrenderer-host` recipes use native host development libraries. On Debian or Ubuntu, `./lfs build` checks and installs their declared dependencies during build preparation when these packages are pending. Installation may require a sudo password. The equivalent manual command is:
 
 ```sh
-sudo apt install pkg-config libsdl2-dev libgbm-dev libdrm-dev libepoxy-dev libglib2.0-dev libpixman-1-dev zlib1g-dev python3-venv libva-dev mesa-va-drivers
+sudo apt install pkg-config libsdl2-dev libgbm-dev libdrm-dev libepoxy-dev libglib2.0-dev libpixman-1-dev zlib1g-dev python3-venv libva-dev mesa-va-drivers libusb-1.0-0-dev acl
 ```
 
 The recipe requires SDL, OpenGL, and VirGL support during configuration. Host QEMU installation does not require copying files into the guest image.
@@ -168,6 +172,131 @@ The image uses a DOS partition table, one ext3 partition, and the GRUB `i386-pc`
 The launcher sets `opt/org.seabios/pci64=0` through QEMU firmware configuration to keep PCI memory resources below 4 GiB, within the i686 kernel's device mapping range.
 
 During execution, the launcher creates `lfs-tap0`, assigns the host address `10.0.6.1`, and serves the `10.0.6.0/24` subnet. It configures DHCP, DNS, forwarding, and NAT, then removes its network configuration when QEMU exits.
+
+### USB input and data storage
+
+The QEMU launcher provides an xHCI controller, a USB keyboard, a relative USB
+mouse, and a removable USB mass-storage device. The emulated PS/2 controller
+is disabled. The system disk remains attached through IDE.
+
+The USB data device uses `.workspace/<arch>/qemu-hd/usb-data.img`. The launcher
+creates this independent 128 MiB ext3 filesystem when the file is absent and
+preserves its contents across launches. `MOS_USB_IMAGE` selects an existing
+raw data-device file; the launcher does not format a selected file.
+
+The default filesystem occupies the whole USB device and has a shared, sticky
+root directory. Existing custom filesystems retain their ownership and access
+permissions.
+
+In Xfce, the MOS GIO volume monitor exposes USB volumes in Thunar and on the
+desktop. The session automounter mounts ext3 and ext4 volumes under
+`/media/mos/<device>-<attachment-id>` at login and on insertion. A manually
+unmounted volume remains unmounted until a mount action, a new session, or
+reinsertion. The volume context menu provides mounting and unmounting.
+
+The `org.mos.Storage1` system D-Bus service discovers USB block devices through
+sysfs, probes filesystem labels and UUIDs with libblkid, and performs privileged
+mount operations. Polkit grants mount and unmount operations to members of
+`sudo`. The service accepts attachment identities rather than arbitrary device
+paths or mount options. Mounts use `nosuid` and `nodev` flags. POSIX filesystem
+permissions remain effective after mounting. Removal retires the associated
+mount and reinsertion creates a distinct volume identity.
+
+Outside a graphical session, a permitted account can mount the default volume
+with `gio mount -d /dev/sda`. `gio mount -li` lists the volume and its current
+mount path; `gio mount -u <mount-path>` unmounts it. Administrative manual
+mounting remains available when the volume is not mounted by the desktop:
+
+```sh
+mkdir -p /mnt/usb
+mount -t ext3 /dev/sda /mnt/usb
+sync
+umount /mnt/usb
+```
+
+The QEMU monitor can disconnect and reconnect the data device while retaining
+its backing file:
+
+```text
+device_del usb-disk
+device_add usb-storage,id=usb-disk,bus=usb.0,port=3,drive=usbdata,removable=true
+```
+
+The keyboard and mouse device identifiers are `usb-keyboard` and `usb-mouse`.
+
+USB disks use `/dev/sda`, `/dev/sdb`, and subsequent SCSI-style device names.
+MBR primary partitions use names such as `/dev/sda1`. Interface identities and
+driver bindings are exposed under `/sys/bus/usb/devices`. Block-device metadata
+is exposed under `/sys/class/block`, `/sys/block`, and `/sys/dev/block`. The
+`mos_generation` attribute distinguishes USB attachments when device numbers
+are reused.
+
+MOS enumerates devices connected directly to xHCI root ports during startup
+and after runtime attachment. Removal cancels device I/O, removes its device
+nodes and USB interface bindings, and releases pressed HID keys and buttons.
+An open descriptor for a removed disk returns `ENODEV` for reads and writes;
+it does not reference a reinserted disk. Disconnected device objects remain
+allocated until their final open descriptor or filesystem handle is closed.
+Unmount a USB filesystem before removing its device to commit pending writes.
+The desktop storage service detaches its mounts after removal. Filesystems
+mounted administratively require administrative cleanup after removal. External
+The xHCI transport supports external hubs, nested routes, downstream port power,
+reset, connection changes, and recursive device removal. USB2 hubs use the
+single transaction translator alternate setting. Hub status interrupts have a
+periodic status-check fallback. A route supports up to five external hubs;
+controllers expose up to 127 device slots. HID support covers boot-protocol
+keyboards and relative mice; mouse reports with
+an additional wheel byte are accepted. Storage support covers Bulk-Only
+Transport with the SCSI transparent command set, LUN 0, 512-byte sectors, and
+capacities below 2 TiB. UAS, GPT partition discovery, extended partitions, and
+non-boot HID report formats are not supported.
+
+### USB isochronous transfers and cameras
+
+The transport configures control, bulk, interrupt, and isochronous endpoints.
+Interface alternate settings are retained during descriptor parsing and can be
+selected independently. Isochronous submissions contain up to 256 service
+intervals and 1 MiB of data. Two submissions can remain queued per endpoint;
+each packet reports its actual length and completion status. Device removal
+cancels pending submissions before reclaiming DMA buffers.
+
+The launcher reserves USB port 4 for audio and port 5 for a host camera. The
+xHCI controller provides eight USB2 and eight USB3 ports. `MOS_USB_CAMERA=auto`
+selects the first USB camera exposed through the host video-device inventory.
+`MOS_USB_CAMERA=BUS:PORT` selects a physical USB port, such as `3:6` or `3:6.2`.
+`MOS_USB_CAMERA=none` omits camera passthrough. The host `acl` package supplies
+`getfacl` and `setfacl`; the launcher temporarily grants the invoking account
+read/write access to the selected USB device when required and restores its
+ACL after QEMU exits. The selected camera is assigned to the guest while QEMU
+runs and cannot simultaneously serve a host camera application.
+
+The UVC driver exposes supported MJPEG and YUYV capture interfaces as
+`/dev/video0` through `/dev/video3`. V4L2 supports format and frame-size
+selection, `read`, polling, and shared `mmap` streaming with up to four queued
+frame buffers. Capture retains complete frames and discards damaged or
+incomplete frames. The maximum frame buffer is 4 MiB. USERPTR, DMA-BUF, UVC
+extension controls, and infrared-specific pixel formats are not supported.
+
+Guvcview 2.2.2 is built from source with GTK3 and SDL2, using the configured
+FFmpeg, libv4l, libusb, and PortAudio libraries. Continuous preview uses V4L2
+`mmap` capture with MJPEG compression:
+
+```sh
+guvcview --device=/dev/video0 --capture=mmap --format=MJPG --resolution=320x240 --audio=none
+```
+
+Additional emulated hubs can use free ports, for example:
+
+```sh
+./lfs run -- -device usb-hub,id=usb-hub,bus=usb.0,port=6
+```
+
+The host-side `tests/usb_hub.py` runner validates downstream disk removal and
+hub-subtree replacement using QMP and the guest `usb_hotplug` test. Its test
+topology uses hubs at ports `6` and `6.1`, with a keyboard at `6.1.1`, a mouse
+at `6.1.2`, and the `usb-disk` storage device at `6.1.3`. Guest audio and camera
+checks are available in `tests/guest/usb_audio.c`, `usb_alsa.c`, and
+`usb_camera.c`.
 
 ## Desktop and system configuration
 

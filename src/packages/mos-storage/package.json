@@ -1,0 +1,15 @@
+{
+  "name": "mos-storage",
+  "version": "1",
+  "order": 110,
+  "source": "meta",
+  "artifact": "artifacts/mos-storage.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "polkit",
+    "util-linux"
+  ]
+}

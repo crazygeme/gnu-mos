@@ -1,0 +1,14 @@
+{
+  "name": "mos-volume-monitor",
+  "version": "1",
+  "order": 110.1,
+  "source": "meta",
+  "artifact": "artifacts/mos-volume-monitor.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "mos-storage"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "portaudio",
+  "version": "19.7.0",
+  "order": 174,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/p/portaudio19/portaudio19_{version}.orig.tar.gz",
+  "archive": "portaudio-19.7.0.tar.gz",
+  "sha256": "5af29ba58bbdbb7bbcefaaecc77ec8fc413f0db6f4c4e286c40c3e1b83174fa0",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "alsa-lib",
+    "alsa-oss"
+  ],
+  "build-tools": [
+    "cmake"
+  ]
+}

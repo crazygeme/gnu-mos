@@ -1,0 +1,14 @@
+{
+  "name": "mos-automount",
+  "version": "1",
+  "order": 110.2,
+  "source": "meta",
+  "artifact": "artifacts/mos-automount.done",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "glib",
+    "mos-volume-monitor"
+  ]
+}

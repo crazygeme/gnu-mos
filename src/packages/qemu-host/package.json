@@ -15,7 +15,9 @@
       "libglib2.0-dev",
       "libpixman-1-dev",
       "zlib1g-dev",
-      "python3-venv"
+      "python3-venv",
+      "libusb-1.0-0-dev",
+      "acl"
     ]
   },
   "source": "archive",

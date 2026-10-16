@@ -30,6 +30,7 @@
     "xf86-input-keyboard",
     "xf86-input-mouse",
     "xrdb",
-    "xterm"
+    "xterm",
+    "mos-automount"
   ]
 }

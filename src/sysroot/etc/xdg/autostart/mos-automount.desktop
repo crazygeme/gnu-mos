@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=MOS removable volumes
+Comment=Mount newly discovered USB volumes
+Exec=/usr/libexec/mos-automount
+OnlyShowIn=XFCE;
+NoDisplay=true
+Terminal=false

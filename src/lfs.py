@@ -6,10 +6,12 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 import threading
 import time
 import urllib.request
@@ -716,6 +718,81 @@ def create_image() -> None:
         subprocess.run(["sudo", "losetup", "-d", loop], check=False)
 
 
+def qemu_usb_image() -> Path:
+    configured = os.environ.get("MOS_USB_IMAGE")
+    if configured:
+        image = Path(configured).expanduser().resolve()
+        if not image.is_file():
+            raise SystemExit(f"USB data image does not exist: {image}")
+        return image
+    image = WORK / "qemu-hd/usb-data.img"
+    image.parent.mkdir(parents=True, exist_ok=True)
+    with (image.parent / "usb-data.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if not image.exists():
+            fd, temporary = tempfile.mkstemp(prefix="usb-data-", suffix=".img", dir=image.parent)
+            temporary = Path(temporary)
+            try:
+                with os.fdopen(fd, "wb") as output:
+                    output.truncate(128 * 1024 * 1024)
+                run("mkfs.ext3", "-F", "-L", "MOSUSB", str(temporary))
+                run("debugfs", "-w", "-R", "set_inode_field / mode 041777", str(temporary))
+                temporary.replace(image)
+            finally:
+                temporary.unlink(missing_ok=True)
+    return image
+
+
+def qemu_camera() -> tuple[str, Path] | None:
+    selection = os.environ.get("MOS_USB_CAMERA", "auto")
+    if selection == "none":
+        return None
+    candidates = []
+    if selection == "auto":
+        for entry in sorted(Path("/sys/class/video4linux").glob("video*")):
+            device = (entry / "device").resolve()
+            for parent in (device, *device.parents):
+                if (parent / "idVendor").is_file():
+                    candidates.append(parent)
+                    break
+    elif re.fullmatch(r"[0-9]+:[0-9]+(?:\.[0-9]+)*", selection):
+        bus, port = selection.split(":", 1)
+        candidates.append(Path("/sys/bus/usb/devices") / f"{int(bus)}-{port}")
+    else:
+        raise SystemExit("MOS_USB_CAMERA requires auto, none, or BUS:PORT")
+    for device in candidates:
+        if not (device / "busnum").is_file() or not (device / "devnum").is_file():
+            continue
+        bus = int((device / "busnum").read_text())
+        address = int((device / "devnum").read_text())
+        port = (device / "devpath").read_text().strip()
+        return (
+            f"usb-host,id=usb-camera,bus=usb.0,port=5,hostbus={bus},hostport={port},isobsize=256,isobufs=8",
+            Path(f"/dev/bus/usb/{bus:03d}/{address:03d}"),
+        )
+    if selection != "auto":
+        raise SystemExit(f"USB camera is unavailable: {selection}")
+    return None
+
+
+@contextmanager
+def qemu_camera_access(camera: tuple[str, Path] | None):
+    if camera is None or os.geteuid() == 0 or os.access(camera[1], os.R_OK | os.W_OK):
+        yield
+        return
+    if not shutil.which("getfacl") or not shutil.which("setfacl"):
+        raise SystemExit("USB camera access requires the host acl package")
+    with tempfile.NamedTemporaryFile(prefix="mos-camera-acl-", mode="w") as backup:
+        acl = subprocess.check_output(["getfacl", "--absolute-names", str(camera[1])], text=True)
+        backup.write(acl)
+        backup.flush()
+        sudo_run("setfacl", "-m", f"u:{os.getuid()}:rw", str(camera[1]))
+        try:
+            yield
+        finally:
+            sudo_run("setfacl", "--restore=" + backup.name)
+
+
 def qemu(extra: list[str]) -> None:
     if not IMAGE.exists():
         raise SystemExit("run requires ./lfs setup")
@@ -726,8 +803,11 @@ def qemu(extra: list[str]) -> None:
         raise SystemExit(
             "desktop QEMU is missing; run ./lfs build --all to build qemu-host"
         )
+    usb_image = qemu_usb_image()
+    camera = qemu_camera()
     command = [
         executable,
+        "-machine", "i8042=off",
         "-enable-kvm",
         "-cpu",
         "host",
@@ -744,7 +824,15 @@ def qemu(extra: list[str]) -> None:
         "tap,id=net0,ifname=lfs-tap0,script=no,downscript=no",
         "-device",
         "e1000,netdev=net0,mac=52:54:00:12:34:56",
+        "-device", "qemu-xhci,id=usb,p2=8,p3=8",
+        "-device", "usb-kbd,id=usb-keyboard,bus=usb.0,port=1",
+        "-device", "usb-mouse,id=usb-mouse,bus=usb.0,port=2",
+        "-blockdev", json.dumps({"driver": "file", "node-name": "usb-file", "filename": str(usb_image)}),
+        "-blockdev", json.dumps({"driver": "raw", "node-name": "usbdata", "file": "usb-file"}),
+        "-device", "usb-storage,id=usb-disk,bus=usb.0,port=3,drive=usbdata,removable=true",
     ]
+    if camera is not None:
+        command.extend(["-device", camera[0]])
     if "-audiodev" not in qemu_extra and "-audio" not in qemu_extra:
         audio_backend = os.environ.get("MOS_AUDIO_BACKEND", "sdl")
         command.extend(
@@ -752,7 +840,7 @@ def qemu(extra: list[str]) -> None:
                 "-audiodev",
                 f"{audio_backend},id=audio0",
                 "-device",
-                "AC97,audiodev=audio0",
+                "usb-audio,id=usb-audio,bus=usb.0,port=4,audiodev=audio0,buffer=65536",
             ]
         )
     if not NO_GUI:
@@ -775,7 +863,7 @@ def qemu(extra: list[str]) -> None:
     if not NO_GUI:
         # VirGL video imports host VA surfaces through EGL images.
         env["SDL_VIDEO_X11_FORCE_EGL"] = "1"
-    with qemu_network():
+    with qemu_camera_access(camera), qemu_network():
         run(*command, env=env)
 
 

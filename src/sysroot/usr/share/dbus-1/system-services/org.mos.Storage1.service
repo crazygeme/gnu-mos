@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.mos.Storage1
+Exec=/usr/libexec/mos-storage
+User=root

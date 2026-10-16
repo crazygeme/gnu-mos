@@ -1,0 +1,25 @@
+{
+  "name": "guvcview",
+  "version": "2.2.2",
+  "order": 205,
+  "source": "archive",
+  "url": "https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/g/guvcview/guvcview_{version}.orig.tar.bz2",
+  "archive": "guvcview-src-2.2.2.tar.bz2",
+  "sha256": "240c6dbb8de6e8d8ed711ffd7738312b7e560638165c7588d7433e0aad9819ac",
+  "profiles": [
+    "gui"
+  ],
+  "dependencies": [
+    "gtk3",
+    "sdl2",
+    "libv4l",
+    "libusb",
+    "portaudio",
+    "libpng",
+    "ffmpeg",
+    "libudev"
+  ],
+  "build-tools": [
+    "cmake"
+  ]
+}
