@@ -173,6 +173,8 @@ The launcher sets `opt/org.seabios/pci64=0` through QEMU firmware configuration 
 
 During execution, the launcher creates `lfs-tap0`, assigns the host address `10.0.6.1`, and serves the `10.0.6.0/24` subnet. It configures DHCP, DNS, forwarding, and NAT, then removes its network configuration when QEMU exits.
 
+Host TUN interfaces with an IPv4 address in `198.18.0.0/15` are treated as Fake-IP proxy tunnels. Traffic from the LFS subnet to these interfaces retains its guest source address. The launcher removes the corresponding NAT exemptions when QEMU exits.
+
 ### USB input and data storage
 
 The QEMU launcher provides an xHCI controller, a USB keyboard, and a relative

@@ -17,6 +17,11 @@ The configured desktop account uses a 60-second shell environment resolution
 timeout through `application.shellEnvironmentResolutionTimeout` in
 `~/.config/Code/User/settings.json`.
 
+The desktop account configures the LLVM clangd extension to use the installed
+`/usr/bin/clangd` language server, with server update checks disabled.
+`C_Cpp.intelliSenseEngine` is `disabled` so Microsoft C/C++ and clangd do not
+provide competing language services. Microsoft C/C++ debugging remains available.
+
 The package launcher selects ANGLE with the OpenGL backend and enables GPU
 rasterization and zero-copy rendering. It enables the Chromium features
 `AcceleratedVideoDecoder`, `AcceleratedVideoDecodeLinuxGL`,
@@ -26,3 +31,12 @@ The hardware video device is `/dev/dri/renderD128`, selected explicitly with
 `--hardware-video-device-path`. Video codec availability depends on the VirGL
 VA-API driver and host GPU.
 Additional command-line arguments are passed to the application.
+
+The graphical and command-line launchers select V8 single-threaded garbage
+collection. Garbage collection does not use parallel workers. The launchers
+set `DOTNET_EnableDiagnostics=0` for the extension signature verifier;
+.NET diagnostic attachment is unavailable in these processes. Marketplace
+extension signature verification remains enabled.
+
+Empty per-user extension registries are omitted from the sysroot overlay.
+Installed extension registrations in the image remain available during setup.

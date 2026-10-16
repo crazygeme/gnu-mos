@@ -1,3 +1,6 @@
 {
-  "application.shellEnvironmentResolutionTimeout": 60
+  "application.shellEnvironmentResolutionTimeout": 60,
+  "clangd.path": "/usr/bin/clangd",
+  "clangd.checkUpdates": false,
+  "C_Cpp.intelliSenseEngine": "disabled"
 }

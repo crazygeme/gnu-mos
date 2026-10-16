@@ -1,9 +1,13 @@
 import os
+import json
 from pathlib import Path
 import shutil
 import subprocess
 
 sysroot = Path(os.environ["LFS_SYSROOT"])
+for registry in sysroot.glob("home/*/.vscode/extensions/extensions.json"):
+    if json.loads(registry.read_text()) == []:
+        registry.unlink()
 directory = sysroot / "usr/share/code"
 launcher = directory / "code"
 with launcher.open("rb") as stream:

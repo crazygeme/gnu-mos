@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import fcntl
 import hashlib
+import ipaddress
 import json
 import os
 import re
@@ -855,6 +856,23 @@ def qemu(extra: list[str]) -> None:
         run(*command, env=env)
 
 
+def qemu_proxy_tunnels() -> list[str]:
+    interfaces = json.loads(
+        subprocess.check_output(["ip", "-j", "-d", "-4", "addr", "show"], text=True)
+    )
+    fake_ip_range = ipaddress.ip_network("198.18.0.0/15")
+    return [
+        item["ifname"]
+        for item in interfaces
+        if item.get("linkinfo", {}).get("info_kind") == "tun"
+        and any(
+            ipaddress.ip_address(address["local"]) in fake_ip_range
+            for address in item.get("addr_info", [])
+            if address.get("family") == "inet"
+        )
+    ]
+
+
 @contextmanager
 def qemu_network():
     interface = "lfs-tap0"
@@ -863,6 +881,7 @@ def qemu_network():
     pid_file = WORK / "lfs-dnsmasq.pid"
     tap_created = False
     nat_added = False
+    proxy_tunnels = []
     forward_out_added = False
     forward_in_added = False
     dnsmasq_started = False
@@ -899,6 +918,12 @@ def qemu_network():
             "MASQUERADE",
         )
         nat_added = True
+        for tunnel in qemu_proxy_tunnels():
+            sudo_run(
+                "iptables", "-t", "nat", "-I", "POSTROUTING", "1",
+                "-s", subnet, "-o", tunnel, "-j", "RETURN",
+            )
+            proxy_tunnels.append(tunnel)
         sudo_run("iptables", "-A", "FORWARD", "-i", interface, "-j", "ACCEPT")
         forward_out_added = True
         sudo_run(
@@ -953,6 +978,11 @@ def qemu_network():
         if forward_out_added:
             cleanup_network(
                 "iptables", "-D", "FORWARD", "-i", interface, "-j", "ACCEPT"
+            )
+        for tunnel in reversed(proxy_tunnels):
+            cleanup_network(
+                "iptables", "-t", "nat", "-D", "POSTROUTING",
+                "-s", subnet, "-o", tunnel, "-j", "RETURN",
             )
         if nat_added:
             cleanup_network(
