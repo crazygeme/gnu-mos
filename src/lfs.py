@@ -643,7 +643,7 @@ def create_image() -> None:
     )
     new_image = not IMAGE.exists()
     if new_image:
-        image_size = os.environ.get("LFS_IMAGE_SIZE", "8G")
+        image_size = os.environ.get("LFS_IMAGE_SIZE", "40G")
         run("qemu-img", "create", "-f", "raw", str(IMAGE), image_size)
     partition_info = subprocess.run(
         ["sfdisk", "--json", str(IMAGE)], capture_output=True, text=True
