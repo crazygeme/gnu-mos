@@ -175,18 +175,17 @@ During execution, the launcher creates `lfs-tap0`, assigns the host address `10.
 
 ### USB input and data storage
 
-The QEMU launcher provides an xHCI controller, a USB keyboard, a relative USB
-mouse, and a removable USB mass-storage device. The emulated PS/2 controller
-is disabled. The system disk remains attached through IDE.
+The QEMU launcher provides an xHCI controller, a USB keyboard, and a relative
+USB mouse. The emulated PS/2 controller is disabled. The system disk remains
+attached through IDE. USB mass storage is optional and is not attached by
+default.
 
-The USB data device uses `.workspace/<arch>/qemu-hd/usb-data.img`. The launcher
-creates this independent 128 MiB ext3 filesystem when the file is absent and
-preserves its contents across launches. `MOS_USB_IMAGE` selects an existing
-raw data-device file; the launcher does not format a selected file.
+`MOS_USB_IMAGE` attaches an existing raw data-device file as a removable USB
+mass-storage device. The launcher does not create or format USB disk images.
 
-The default filesystem occupies the whole USB device and has a shared, sticky
-root directory. Existing custom filesystems retain their ownership and access
-permissions.
+```sh
+MOS_USB_IMAGE=/path/to/usb.img ./lfs run
+```
 
 In Xfce, the MOS GIO volume monitor exposes USB volumes in Thunar and on the
 desktop. The session automounter mounts ext3 and ext4 volumes under
@@ -202,7 +201,7 @@ paths or mount options. Mounts use `nosuid` and `nodev` flags. POSIX filesystem
 permissions remain effective after mounting. Removal retires the associated
 mount and reinsertion creates a distinct volume identity.
 
-Outside a graphical session, a permitted account can mount the default volume
+Outside a graphical session, a permitted account can mount an attached USB volume
 with `gio mount -d /dev/sda`. `gio mount -li` lists the volume and its current
 mount path; `gio mount -u <mount-path>` unmounts it. Administrative manual
 mounting remains available when the volume is not mounted by the desktop:
@@ -214,8 +213,8 @@ sync
 umount /mnt/usb
 ```
 
-The QEMU monitor can disconnect and reconnect the data device while retaining
-its backing file:
+For a data device attached with `MOS_USB_IMAGE`, the QEMU monitor can
+disconnect and reconnect the device while retaining its backing file:
 
 ```text
 device_del usb-disk
@@ -294,7 +293,8 @@ Additional emulated hubs can use free ports, for example:
 The host-side `tests/usb_hub.py` runner validates downstream disk removal and
 hub-subtree replacement using QMP and the guest `usb_hotplug` test. Its test
 topology uses hubs at ports `6` and `6.1`, with a keyboard at `6.1.1`, a mouse
-at `6.1.2`, and the `usb-disk` storage device at `6.1.3`. Guest audio and camera
+at `6.1.2`, and the `usb-disk` storage device at `6.1.3`. The `usbdata` backing
+node requires an existing image selected with `MOS_USB_IMAGE`. Guest audio and camera
 checks are available in `tests/guest/usb_audio.c`, `usb_alsa.c`, and
 `usb_camera.c`.
 

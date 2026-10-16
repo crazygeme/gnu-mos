@@ -718,28 +718,13 @@ def create_image() -> None:
         subprocess.run(["sudo", "losetup", "-d", loop], check=False)
 
 
-def qemu_usb_image() -> Path:
+def qemu_usb_image() -> Path | None:
     configured = os.environ.get("MOS_USB_IMAGE")
-    if configured:
-        image = Path(configured).expanduser().resolve()
-        if not image.is_file():
-            raise SystemExit(f"USB data image does not exist: {image}")
-        return image
-    image = WORK / "qemu-hd/usb-data.img"
-    image.parent.mkdir(parents=True, exist_ok=True)
-    with (image.parent / "usb-data.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        if not image.exists():
-            fd, temporary = tempfile.mkstemp(prefix="usb-data-", suffix=".img", dir=image.parent)
-            temporary = Path(temporary)
-            try:
-                with os.fdopen(fd, "wb") as output:
-                    output.truncate(128 * 1024 * 1024)
-                run("mkfs.ext3", "-F", "-L", "MOSUSB", str(temporary))
-                run("debugfs", "-w", "-R", "set_inode_field / mode 041777", str(temporary))
-                temporary.replace(image)
-            finally:
-                temporary.unlink(missing_ok=True)
+    if not configured:
+        return None
+    image = Path(configured).expanduser().resolve()
+    if not image.is_file():
+        raise SystemExit(f"USB data image does not exist: {image}")
     return image
 
 
@@ -827,10 +812,13 @@ def qemu(extra: list[str]) -> None:
         "-device", "qemu-xhci,id=usb,p2=8,p3=8",
         "-device", "usb-kbd,id=usb-keyboard,bus=usb.0,port=1",
         "-device", "usb-mouse,id=usb-mouse,bus=usb.0,port=2",
-        "-blockdev", json.dumps({"driver": "file", "node-name": "usb-file", "filename": str(usb_image)}),
-        "-blockdev", json.dumps({"driver": "raw", "node-name": "usbdata", "file": "usb-file"}),
-        "-device", "usb-storage,id=usb-disk,bus=usb.0,port=3,drive=usbdata,removable=true",
     ]
+    if usb_image is not None:
+        command.extend([
+            "-blockdev", json.dumps({"driver": "file", "node-name": "usb-file", "filename": str(usb_image)}),
+            "-blockdev", json.dumps({"driver": "raw", "node-name": "usbdata", "file": "usb-file"}),
+            "-device", "usb-storage,id=usb-disk,bus=usb.0,port=3,drive=usbdata,removable=true",
+        ])
     if camera is not None:
         command.extend(["-device", camera[0]])
     if "-audiodev" not in qemu_extra and "-audio" not in qemu_extra:
