@@ -29,3 +29,7 @@ function __promp_command(){
 }
 
 PROMPT_COMMAND=__promp_command
+
+if [[ $- == *i* ]] && command -v fzf >/dev/null 2>&1; then
+	eval "$(fzf --bash)"
+fi
