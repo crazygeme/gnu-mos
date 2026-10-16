@@ -165,7 +165,7 @@ configuration behavior.
 | Environment variable | Default | Purpose |
 | --- | --- | --- |
 | `LFS_IMAGE_SIZE` | `8G` | Raw disk size when `setup` creates a new image. |
-| `LFS_RAM` | `4096` | Guest memory passed to QEMU with `-m`. |
+| `LFS_RAM` | `16384` | Guest memory in MiB, used by QEMU and the graphical mode shared memory backend. |
 
 The image uses a DOS partition table, one ext3 partition, and the GRUB `i386-pc` boot target. The launcher uses KVM, the host CPU model, two virtual CPUs, and an IDE disk. Serial output is written to `.workspace/<arch>/krn.log`.
 

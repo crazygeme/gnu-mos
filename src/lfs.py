@@ -783,6 +783,7 @@ def qemu(extra: list[str]) -> None:
         raise SystemExit("run requires ./lfs setup")
     serial = "file:" + str(WORK / "krn.log")
     qemu_extra = list(extra)
+    memory = os.environ.get("LFS_RAM", "16384")
     executable = str(WORK / "tools/qemu/bin/qemu-system-x86_64")
     if not Path(executable).is_file():
         raise SystemExit(
@@ -797,9 +798,9 @@ def qemu(extra: list[str]) -> None:
         "-cpu",
         "host",
         "-m",
-        os.environ.get("LFS_RAM", "8192"),
+        memory,
         "-smp",
-        "2",
+        "8",
         # The i686 kernel maps PCI MMIO only below 4 GiB.
         "-fw_cfg",
         "name=opt/org.seabios/pci64,string=0",
@@ -840,7 +841,6 @@ def qemu(extra: list[str]) -> None:
         if "-display" not in qemu_extra:
             command.extend(["-display", "sdl,gl=on,full-screen=off"])
     if not NO_GUI:
-        memory = os.environ.get("LFS_RAM", "8192")
         command.extend([
             "-object", f"memory-backend-memfd,id=mos-memory,size={memory}M,share=on",
             "-machine", "memory-backend=mos-memory",
