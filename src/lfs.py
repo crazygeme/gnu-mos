@@ -30,6 +30,7 @@ BASE_WORK = WORK
 ARCH = "x64"
 TARGETS = {"x86": "i686-lfs-linux-gnu", "x64": "x86_64-lfs-linux-gnu"}
 NO_GUI = False
+USB_SYSFS = Path("/sys/bus/usb/devices")
 TTY = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
 RESET = "\033[0m" if TTY else ""
 CYAN = "\033[36m" if TTY else ""
@@ -741,9 +742,22 @@ def qemu_camera() -> tuple[str, Path] | None:
                 if (parent / "idVendor").is_file():
                     candidates.append(parent)
                     break
+        # USB descriptors remain available while the host video driver is detached.
+        for device in sorted(USB_SYSFS.iterdir()):
+            if not (device / "idVendor").is_file():
+                continue
+            for interface in sorted(device.glob(device.name + ":*")):
+                try:
+                    video_class = (interface / "bInterfaceClass").read_text().strip()
+                    subclass = (interface / "bInterfaceSubClass").read_text().strip()
+                except OSError:
+                    continue
+                if video_class == "0e" and subclass == "02":
+                    candidates.append(device)
+                    break
     elif re.fullmatch(r"[0-9]+:[0-9]+(?:\.[0-9]+)*", selection):
         bus, port = selection.split(":", 1)
-        candidates.append(Path("/sys/bus/usb/devices") / f"{int(bus)}-{port}")
+        candidates.append(USB_SYSFS / f"{int(bus)}-{port}")
     else:
         raise SystemExit("MOS_USB_CAMERA requires auto, none, or BUS:PORT")
     for device in candidates:

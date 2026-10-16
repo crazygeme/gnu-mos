@@ -94,6 +94,31 @@ class USBMedia(unittest.TestCase):
         access.assert_called_once_with(camera)
         self.assertIn(camera[0], run.call_args.args)
 
+    def test_camera_auto_detection_without_host_video_nodes(self):
+        usb = self.work / "usb"
+        camera = usb / "1-3"
+        interface = camera / "1-3:1.1"
+        interface.mkdir(parents=True)
+        descriptors = {"idVendor": "5986", "busnum": "1", "devnum": "2", "devpath": "3"}
+        for name, value in descriptors.items():
+            (camera / name).write_text(value + "\n")
+        (interface / "bInterfaceClass").write_text("0e\n")
+        (interface / "bInterfaceSubClass").write_text("02\n")
+        with patch.dict(os.environ, MOS_USB_CAMERA="auto"), \
+             patch.object(lfs, "USB_SYSFS", usb), \
+             patch.object(Path, "glob", autospec=True) as glob:
+            glob.side_effect = lambda path, pattern: iter(
+                [interface] if path == camera else []
+            )
+            selected = lfs.qemu_camera()
+            self.assertIsNotNone(selected)
+            self.assertIn("hostbus=1,hostport=3", selected[0])
+            self.assertEqual(selected[1], Path("/dev/bus/usb/001/002"))
+            (interface / "bInterfaceSubClass").write_text("01\n")
+            self.assertIsNone(lfs.qemu_camera())
+            (interface / "bInterfaceSubClass").unlink()
+            self.assertIsNone(lfs.qemu_camera())
+
 
 if __name__ == "__main__":
     unittest.main()
