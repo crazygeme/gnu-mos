@@ -1,0 +1,29 @@
+{
+  "name": "libgrpc29t64",
+  "version": "1.51.1-6",
+  "order": 221,
+  "source": "deb",
+  "deb-package": "libgrpc29t64",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/g/grpc/libgrpc29t64_1.51.1-6_amd64.deb",
+  "archive": "libgrpc29t64_1.51.1-6_amd64.deb",
+  "sha256": "8d7dfdca30c13995a76bbbb36a3e4d245056b800c7f23fda8fd80a01b7307fc6",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "libabsl20240722",
+    "glibc",
+    "libcares2",
+    "gcc-target",
+    "libprotobuf32t64",
+    "libprotoc32t64",
+    "libre2-11",
+    "openssl",
+    "zlib"
+  ]
+}

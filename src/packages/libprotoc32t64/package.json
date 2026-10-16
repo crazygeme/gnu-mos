@@ -1,0 +1,23 @@
+{
+  "name": "libprotoc32t64",
+  "version": "3.21.12-11+deb13u1",
+  "order": 217,
+  "source": "deb",
+  "deb-package": "libprotoc32t64",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/p/protobuf/libprotoc32t64_3.21.12-11+deb13u1_amd64.deb",
+  "archive": "libprotoc32t64_3.21.12-11+deb13u1_amd64.deb",
+  "sha256": "8a96715498f10f8e166411248164448c9a892fa1d5b25f1e02a93ea668fa72aa",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "gcc-target",
+    "libprotobuf32t64"
+  ]
+}

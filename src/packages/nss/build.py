@@ -68,7 +68,18 @@ for pattern in ("*.so", "*.a", "*.chk"):
 for executable in (dist / "lfs.OBJ/bin").iterdir():
     if executable.is_file():
         shutil.copy2(executable, binary_dir / executable.name)
-shutil.copytree(dist / "public/nss", include_dir, dirs_exist_ok=True)
+def install_header(source, destination):
+    destination = Path(destination)
+    destination.unlink(missing_ok=True)
+    shutil.copyfile(source, destination)
+    destination.chmod(0o644)
+    return str(destination)
+
+
+shutil.copytree(
+    dist / "public/nss", include_dir, dirs_exist_ok=True,
+    copy_function=install_header,
+)
 (library_dir / "pkgconfig/nss.pc").write_text(
     "prefix=/usr\nexec_prefix=${prefix}\nlibdir=${prefix}/lib\n"
     "includedir=${prefix}/include/nss\n\n"

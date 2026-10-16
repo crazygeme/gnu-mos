@@ -1,0 +1,21 @@
+{
+  "name": "libcares2",
+  "version": "1.34.5-1+deb13u1",
+  "order": 216,
+  "source": "deb",
+  "deb-package": "libcares2",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/c/c-ares/libcares2_1.34.5-1+deb13u1_amd64.deb",
+  "archive": "libcares2_1.34.5-1+deb13u1_amd64.deb",
+  "sha256": "5034a2c34ea4730797df1a5f6a0ec142d7d09ce6923c06e167f08ad2e69a4218",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "libc++abi-dev",
+  "version": "1:19.1.7-3+b1",
+  "order": 207,
+  "source": "deb",
+  "deb-package": "libc++abi-19-dev",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/libc++abi-19-dev_19.1.7-3+b1_amd64.deb",
+  "archive": "libc++abi-19-dev_19.1.7-3+b1_amd64.deb",
+  "sha256": "f50542a435e49a95a7ffe677866551fd6f64d2b52a14c7bee09a3612eb28f51b",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "libc++abi1-19"
+  ]
+}

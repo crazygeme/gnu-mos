@@ -1,0 +1,21 @@
+{
+  "name": "libzstd1",
+  "version": "1.5.7+dfsg-1",
+  "order": 211,
+  "source": "deb",
+  "deb-package": "libzstd1",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/libz/libzstd/libzstd1_1.5.7+dfsg-1_amd64.deb",
+  "archive": "libzstd1_1.5.7+dfsg-1_amd64.deb",
+  "sha256": "2f6a2aeacfc925eba8b00ac9139bc4bfccf8cacb09eb93de067074b26948eef9",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

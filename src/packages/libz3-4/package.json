@@ -1,0 +1,22 @@
+{
+  "name": "libz3-4",
+  "version": "4.13.3-1",
+  "order": 213,
+  "source": "deb",
+  "deb-package": "libz3-4",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/z/z3/libz3-4_4.13.3-1_amd64.deb",
+  "archive": "libz3-4_4.13.3-1_amd64.deb",
+  "sha256": "71383373523ef62d47eccf660cf6535c3febcbb3f88e54cb7a43124014b57359",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "gcc-target"
+  ]
+}

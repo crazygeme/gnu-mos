@@ -1,0 +1,23 @@
+{
+  "name": "libc++-dev",
+  "version": "1:19.1.7-3+b1",
+  "order": 208,
+  "source": "deb",
+  "deb-package": "libc++-19-dev",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/libc++-19-dev_19.1.7-3+b1_amd64.deb",
+  "archive": "libc++-19-dev_19.1.7-3+b1_amd64.deb",
+  "sha256": "e2c81f828b438661822b95cc5292bec8017f0ec1660772c7b7670002d8c41134",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "libc++1-19",
+    "libc++abi-dev",
+    "libunwind-19-dev"
+  ]
+}

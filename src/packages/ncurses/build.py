@@ -22,6 +22,7 @@ env.update(
 common = (
     "--prefix=/usr",
     "--with-shared",
+    "--with-versioned-syms",
     "--without-debug",
     "--without-ada",
     "--without-cxx",

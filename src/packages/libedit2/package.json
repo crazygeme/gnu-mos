@@ -1,0 +1,23 @@
+{
+  "name": "libedit2",
+  "version": "3.1-20250104-1",
+  "order": 210,
+  "source": "deb",
+  "deb-package": "libedit2",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/libe/libedit/libedit2_3.1-20250104-1_amd64.deb",
+  "archive": "libedit2_3.1-20250104-1_amd64.deb",
+  "sha256": "b002ea172b9c1e34a67bc497c523c67bb74c3f0a4e98113cb083990a1f1d3bfe",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "libbsd",
+    "glibc",
+    "ncurses"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "libabsl20240722",
+  "version": "20240722.0-4",
+  "order": 214,
+  "source": "deb",
+  "deb-package": "libabsl20240722",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/a/abseil/libabsl20240722_20240722.0-4_amd64.deb",
+  "archive": "libabsl20240722_20240722.0-4_amd64.deb",
+  "sha256": "78c6d7692890990a27cb1d5bbd95b7bfe47a4183ffafec5b30f689f9b58ec6f7",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "gcc-target"
+  ]
+}

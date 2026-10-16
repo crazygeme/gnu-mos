@@ -1,0 +1,25 @@
+{
+  "name": "clang-format",
+  "version": "1:19.1.7-3+b1",
+  "order": 226,
+  "source": "deb",
+  "deb-package": "clang-format-19",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/clang-format-19_19.1.7-3+b1_amd64.deb",
+  "archive": "clang-format-19_19.1.7-3+b1_amd64.deb",
+  "sha256": "25c849491d8cddc1d65e6f5f67d188a4406c5cdb8c78c490bef08c9477a4e150",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libclang-cpp19",
+    "gcc-target",
+    "libllvm19",
+    "python"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "libunwind-19",
+  "version": "1:19.1.7-3+b1",
+  "order": 203,
+  "source": "deb",
+  "deb-package": "libunwind-19",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/libunwind-19_19.1.7-3+b1_amd64.deb",
+  "archive": "libunwind-19_19.1.7-3+b1_amd64.deb",
+  "sha256": "8473b38395b7e2d754146750a9ad71a699bb09e1f958f06a7e6804eda37f45c6",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc"
+  ]
+}

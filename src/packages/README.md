@@ -46,6 +46,11 @@ examples from Microsoft's official repositories. Microsoft Edge
 identities are `microsoft-edge-stable` and `code`. Both manifests pin archive
 filenames and SHA256 checksums and declare the host `dpkg` package dependency.
 
+The `clang` and `clang-tools` packages import LLVM/Clang 19.1.7 Debian binaries
+for `x64` console and GUI builds, including `clang-format`, `clangd`, and their
+runtime libraries. Package selection, compiler configuration, and command
+entry points are documented in [Clang C and C++ Toolchain](clang/README.md).
+
 The GUI profile builds NSPR 4.38.2, NSS 3.123, and the CUPS 2.4.20 client
 library before either Debian application package. Both binary manifests declare
 these runtime package dependencies. Shared libraries reside in `/usr/lib`,
@@ -53,7 +58,8 @@ development headers in `/usr/include/nspr`, `/usr/include/nss`, and
 `/usr/include/cups`, and development metadata in `/usr/lib/pkgconfig`.
 NSPR supplies `libnspr4.so`, `libplc4.so`, and `libplds4.so`. NSS supplies
 `libnss3.so`, `libnssutil3.so`, `libsmime3.so`, `libssl3.so`, and its cryptographic
-modules. NSS uses the configured NSPR libraries, the position-independent
+modules. NSS header installation replaces existing files and sets mode 0644.
+NSS uses the configured NSPR libraries, the position-independent
 SQLite archive, and zlib. Its link configuration places `libm` after the SQLite
 archive to resolve the archive's math-function dependencies and retains the
 configured zlib linker flags for compression consumers. Its `nsinstall`

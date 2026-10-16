@@ -1,0 +1,19 @@
+{
+  "name": "libclang-common-19-dev",
+  "version": "1:19.1.7-3+b1",
+  "order": 212,
+  "source": "deb",
+  "deb-package": "libclang-common-19-dev",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/libclang-common-19-dev_19.1.7-3+b1_amd64.deb",
+  "archive": "libclang-common-19-dev_19.1.7-3+b1_amd64.deb",
+  "sha256": "4018e40e2d4144fe38c45822e68cca63c1bf6c7872c3073ebb262ad4b2f9b8bc",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": []
+}

@@ -10,7 +10,7 @@ env = environment()
 env["CFLAGS"] += " -fPIC"
 env["CHOST"] = env.get("LFS_TARGET", "i686-lfs-linux-gnu")
 subprocess.run(
-    [str(source / "configure"), "--prefix=/usr", "--static"],
+    [str(source / "configure"), "--prefix=/usr", "--shared"],
     cwd=source,
     env=env,
     check=True,

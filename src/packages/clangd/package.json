@@ -1,0 +1,29 @@
+{
+  "name": "clangd",
+  "version": "1:19.1.7-3+b1",
+  "order": 227,
+  "source": "deb",
+  "deb-package": "clangd-19",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/clangd-19_19.1.7-3+b1_amd64.deb",
+  "archive": "clangd-19_19.1.7-3+b1_amd64.deb",
+  "sha256": "2ad4bc4bf5f69ca727ad1437bf733ba4ec0af09031cec7b80e3098917d24444b",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "libabsl20240722",
+    "glibc",
+    "libclang-cpp19",
+    "gcc-target",
+    "libgrpc++1.51t64",
+    "libgrpc29t64",
+    "libllvm19",
+    "libprotobuf32t64",
+    "libclang-common-19-dev"
+  ]
+}

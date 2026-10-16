@@ -1,0 +1,23 @@
+--- a/meson.build
++++ b/meson.build
+@@ -673,12 +673,20 @@
+     endif
+ endforeach
+ 
++xml_link_args = []
++xml_version_script = files('libxml2.syms')
++if host_machine.system() == 'linux'
++    xml_link_args += '-Wl,--version-script=' + (meson.current_source_dir() / 'libxml2.syms')
++endif
++
+ xml_lib = library(
+     'xml2',
+     files(xml_src),
+     c_args: libxml2_cflags,
+     dependencies: xml_deps,
+     include_directories: config_dir,
++    link_args: xml_link_args,
++    link_depends: xml_version_script,
+     install: true,
+     version: meson.project_version(),
+ )

@@ -1,0 +1,23 @@
+{
+  "name": "libre2-11",
+  "version": "20240702-3+b1",
+  "order": 218,
+  "source": "deb",
+  "deb-package": "libre2-11",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/r/re2/libre2-11_20240702-3+b1_amd64.deb",
+  "archive": "libre2-11_20240702-3+b1_amd64.deb",
+  "sha256": "128136b987e90b41d1ace03348fcf42fbfb9fec8bb9294332b13eaeadfec4062",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "libabsl20240722",
+    "glibc",
+    "gcc-target"
+  ]
+}

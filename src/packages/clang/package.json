@@ -1,0 +1,30 @@
+{
+  "name": "clang",
+  "version": "1:19.1.7-3+b1",
+  "order": 225,
+  "source": "deb",
+  "deb-package": "clang-19",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/clang-19_19.1.7-3+b1_amd64.deb",
+  "archive": "clang-19_19.1.7-3+b1_amd64.deb",
+  "sha256": "bbb74458d782b7792b61b0eed92746df5e6d033778c045cf8c2b3835b7c4efc4",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libclang-cpp19",
+    "gcc-target",
+    "libllvm19",
+    "libclang-common-19-dev",
+    "llvm-19-linker-tools",
+    "libclang1-19",
+    "binutils-target",
+    "libc++-dev",
+    "libc++abi-dev"
+  ]
+}

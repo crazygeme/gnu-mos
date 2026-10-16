@@ -1,0 +1,34 @@
+{
+  "name": "clang-tools",
+  "version": "1:19.1.7-3+b1",
+  "order": 228,
+  "source": "deb",
+  "deb-package": "clang-tools-19",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/clang-tools-19_19.1.7-3+b1_amd64.deb",
+  "archive": "clang-tools-19_19.1.7-3+b1_amd64.deb",
+  "sha256": "27fa6cb89386dc4c3dcbec5b6bd0839863ebd97316d21f44cdb42b6d9c9b1a2a",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libclang-cpp19",
+    "libclang1-19",
+    "gcc-target",
+    "libllvm19",
+    "libxml2",
+    "libz3-4",
+    "libzstd1",
+    "zlib",
+    "clang",
+    "python",
+    "clang-format",
+    "clangd",
+    "perl"
+  ]
+}

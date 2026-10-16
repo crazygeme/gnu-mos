@@ -72,6 +72,11 @@ class BinaryRuntime(unittest.TestCase):
                     (dist / "lfs.OBJ/lib" / name).write_text("target library")
                 (dist / "lfs.OBJ/bin/certutil").write_text("target executable")
                 (dist / "public/nss/nss.h").write_text("target header")
+                (dist / "public/nss/nss.h").chmod(0o444)
+                installed_header = base / "sysroot/usr/include/nss/nss.h"
+                installed_header.parent.mkdir(parents=True)
+                installed_header.write_text("installed header")
+                installed_header.chmod(0o444)
                 env = {"LFS_ARCH": arch, "LFS_BITS": bits, "LFS_TARGET": target,
                        "LFS_SYSROOT": str(base / "sysroot"), "LFS_WORKSPACE": str(base)}
                 with patch.dict(os.environ, env), \
@@ -88,6 +93,9 @@ class BinaryRuntime(unittest.TestCase):
                 self.assertEqual("USE_64=1" in target_build.args[0], arch == "x64")
                 self.assertTrue((base / "sysroot/usr/lib/libsoftokn3.so").is_file())
                 self.assertTrue((base / "sysroot/usr/include/nss/nss.h").is_file())
+                self.assertEqual(installed_header.read_text(), "target header")
+                self.assertEqual(installed_header.stat().st_mode & 0o777, 0o644)
+                self.assertEqual((dist / "public/nss/nss.h").stat().st_mode & 0o777, 0o444)
                 self.assertTrue((base / "sysroot/usr/bin/certutil").is_file())
                 self.assertNotIn(temporary, (base / "sysroot/usr/lib/pkgconfig/nss.pc").read_text())
                 # Expand the recipe's override with GNU make's assignment rules.

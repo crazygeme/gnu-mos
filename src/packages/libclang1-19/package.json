@@ -1,0 +1,23 @@
+{
+  "name": "libclang1-19",
+  "version": "1:19.1.7-3+b1",
+  "order": 223,
+  "source": "deb",
+  "deb-package": "libclang1-19",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/libclang1-19_19.1.7-3+b1_amd64.deb",
+  "archive": "libclang1-19_19.1.7-3+b1_amd64.deb",
+  "sha256": "4e7e2a5fe236e280d32fb529350b3c1cfd9410a964629a57ea079a314c45d7a3",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "gcc-target",
+    "libllvm19"
+  ]
+}

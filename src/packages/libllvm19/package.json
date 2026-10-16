@@ -1,0 +1,28 @@
+{
+  "name": "libllvm19",
+  "version": "1:19.1.7-3+b1",
+  "order": 219,
+  "source": "deb",
+  "deb-package": "libllvm19",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/libllvm19_19.1.7-3+b1_amd64.deb",
+  "archive": "libllvm19_19.1.7-3+b1_amd64.deb",
+  "sha256": "db0d614d61345ca710fb73e75105f1ec6e38898fa7b3aa99fa7eb7d8b0a11d57",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "libedit2",
+    "libffi",
+    "gcc-target",
+    "libxml2",
+    "libz3-4",
+    "libzstd1",
+    "zlib"
+  ]
+}

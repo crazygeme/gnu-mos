@@ -1,0 +1,23 @@
+{
+  "name": "libprotobuf32t64",
+  "version": "3.21.12-11+deb13u1",
+  "order": 215,
+  "source": "deb",
+  "deb-package": "libprotobuf32t64",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/p/protobuf/libprotobuf32t64_3.21.12-11+deb13u1_amd64.deb",
+  "archive": "libprotobuf32t64_3.21.12-11+deb13u1_amd64.deb",
+  "sha256": "38c43ec79a043d2b2659fed321725049a7e457096a66691cf6eb0d3a1a8f0e85",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "gcc-target",
+    "zlib"
+  ]
+}

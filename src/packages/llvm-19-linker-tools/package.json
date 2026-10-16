@@ -1,0 +1,23 @@
+{
+  "name": "llvm-19-linker-tools",
+  "version": "1:19.1.7-3+b1",
+  "order": 220,
+  "source": "deb",
+  "deb-package": "llvm-19-linker-tools",
+  "architectures": [
+    "x64"
+  ],
+  "url": "https://mirrors.ustc.edu.cn/debian/pool/main/l/llvm-toolchain-19/llvm-19-linker-tools_19.1.7-3+b1_amd64.deb",
+  "archive": "llvm-19-linker-tools_19.1.7-3+b1_amd64.deb",
+  "sha256": "874a0a5cde797cda3e94e9310a0a9958608f526f177637414a8ce9620c804818",
+  "host-packages": {
+    "apt": [
+      "dpkg"
+    ]
+  },
+  "dependencies": [
+    "glibc",
+    "gcc-target",
+    "libllvm19"
+  ]
+}
