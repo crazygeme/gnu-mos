@@ -75,6 +75,7 @@ for patch_name in (
     "sdl-lock-sync.patch",
     "virgl-video.patch",
     "blob-ram-cpr.patch",
+    "xhci-frame-timeline.patch",
 ):
     patch = Path(__file__).with_name(patch_name)
     for options in (("--dry-run",), ()):

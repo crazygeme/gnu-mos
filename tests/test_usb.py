@@ -60,6 +60,8 @@ class USBMedia(unittest.TestCase):
             self.assertIn("usb-kbd,id=usb-keyboard,bus=usb.0,port=1", command)
             self.assertIn("usb-mouse,id=usb-mouse,bus=usb.0,port=2", command)
             self.assertIn("usb-audio,id=usb-audio,bus=usb.0,port=4,audiodev=audio0,buffer=65536", command)
+            self.assertEqual(command[command.index("-audiodev") + 1],
+                             "sdl,id=audio0,out.frequency=48000")
             if usb is None:
                 self.assertNotIn("-blockdev", command)
                 self.assertFalse(any(arg.startswith("usb-storage,") for arg in command))

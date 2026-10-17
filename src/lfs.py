@@ -839,10 +839,13 @@ def qemu(extra: list[str]) -> None:
         command.extend(["-device", camera[0]])
     if "-audiodev" not in qemu_extra and "-audio" not in qemu_extra:
         audio_backend = os.environ.get("MOS_AUDIO_BACKEND", "sdl")
+        audio_options = f"{audio_backend},id=audio0"
+        if not any(option.startswith("out.frequency=") for option in audio_backend.split(",")):
+            audio_options += ",out.frequency=48000"
         command.extend(
             [
                 "-audiodev",
-                f"{audio_backend},id=audio0",
+                audio_options,
                 "-device",
                 "usb-audio,id=usb-audio,bus=usb.0,port=4,audiodev=audio0,buffer=65536",
             ]

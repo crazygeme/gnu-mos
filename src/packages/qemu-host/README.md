@@ -102,3 +102,10 @@ entrypoint. H.264 and HEVC encoding use the selected host entrypoint.
 The renderer's `vaapi-upload-sync.patch` completes OpenGL surface writes
 before the VA-API engine reads the exported encoding input. The synchronization
 applies independently of the host GPU vendor.
+
+`xhci-frame-timeline.patch` interprets isochronous Frame IDs in the nearest
+2048 ms scheduling epoch. The 11-bit Frame ID and the current microframe
+counter determine the signed scheduling offset. This preserves the intended
+frame timeline when host execution reaches a queued packet after its target
+frame. The valid future scheduling horizon is 895 ms, as defined by xHCI
+section 4.11.2.5.

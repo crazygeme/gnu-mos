@@ -2,6 +2,14 @@ MOS is built as a kernel package. Its userspace is not copied from any
 distribution image. The package produces the generic `/boot/kernel` artifact
 consumed by GRUB; all userspace files are produced by the LFS package set.
 
+USB Audio Class 1 playback exposes native ALSA PCM and control devices under
+`/dev/snd`. PCM supports interleaved write and shared-memory access, hardware
+parameter negotiation, completion-based frame position, readiness notification,
+and underrun recovery. Full-speed USB output retains an explicit frame timeline.
+The card provides stereo 48000 Hz S16_LE playback; ALSA `plug` supplies userspace
+format and rate conversion. [Audio playback](../../../docs/audio.md) describes
+configuration, interface constraints and guest and host verification commands.
+
 `KDSETLED` sends keyboard LED state through the PS/2 controller. Keyboard and
 auxiliary command transactions share controller serialization. Keyboard LED
 commands consume acknowledgments and resend replies separately from scancodes,
