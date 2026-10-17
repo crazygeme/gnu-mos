@@ -16,6 +16,8 @@ GNU/MOS builds 32-bit x86 and 64-bit x86 operating systems with the [MOS kernel]
 
 The desktop profile starts graphical login in runlevel 5. The console profile starts in runlevel 3. Package versions, source locations, and build order are defined in the individual `src/packages/*/package.json` manifests.
 
+The system disk uses PCIe NVMe. IDE, SATA AHCI, and NVMe volumes share partition discovery, filesystem probing, and a bounded write-back cache. Storage interfaces and validation are described in [Fixed Block Storage](docs/storage.md).
+
 ## Host requirements
 
 The build recipes target an x86-64 Linux host. Image setup executes installed target programs. The x86 profile requires host support for 32-bit x86 execution; the x64 profile requires x86-64 execution.

@@ -70,7 +70,8 @@ class USBMedia(unittest.TestCase):
                 self.assertIn(json.dumps({"driver": "file", "node-name": "usb-file", "filename": str(usb)}), command)
                 self.assertIn(json.dumps({"driver": "raw", "node-name": "usbdata", "file": "usb-file"}), command)
                 self.assertIn("usb-storage,id=usb-disk,bus=usb.0,port=3,drive=usbdata,removable=true", command)
-            self.assertIn(f"file={lfs.IMAGE},format=raw,if=ide,index=0,media=disk", command)
+            self.assertIn(f"file={lfs.IMAGE},format=raw,if=none,id=system-disk", command)
+            self.assertIn("nvme,drive=system-disk,serial=MOSNVME0001,bootindex=0", command)
             self.assertEqual(image.read_bytes(), b"existing data")
 
     def test_camera_selection_is_validated(self):
