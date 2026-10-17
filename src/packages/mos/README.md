@@ -115,11 +115,11 @@ reader references. Ext4 page reads and writeback use independent operation
 cursors. `test/page_cache_reads.py` validates concurrent faults and descriptor
 offset preservation with deterministic file contents.
 
-Clone namespace isolation is unavailable. Recognized namespace flags,
-including `CLONE_NEWUSER`, return `EINVAL`, allowing Chromium's capability
-probe to report unavailable namespace support. Chromium's namespace sandbox
-cannot operate on MOS. `test/clone_namespaces.py` validates namespace-flag
-rejection inside the guest.
+MOS supports mount, UTS, IPC, PID, and cgroup namespaces. User and network
+namespace creation return `EINVAL`. Chromium's user-namespace sandbox is
+unavailable; applications use the configured SUID helper. Namespace and
+capability behavior is validated by `test/clone_namespaces.sh` and
+`test/capability_namespace.sh`.
 
 The Chromium SUID sandbox uses shared `CLONE_FS` state across `exec` to apply
 the helper's chroot to its child. Proc directory aliases retain the selected
@@ -657,3 +657,16 @@ Seccomp filtering and complete Linux capability enforcement are unsupported.
 
 The x64 Docker package uses these interfaces with the configured
 [Docker runtime](../docker/README.md).
+
+Idle CPUs check runnable tasks before entering hardware sleep. The readiness
+check respects CPU affinity, task termination, and execution on other CPUs.
+`test/test_idle_ready_host.py` validates eligibility and queue preservation.
+
+`waitid` selects child exit and stop events by PID, process group, or all children.
+`WNOHANG` clears the returned signal information when no event is available;
+`WNOWAIT` retains the event for subsequent observation or reaping. Results use
+namespace-visible child identifiers and the calling ABI's signal information
+and resource-usage layouts. Continued-event selection and PID descriptor
+selection are unsupported and return `EINVAL`. `test/waitid.sh` validates
+exit status, signal termination, stopped children, repeated observation,
+nonblocking selection, resource usage, and PID namespaces.

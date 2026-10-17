@@ -8,9 +8,9 @@ The package postscript retains the vendor launcher as `microsoft-edge.vendor`
 and installs a launcher that retains the application's sandbox defaults.
 The SUID helper has root ownership and mode 4755.
 
-MOS supports the SUID helper's chroot isolation and process dumpability controls.
-Chromium namespace isolation and seccomp filtering are unavailable. The SUID
-sandbox therefore provides filesystem isolation without these additional layers.
+MOS supports the SUID helper's chroot and PID namespace isolation and process
+dumpability controls. User and network namespace creation and seccomp filtering
+are unavailable. The SUID sandbox uses filesystem and PID namespace isolation.
 
 The package launcher selects ANGLE with the OpenGL backend and enables GPU
 rasterization and zero-copy rendering. It enables the Chromium features

@@ -1,6 +1,6 @@
 {
   "name": "mos",
-  "version": "main",
+  "version": "docker",
   "order": 90,
   "source": "git",
   "git": "https://github.com/crazygeme/mos.git",

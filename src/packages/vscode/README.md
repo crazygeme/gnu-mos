@@ -9,9 +9,9 @@ the executable at `/usr/share/code/code.bin`. Graphical and command-line
 invocations retain the application's sandbox defaults. The postscript assigns
 root ownership and mode 4755 to `/usr/share/code/chrome-sandbox`.
 
-MOS supports the SUID helper's chroot isolation and process dumpability controls.
-Chromium namespace isolation and seccomp filtering are unavailable. The SUID
-sandbox therefore provides filesystem isolation without these additional layers.
+MOS supports the SUID helper's chroot and PID namespace isolation and process
+dumpability controls. User and network namespace creation and seccomp filtering
+are unavailable. The SUID sandbox uses filesystem and PID namespace isolation.
 
 The configured desktop account uses a 60-second shell environment resolution
 timeout through `application.shellEnvironmentResolutionTimeout` in
