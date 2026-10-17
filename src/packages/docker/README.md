@@ -6,47 +6,49 @@ Debian packages. `docker` provides `docker-ce` 29.9.0,
 runc 1.5.2. Runtime libraries and packet-filter utilities have explicit package
 dependencies. Downloads use the Tsinghua University mirrors.
 
-`./lfs setup --arch x64` installs `/etc/docker/daemon.json`,
-`/etc/init.d/docker`, and `/etc/rc3.d/S45docker`. Runlevels 3 and 5 start Docker
-after network initialization. The service mounts the cgroup v1 `pids` and
-`devices` hierarchies, waits for the daemon API, and validates the daemon PID
-before stopping it. The log is `/var/log/docker.log`.
+`./lfs setup --arch x64` installs `/etc/docker/daemon.json` and
+`docker.service`. The multi-user target starts Docker after the network target.
+Systemd mounts the cgroup v1 controllers. Docker uses the systemd cgroup driver.
+`journalctl -u docker` displays daemon messages, and `systemctl status docker` reports service state.
 
 ```sh
-/etc/init.d/docker start
+systemctl start docker
 docker pull busybox:1.37.0
-docker run --rm --network host busybox:1.37.0 echo MOS_DOCKER_OK
-/etc/init.d/docker restart
+docker run --rm --network none busybox:1.37.0 echo MOS_DOCKER_OK
+systemctl restart docker
 ```
 
 The configuration selects the `vfs` storage driver, disables the containerd
 snapshotter, and selects `io.containerd.runc.v2` with `NoPivotRoot=true`.
 Root filesystem placement uses a private mount namespace, `MS_MOVE`, and
 `chroot`. Bridge creation, Docker iptables rules, IP forwarding, and IP
-masquerading are disabled. Containers require `--network host`; port publishing
-and independent container network namespaces are unsupported. The kernel does
-not provide `NETLINK_NETFILTER`; the packaged iptables and nftables utilities
+masquerading are disabled. `--network none` creates an isolated loopback
+network namespace. `--network host` shares the initial network namespace
+when outbound connectivity is required. Port publishing is unsupported. The
+kernel does not provide `NETLINK_NETFILTER`; the packaged iptables and nftables utilities
 cannot initialize their packet-filter backend.
 
-MOS provides mount, UTS, PID, shared-memory IPC, and cgroup namespaces.
+Devpts mounts with `newinstance` have independent terminal numbering. The
+Unix98 terminal allocator supports 16 pairs across the system.
+
+MOS provides mount, UTS, PID, shared-memory IPC, network, and cgroup namespaces.
 The `pids` controller enforces hierarchical process/thread counts; the `devices`
 controller checks device opens and creation. Cgroup v2, CPU, memory, cpuset,
-I/O resource controllers, user namespace creation, and network namespace
-creation are unsupported. `/dev/mqueue` has an IPC-namespace filesystem root;
-POSIX message queue system calls are unsupported. `oom_score_adj` records an
-inherited process preference without implementing an OOM victim selector.
+I/O resource controllers and user namespace creation are unsupported.
+`/dev/mqueue` has an IPC-namespace filesystem root; POSIX message queue system
+calls are unsupported. `oom_score_adj` records an inherited process preference without implementing an OOM victim selector.
 
 Seccomp filtering is unsupported; Docker runs containers without its default
 seccomp profile. Capability sets and namespace/mount/device checks are present,
-but some privileged operations retain UID-based checks. Device and network
-subsystems are shared. The runtime does not provide the complete isolation
-boundary of a Linux host.
+but some privileged operations retain UID-based checks. Physical network
+interfaces remain in the initial network namespace. The runtime does not
+provide the complete isolation boundary of a Linux host.
 
 ## Validation
 
 Run `smoke-test.sh` as root in a MOS guest with a usable image and outbound
 network access when the image requires downloading. The script validates
-container execution and deletion, PID 1 visibility, hostname selection,
+container execution and deletion, terminal allocation, PID 1 visibility, hostname selection,
 `docker exec`, logs, device access restrictions, a process limit of 32,
 bind volumes with relative symlinks, read-only mounts, and a non-root user.
 `DOCKER_TEST_RESTART=1` additionally

@@ -21,6 +21,6 @@
     "docker-ce-cli",
     "iptables",
     "nftables",
-    "libsystemd0"
+    "systemd"
   ]
 }

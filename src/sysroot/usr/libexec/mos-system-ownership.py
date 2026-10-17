@@ -43,3 +43,28 @@ if wrapper.exists() or sudo.exists():
         os.chmod(policy, 0o440)
         os.chown(sudo, 0, 0)
         os.chmod(sudo, 0o4755)
+
+helper = Path("/usr/libexec/dbus-daemon-launch-helper")
+if helper.exists():
+    import grp
+    os.chown(helper, 0, grp.getgrnam("messagebus").gr_gid)
+    os.chmod(helper, 0o4750)
+for name in ("/usr/bin/pkexec", "/usr/lib/polkit-1/polkit-agent-helper-1"):
+    helper = Path(name)
+    if helper.exists():
+        os.chown(helper, 0, 0)
+        os.chmod(helper, 0o4755)
+if Path("/usr/lib/polkit-1/polkitd").exists():
+    import grp
+    import pwd
+    uid = pwd.getpwnam("polkitd").pw_uid
+    gid = grp.getgrnam("polkitd").gr_gid
+    state = Path("/var/lib/polkit-1")
+    state.mkdir(parents=True, exist_ok=True)
+    os.chown(state, uid, gid)
+    os.chmod(state, 0o700)
+    for name in ("/etc/polkit-1/rules.d", "/usr/share/polkit-1/rules.d"):
+        directory = Path(name)
+        directory.mkdir(parents=True, exist_ok=True)
+        os.chown(directory, 0, gid)
+        os.chmod(directory, 0o750)

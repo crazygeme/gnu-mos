@@ -21,7 +21,7 @@
     "xinit",
     "dbus",
     "polkit",
-    "sysvinit",
+    "systemd",
     "adwaita-icon-theme",
     "dejavu-fonts",
     "xauth",

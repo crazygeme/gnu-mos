@@ -1,0 +1,14 @@
+[Unit]
+Description=X display manager
+After=systemd-user-sessions.service dbus.service mos-system-ownership.service
+Conflicts=getty@tty2.service
+
+[Service]
+ExecStartPre=/usr/bin/mkdir -p /run/xdm
+ExecStartPre=/usr/bin/chmod 0700 /run/xdm
+ExecStart=/usr/bin/xdm -nodaemon -config /etc/X11/xdm/xdm-config
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target
+Alias=display-manager.service

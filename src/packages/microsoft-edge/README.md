@@ -9,8 +9,9 @@ and installs a launcher that retains the application's sandbox defaults.
 The SUID helper has root ownership and mode 4755.
 
 MOS supports the SUID helper's chroot and PID namespace isolation and process
-dumpability controls. User and network namespace creation and seccomp filtering
-are unavailable. The SUID sandbox uses filesystem and PID namespace isolation.
+dumpability controls. Private network namespaces provide independent loopback
+interfaces. The SUID sandbox uses filesystem and PID namespace isolation.
+User namespace creation and seccomp filtering are unsupported.
 
 The package launcher selects ANGLE with the OpenGL backend and enables GPU
 rasterization and zero-copy rendering. It enables the Chromium features

@@ -1,0 +1,26 @@
+{
+  "name": "systemd",
+  "version": "252.39",
+  "order": 105,
+  "source": "archive",
+  "url": "https://github.com/systemd/systemd-stable/archive/refs/tags/v{version}.tar.gz",
+  "archive": "systemd-252.39.tar.gz",
+  "sha256": "08a54a6c4d4cf969fc025eaa8922a55d6bc458100c242510b56c96e7d72af1c5",
+  "build-tools": [
+    "meson",
+    "ninja"
+  ],
+  "host-packages": {
+    "apt": [
+      "gperf",
+      "python3-jinja2"
+    ]
+  },
+  "dependencies": [
+    "util-linux",
+    "libcap",
+    "linux-pam",
+    "libxcrypt",
+    "openssl"
+  ]
+}

@@ -128,12 +128,12 @@ excluded from `./lfs build --no-gui`, which builds all console packages. The
 console build uses `.workspace/<arch>/sysroot/`, `.workspace/<arch>/tools/`, and
 `.workspace/<arch>/artifacts/`. Completed packages are shared between build modes within the selected architecture. Source downloads are shared between architectures; installed files and completion markers are isolated.
 Both build modes use `.workspace/<arch>/qemu-hd/lfs.img`. `./lfs setup` configures
-default runlevel 5; `./lfs setup --no-gui` configures default runlevel 3.
+`graphical.target`; `./lfs setup --no-gui` configures `multi-user.target`.
 `./lfs run` boots the configuration installed in the shared image.
 The GRUB entry `LFS on MOS (console)` passes `3` to `/sbin/init` and starts
-text mode regardless of the configured default runlevel. MOS forwards standalone
-`3` and `5` kernel command-line arguments to SysV init; the last matching
-argument takes precedence.
+text mode regardless of the configured default target. MOS forwards standalone
+`3` and `5` kernel command-line arguments to `/sbin/init`; systemd selects the
+corresponding multi-user or graphical target. The last matching argument takes precedence.
 `./lfs run` connects an e1000 adapter through `lfs-tap0`. The host provides
 DHCP, DNS, and IPv4 NAT on `10.0.6.0/24`; the guest uses `10.0.6.1` as its
 name server.
@@ -161,18 +161,13 @@ artifact. A GUI completion satisfies both profile selections; a console
 completion satisfies only console selection. Selecting GUI after a console
 build requires one package build with the GUI configuration.
 
-The console system uses the MOS kernel, GRUB, and sysvinit. Sysvinit runs
-the shared `/etc/rc3.d` service scripts in runlevels 3 and 5, displays startup
-results, and respawns `agetty` on `/dev/tty1`. These shared init entries remain
-active during transitions between runlevels 3 and 5.
-The `sysklogd` service starts before the network and SSH services and accepts
-local messages through `/dev/log`. Authentication messages are stored in
-`/var/log/auth.log`, kernel messages in `/var/log/kern.log`, and other messages
-in `/var/log/messages`. SSH uses its default syslog logging and log level.
-MOS exposes kernel `printk()` records through `/dev/kmsg` and `/proc/kmsg`,
-using the same record buffer as `klogctl()`. Sysklogd reads `/dev/kmsg` and
-uses `/proc/kmsg` as a fallback. MOS diagnostic `klog()` output uses the serial
-port. The service does not receive or forward network syslog messages.
+The system uses the MOS kernel, GRUB, and systemd 252.39. Native service
+units manage the system message bus, SSH server, scheduled commands, Docker,
+and XDM. The console profile selects `multi-user.target`; the graphical
+profile selects `graphical.target`. Agetty runs on `/dev/tty1`.
+Systemd mounts the cgroup v1 service hierarchy at `/sys/fs/cgroup/systemd`.
+MOS exposes kernel records through `/dev/kmsg`, `/proc/kmsg`, and `klogctl()`.
+MOS diagnostic `klog()` output uses the serial port.
 The glibc postscript generates `C.utf8` locale data with the installed target
 `localedef` and dynamic loader. Setup requires an x86 Linux host capable of
 running the selected target executables. Login shells use `LANG=C.UTF-8` and
@@ -182,9 +177,8 @@ The target `groff` package formats manual pages, `gzip` reads compressed
 manual pages, and the util-linux `more` command provides pagination.
 The man-db configuration is `/etc/man_db.conf`, also available through
 `/usr/etc/man_db.conf`.
-The network service checks for `eth0` in `/proc/net/dev`. DHCP is provided by
-the MOS kernel; service startup does not wait for address assignment.
-In runlevel 5, XDM 1.1.17 provides a local graphical login on `/dev/tty2`.
+The MOS kernel configures `eth0` through DHCP.
+In the graphical target, XDM 1.1.17 provides a local graphical login on `/dev/tty2`.
 PAM authenticates system accounts and creates missing home directories with
 mode 0700. Successful login starts Xfce 4.20.0 as the authenticated user,
 with GTK 3.24.49 and a dedicated D-Bus session. The GUI profile includes
@@ -196,9 +190,9 @@ The GUI profile also includes MATE System Monitor 1.28.1, MATE Calculator
 usage graphs from the application menu. Calculator provides graphical
 calculations, and Mousepad is the default text editor. Application commands
 and supporting libraries are described in [Xfce desktop](xfce/README.md).
-`telinit 3` stops the display manager; `telinit 5` starts it.
-The init entry uses `once`, so an exited display manager is not automatically
-restarted. XDM configuration resides in `/etc/X11/xdm`, PAM policy in
+`systemctl isolate multi-user.target` stops the display manager;
+`systemctl isolate graphical.target` starts it. Systemd restarts XDM on failure.
+XDM configuration resides in `/etc/X11/xdm`, PAM policy in
 `/etc/pam.d/xdm`, and display-manager diagnostics in `/var/log/xdm.log`.
 Session output is appended to `~/.xsession-errors`. XDMCP and X11 TCP
 listeners are disabled.

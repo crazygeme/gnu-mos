@@ -1,0 +1,15 @@
+[Unit]
+Description=System file ownership and runtime directories
+DefaultDependencies=no
+After=systemd-remount-fs.service
+Before=sysinit.target systemd-sysusers.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/libexec/mos-system-ownership.py
+ExecStart=/usr/bin/mkdir -p /tmp/.X11-unix /tmp/.ICE-unix /run/dbus /run/sshd
+ExecStart=/usr/bin/chmod 1777 /tmp /tmp/.X11-unix /tmp/.ICE-unix
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target

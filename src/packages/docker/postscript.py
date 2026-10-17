@@ -1,10 +1,8 @@
 import json
 import os
 from pathlib import Path
-import shutil
 
 root = Path(os.environ["LFS_SYSROOT"])
-package = Path(__file__).parent
 (root / "etc/docker").mkdir(parents=True, exist_ok=True)
 configuration = {
     "storage-driver": "vfs",
@@ -16,7 +14,7 @@ configuration = {
     "ip6tables": False,
     "ip-forward": False,
     "ip-masq": False,
-    "exec-opts": ["native.cgroupdriver=cgroupfs"],
+    "exec-opts": ["native.cgroupdriver=systemd"],
     "default-runtime": "mos-runc",
     "runtimes": {
         "mos-runc": {
@@ -26,16 +24,6 @@ configuration = {
     },
 }
 (root / "etc/docker/daemon.json").write_text(json.dumps(configuration, indent=2) + "\n")
-script = root / "etc/init.d/docker"
-shutil.copyfile(package / "docker.init", script)
-script.chmod(0o755)
-runlevel = root / "etc/rc3.d"
-runlevel.mkdir(parents=True, exist_ok=True)
-startup = runlevel / "S45docker"
-if startup.is_symlink() or startup.exists():
-    startup.unlink()
-startup.symlink_to("../init.d/docker")
-
 group = root / "etc/group"
 entries = group.read_text().splitlines()
 if not any(line.startswith("docker:") for line in entries):

@@ -43,9 +43,9 @@ The launcher provides USB Audio playback using QEMU's SDL audio backend.
 executable. Explicit `-audio` or `-audiodev` arguments replace the default audio
 configuration and must include the required guest sound device. The USB Audio
 Class 1 driver exposes stereo 48 kHz signed 16-bit little-endian PCM through
-`/dev/dsp`, `/dev/audio`, and `/dev/mixer`. The ALSA default device uses the OSS
-plugin and converts application sample rates and formats to this PCM format.
-The Xfce session defaults SDL applications to the `dsp` audio driver. An explicit
+`/dev/snd/pcmC0D0p` and `/dev/snd/controlC0`. The ALSA default device uses
+the `plug` interface for application sample rate and format conversion.
+The Xfce session defaults SDL applications to the `alsa` audio driver. An explicit
 `SDL_AUDIODRIVER` value overrides that default. USB microphone capture, UAC2,
 and asynchronous feedback endpoints are not supported.
 
@@ -176,7 +176,8 @@ The launcher sets `opt/org.seabios/pci64=0` through QEMU firmware configuration 
 
 During execution, the launcher creates `lfs-tap0`, assigns the host address `10.0.6.1`, and serves the `10.0.6.0/24` subnet. It configures DHCP, DNS, forwarding, and NAT, then removes its network configuration when QEMU exits.
 
-Host TUN interfaces with an IPv4 address in `198.18.0.0/15` are treated as Fake-IP proxy tunnels. Traffic from the LFS subnet to these interfaces retains its guest source address. The launcher removes the corresponding NAT exemptions when QEMU exits.
+The launcher applies IPv4 masquerading to LFS subnet traffic, including routes
+through host TUN interfaces. The corresponding NAT rule is removed when QEMU exits.
 
 ### USB input and data storage
 

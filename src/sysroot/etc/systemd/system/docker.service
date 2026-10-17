@@ -1,0 +1,13 @@
+[Unit]
+Description=Docker container service
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/dockerd
+Delegate=yes
+Restart=on-failure
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

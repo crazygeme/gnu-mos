@@ -9,5 +9,8 @@
   "source": "archive",
   "url": "https://dbus.freedesktop.org/releases/dbus/dbus-{version}.tar.xz",
   "archive": "dbus-1.16.2.tar.xz",
-  "artifact": "artifacts/dbus.done"
+  "artifact": "artifacts/dbus.done",
+  "dependencies": [
+    "systemd"
+  ]
 }

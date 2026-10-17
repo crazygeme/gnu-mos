@@ -1,0 +1,11 @@
+--- a/data/polkit.service.in
++++ b/data/polkit.service.in
+@@ -3,7 +3,7 @@
+ Documentation=man:polkit(8)
+ 
+ [Service]
+-Type=notify-reload
++Type=dbus
+ BusName=org.freedesktop.PolicyKit1
+ CapabilityBoundingSet=CAP_SETUID CAP_SETGID
+ DeviceAllow=/dev/null rw

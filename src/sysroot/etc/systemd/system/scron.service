@@ -1,0 +1,12 @@
+[Unit]
+Description=Scheduled command execution
+After=systemd-user-sessions.service
+
+[Service]
+Type=forking
+PIDFile=/run/crond.pid
+ExecStart=/usr/bin/crond -f /etc/crontab
+ExecReload=/usr/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenSSH server
+After=network.target mos-system-ownership.service
+
+[Service]
+ExecStartPre=/usr/bin/mkdir -p /run/sshd
+ExecStart=/usr/sbin/sshd -D -e
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

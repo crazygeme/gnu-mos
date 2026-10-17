@@ -1,0 +1,17 @@
+[Unit]
+Description=System message bus
+Requires=dbus.socket
+After=mos-system-ownership.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+ExecReload=/usr/bin/dbus-send --print-reply --system --type=method_call --dest=org.freedesktop.DBus / org.freedesktop.DBus.ReloadConfig
+User=messagebus
+Group=messagebus
+AmbientCapabilities=CAP_AUDIT_WRITE
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

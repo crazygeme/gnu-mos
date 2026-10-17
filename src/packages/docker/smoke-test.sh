@@ -10,32 +10,34 @@ cleanup()
     rm -rf "$volume"
 }
 trap cleanup 0
-/etc/init.d/docker start
+systemctl start docker.service
 if ! docker image inspect "$image" >/dev/null 2>&1; then
     docker pull "$image"
 fi
-[ "$(docker run --rm --network host "$image" echo MOS_DOCKER_OK)" = MOS_DOCKER_OK ]
-docker run -d --name "$container" --hostname mos-container --network host --pids-limit 32 \
-    "$image" sh -c 'echo MOS_LOG_OK; sleep 120' >/dev/null
-docker exec "$container" sh -c 'test "$(hostname)" = mos-container; test "$(head -c 1 /proc/1/stat)" = 1'
-docker exec "$container" sh -c \
+[ "$(docker run --rm --network none "$image" echo MOS_DOCKER_OK)" = MOS_DOCKER_OK ]
+[ "$(docker run --rm -t --network none "$image" sh -ec \
+    'test -t 0; test -t 1; echo MOS_TTY_OK' | tr -d '\r')" = MOS_TTY_OK ]
+docker run -d --name "$container" --hostname mos-container --network none --pids-limit 32 \
+    "$image" sh -ec 'echo MOS_LOG_OK; sleep 120' >/dev/null
+docker exec "$container" sh -ec 'test "$(hostname)" = mos-container; test "$(head -c 1 /proc/1/stat)" = 1'
+docker exec "$container" sh -ec \
     'mknod /dev/mos-forbidden c 1 1; if head -c 1 /dev/mos-forbidden; then exit 1; fi; echo permitted >/dev/null'
 [ "$(docker logs "$container")" = MOS_LOG_OK ]
 printf MOS_VOLUME_IN > "$volume/input"
 ln -s input "$volume/link"
-docker run --rm --network host -v "$volume:/data" "$image" sh -c \
+docker run --rm --network none -v "$volume:/data" "$image" sh -ec \
     'test "$(cat /data/link)" = MOS_VOLUME_IN; echo MOS_VOLUME_OUT > /data/output'
 [ "$(cat "$volume/output")" = MOS_VOLUME_OUT ]
-docker run --rm --network host -v "$volume:/data:ro" "$image" sh -c \
+docker run --rm --network none -v "$volume:/data:ro" "$image" sh -ec \
     'test "$(cat /data/link)" = MOS_VOLUME_IN; if echo invalid > /data/output; then exit 1; fi'
 [ "$(cat "$volume/output")" = MOS_VOLUME_OUT ]
-docker run --rm --network host --read-only "$image" sh -c \
+docker run --rm --network none --read-only "$image" sh -ec \
     'if touch /mos-readonly-probe; then exit 1; fi; test ! -e /mos-readonly-probe'
-[ "$(docker run --rm --network host --user 1000:1000 "$image" id -u)" = 1000 ]
+[ "$(docker run --rm --network none --user 1000:1000 "$image" id -u)" = 1000 ]
 docker stop -t 3 "$container" >/dev/null
 docker rm "$container" >/dev/null
 if [ "${DOCKER_TEST_RESTART:-0}" = 1 ]; then
-    /etc/init.d/docker restart
-    [ "$(docker run --rm --network host "$image" echo MOS_RESTART_OK)" = MOS_RESTART_OK ]
+    systemctl restart docker.service
+    [ "$(docker run --rm --network none "$image" echo MOS_RESTART_OK)" = MOS_RESTART_OK ]
 fi
 printf '%s\n' 'Docker container lifecycle, isolation, volumes and permissions: PASS'

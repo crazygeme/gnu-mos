@@ -9,7 +9,7 @@
   "dependencies": [
     "glibc",
     "bash",
-    "sysvinit",
+    "systemd",
     "sysklogd"
   ]
 }
