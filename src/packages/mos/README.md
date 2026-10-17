@@ -645,8 +645,43 @@ directory buffers use dynamic storage within the x86 kernel stack limit.
 Cgroup v1 mounts provide the `pids` and `devices` controllers. Process and thread
 creation observes hierarchical `pids.max`; device opens and creation observe
 inherited device rules. Cgroup namespaces expose paths relative to the selected
-hierarchy roots. CPU, memory, cpuset, I/O controllers, and cgroup v2 are
-unsupported.
+hierarchy roots.
+
+Cgroup v2 is available through `mount -t cgroup2 none MOUNTPOINT`. The unified
+hierarchy provides `cgroup.procs`, `cgroup.threads`, `cgroup.controllers`,
+`cgroup.subtree_control`, `cgroup.type`, `cgroup.events`, and `cgroup.stat`.
+Membership writes migrate every thread in the selected process. Zero selects
+the calling process. Fork and thread creation inherit membership, and zombies
+are excluded from membership listings and active task counts. Cgroup namespaces
+include the unified hierarchy, and `/proc/PID/cgroup` reports its path as
+`0::PATH`.
+
+The v2 `pids` controller provides hierarchical `pids.max`, `pids.current`, and
+`pids.events`. It becomes available when the v1 pids hierarchy has no mounts or
+child groups. Enabling `+pids` in `cgroup.subtree_control` exposes the controller
+files in immediate children. Controller changes are atomic and follow the
+parent enablement constraint. A non-root domain with active tasks cannot enable
+subtree control or accept process migration while subtree control is enabled.
+A controller cannot be disabled while a child enables it. Enabling v2 pids
+prevents v1 pids mounts until v2 subtree control is disabled. Migration may
+exceed a configured limit; further process and thread creation returns `EAGAIN`.
+`pids.events` records limit failures throughout the affected subtree.
+
+Ownership and mode changes support delegated directories and membership files.
+A v2 migration requires write access to both the destination membership file and
+the membership file of the source and destination's common ancestor.
+`cgroup.events` reports recursive population, and event files support
+`POLLPRI`/`POLLERR` notifications. `cgroup.stat` reports linked descendants and
+removed descendants retained by tasks, mounts, or open files.
+
+The v2 implementation supports domain groups. Threaded groups, writes to
+`cgroup.threads`, mount options including `nsdelegate`, event-file inotify
+notifications, freezing, group-wide termination, CPU, memory, cpuset, and I/O
+controllers are unsupported. The systemd package selects the legacy hierarchy;
+registering `cgroup2` does not change this configuration. The guest tests
+`tests/guest/cgroup_v2.py` and `tests/guest/cgroup_v2_threads.c` validate the
+unified hierarchy and pids controller with root privileges and an available
+pids controller.
 
 The AMD64 signal interface supports 64 signals, thread-directed delivery, and
 signalfd records. Process subreapers adopt orphaned descendants. Exec by a

@@ -23,8 +23,9 @@ Directory and membership-file ownership support delegated user subtrees.
 Mount propagation and mount, UTS, IPC, PID, network, and cgroup namespaces
 provide the interfaces used by service isolation. A private network namespace
 contains an independent loopback interface; physical interfaces remain in the
-initial namespace. User namespaces, seccomp filtering, cgroup v2, and CPU and
-memory resource controllers are unsupported.
+initial namespace. MOS also provides a cgroup v2 domain hierarchy and pids
+controller; this package selects the legacy hierarchy. User namespaces, seccomp
+filtering, and CPU and memory resource controllers are unsupported.
 
 Polkit uses D-Bus activation and a `Type=dbus` service with its configured
 filesystem and private-network isolation. Package patches are applied to the
