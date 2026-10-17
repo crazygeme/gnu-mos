@@ -6,9 +6,6 @@
   "url": "https://github.com/libusb/libusb/releases/download/v{version}/libusb-{version}.tar.bz2",
   "archive": "libusb-1.0.29.tar.bz2",
   "sha256": "5977fc950f8d1395ccea9bd48c06b3f808fd3c2c961b44b0c2e6e29fc3a70a85",
-  "profiles": [
-    "gui"
-  ],
   "dependencies": [
     "libudev"
   ]

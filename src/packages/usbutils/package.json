@@ -1,0 +1,18 @@
+{
+  "name": "usbutils",
+  "version": "019",
+  "order": 173,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/kernel.org/linux/utils/usb/usbutils/usbutils-{version}.tar.xz",
+  "archive": "usbutils-019.tar.xz",
+  "sha256": "659f40c440e31ba865c52c818a33d3ba6a97349e3353f8b1985179cb2aa71ec5",
+  "dependencies": [
+    "libusb",
+    "libudev",
+    "hwdata"
+  ],
+  "build-tools": [
+    "meson",
+    "ninja"
+  ]
+}

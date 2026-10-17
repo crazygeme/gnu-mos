@@ -1,0 +1,14 @@
+{
+  "name": "pciutils",
+  "version": "3.15.0",
+  "order": 173.1,
+  "source": "archive",
+  "url": "https://mirrors.ustc.edu.cn/kernel.org/software/utils/pciutils/pciutils-{version}.tar.xz",
+  "archive": "pciutils-3.15.0.tar.xz",
+  "sha256": "c02940f430841ecf158d5d9a50007afc4d5353c8678a2455003ca0b2c4e9f5ff",
+  "dependencies": [
+    "zlib",
+    "libudev",
+    "hwdata"
+  ]
+}
