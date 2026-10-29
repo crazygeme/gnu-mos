@@ -34,7 +34,7 @@ does not resolve Debian runtime dependencies. See
 [Package layout and system integration](src/packages/README.md) for manifest
 fields and extraction behavior.
 
-Image installation requires `sudo`, `qemu-img`, `sfdisk`, `losetup`, `mkfs.ext3`, `debugfs`, and mount utilities. The console launcher requires the host `qemu-system-x86_64`. Both launch profiles require access to KVM, `ip`, `sysctl`, `iptables`, and `dnsmasq`. Privileged operations use `sudo` to manage loop devices, mounts, and host networking.
+Image installation requires `sudo`, `qemu-img`, `sfdisk`, `losetup`, `mkfs.ext3`, `debugfs`, `rsync`, and mount utilities. The console launcher requires the host `qemu-system-x86_64`. Both launch profiles require access to KVM, `ip`, `sysctl`, `iptables`, and `dnsmasq`. Privileged operations use `sudo` to manage loop devices, mounts, and host networking.
 
 The GUI profile builds QEMU 10.2.1 through `qemu-host`, installs it in `.workspace/<arch>/tools/qemu`, and uses that executable for desktop launches. Its SDL refresh path preserves active OpenGL scanout. The desktop launcher uses `virtio-vga-gl` with `-display sdl,gl=on,full-screen=on`. The window starts in borderless desktop fullscreen mode at the host desktop resolution. Relative-pointer movement is forwarded without window scaling, preserving small movements in both windowed and fullscreen modes. `Ctrl+Alt+F` toggles fullscreen mode. The host graphics driver must provide hardware-accelerated OpenGL. An explicit `-display` argument overrides the default display backend and fullscreen setting.
 

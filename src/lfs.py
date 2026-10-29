@@ -699,7 +699,7 @@ def create_image() -> None:
             sudo_run("mkfs.ext3", "-F", partition)
         sudo_run("mount", partition, str(mountpoint))
         mounted = True
-        sudo_run("cp", "-a", str(image_root) + "/.", str(mountpoint) + "/")
+        sudo_run("rsync", "-aHAX", "--force", str(image_root) + "/", str(mountpoint) + "/")
         command = [
             str(grub_install),
             "--target=i386-pc",
