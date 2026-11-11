@@ -28,6 +28,15 @@ subprocess.run(
     check=True,
 )
 
+subprocess.run(
+    [
+        "patch", "-p1", "--forward", "--batch", "-i",
+        str(Path(__file__).with_name("cgroup-unified-root.patch").resolve()),
+    ],
+    cwd=source,
+    check=True,
+)
+
 configure_make_install(
     source,
     options=(

@@ -1,0 +1,13 @@
+--- a/src/cgroups.cpp
++++ b/src/cgroups.cpp
+@@ -100,6 +100,10 @@
+         goto out;
+     }
+ 
++    /* The unified root has no controller name or displayed cgroup. */
++    if (*controller == '\0' && std::strcmp(path, "/") == 0)
++        goto out;
++
+     /* special case for root cgroup */
+     tmp = current_cgroup_set;
+     if (std::strcmp(path, "/") == 0) {
