@@ -17,6 +17,8 @@ support. The launcher selects `/dev/dri/renderD128` on the host.
 `MOS_VIDEO_RENDER_NODE` selects another host render node. The host requires
 a VA-API driver with DRM PRIME surface export and permission to access the selected device.
 Intel iHD and AMD Mesa Gallium use the same surface-export capability check.
+Virglrenderer preserves the exported DMA-BUF plane modifiers when importing
+VA-API surfaces into EGL for decoded-frame downloads and encoder uploads.
 The available codec profiles and encoding capabilities depend on the host
 GPU and driver. Build-time codec enablement does not guarantee host support.
 

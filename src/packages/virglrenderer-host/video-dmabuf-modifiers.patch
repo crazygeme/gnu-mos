@@ -1,0 +1,63 @@
+--- a/src/vrend/virgl_video.h
++++ b/src/vrend/virgl_video.h
+@@ -93,7 +93,7 @@
+         uint32_t drm_format;
+         int fd;
+         uint32_t size;
+-        int modifier;
++        uint64_t modifier;
+         uint32_t offset;
+         uint32_t pitch;
+     } planes[4];
+--- a/src/vrend/vrend_video.c
++++ b/src/vrend/vrend_video.c
+@@ -166,7 +166,7 @@
+ 
+         /* dmabuf -> eglimage */
+         if (EGL_NO_IMAGE_KHR == plane->egl_image) {
+-            EGLint img_attrs[16] = {
++            EGLint img_attrs[20] = {
+                 EGL_LINUX_DRM_FOURCC_EXT,       dmabuf->planes[i].drm_format,
+                 EGL_WIDTH,                      dmabuf->width / (i + 1),
+                 EGL_HEIGHT,                     dmabuf->height / (i + 1),
+@@ -176,6 +176,15 @@
+                 EGL_NONE
+             };
+ 
++            if (dmabuf->planes[i].modifier != DRM_FORMAT_MOD_INVALID) {
++                /* Exported video planes may use a tiled memory layout. */
++                img_attrs[12] = EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT;
++                img_attrs[13] = (EGLint)dmabuf->planes[i].modifier;
++                img_attrs[14] = EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT;
++                img_attrs[15] = (EGLint)(dmabuf->planes[i].modifier >> 32);
++                img_attrs[16] = EGL_NONE;
++            }
++
+             plane->egl_image = eglCreateImageKHR(eglGetCurrentDisplay(),
+                     EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT, NULL, img_attrs);
+         }
+@@ -227,7 +236,7 @@
+ 
+         /* dmabuf -> eglimage */
+         if (EGL_NO_IMAGE_KHR == plane->egl_image) {
+-            EGLint img_attrs[16] = {
++            EGLint img_attrs[20] = {
+                 EGL_LINUX_DRM_FOURCC_EXT,       dmabuf->planes[i].drm_format,
+                 EGL_WIDTH,                      dmabuf->width / (i + 1),
+                 EGL_HEIGHT,                     dmabuf->height / (i + 1),
+@@ -236,6 +245,15 @@
+                 EGL_DMA_BUF_PLANE0_PITCH_EXT,   dmabuf->planes[i].pitch,
+                 EGL_NONE
+             };
++
++            if (dmabuf->planes[i].modifier != DRM_FORMAT_MOD_INVALID) {
++                /* Exported video planes may use a tiled memory layout. */
++                img_attrs[12] = EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT;
++                img_attrs[13] = (EGLint)dmabuf->planes[i].modifier;
++                img_attrs[14] = EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT;
++                img_attrs[15] = (EGLint)(dmabuf->planes[i].modifier >> 32);
++                img_attrs[16] = EGL_NONE;
++            }
+ 
+             plane->egl_image = eglCreateImageKHR(eglGetCurrentDisplay(),
+                     EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT, NULL, img_attrs);

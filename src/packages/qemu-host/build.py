@@ -69,6 +69,7 @@ source = archive_source(
 for patch_name in (
     "sdl-gl-scanout.patch",
     "sdl-relative-pointer.patch",
+    "sdl-hardware-cursor-motion.patch",
     "sdl-gl-context.patch",
     "sdl-keyboard-release.patch",
     "sdl-text-input.patch",

@@ -11,6 +11,12 @@ prefix = workspace / "tools/virglrenderer"
 source = archive_source(
     "virglrenderer-host", "virglrenderer-1.3.0.tar.bz2", "virglrenderer-1.3.0"
 )
+patch = Path(__file__).with_name("video-dmabuf-modifiers.patch")
+for options in (("--dry-run",), ()):
+    subprocess.run(
+        ["patch", "--batch", "-p1", *options, "-i", str(patch)],
+        cwd=source, check=True,
+    )
 build = workspace / "build/virglrenderer-host"
 env = os.environ.copy()
 for key in (

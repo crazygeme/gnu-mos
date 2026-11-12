@@ -1,0 +1,161 @@
+--- a/ui/sdl2.c
++++ b/ui/sdl2.c
+@@ -237,6 +237,42 @@
+     SDL_ShowCursor(SDL_ENABLE);
+ }
+ 
++/* Relative hardware-cursor input is accumulated in guest coordinates. */
++static void sdl_pointer_align(struct sdl2_console *scon, int x, int y)
++{
++    int w, h, sw = surface_width(scon->surface);
++    int sh = surface_height(scon->surface);
++    SDL_GetWindowSize(scon->real_window, &w, &h);
++    if (w <= 0 || h <= 0 || sw <= 0 || sh <= 0) {
++        return;
++    }
++    scon->pointer_x = x;
++    scon->pointer_y = y;
++    scon->pointer_valid = true;
++    scon->pointer_pending = false;
++    scon->pointer_input_ticks = SDL_GetTicks();
++    SDL_WarpMouseInWindow(scon->real_window,
++                         (int64_t)x * w / sw, (int64_t)y * h / sh);
++}
++
++static void sdl_pointer_feedback(struct sdl2_console *scon, int x, int y)
++{
++    uint32_t idle = SDL_GetTicks() - scon->pointer_input_ticks;
++    if (!gui_grab || !guest_cursor || !scon->pointer_valid ||
++        qemu_input_is_absolute(scon->dcl.con) || absolute_enabled) {
++        return;
++    }
++    if (x == scon->pointer_x && y == scon->pointer_y) {
++        scon->pointer_pending = false;
++    } else if (idle >= 100 &&
++               (!scon->pointer_pending ||
++                (idle >= 500 && SDL_GetTicks() -
++                 scon->pointer_feedback_ticks >= 100))) {
++        /* Quiescent guest warps are distinct from input acknowledgements. */
++        sdl_pointer_align(scon, x, y);
++    }
++}
++
+ static void sdl_grab_start(struct sdl2_console *scon)
+ {
+     QemuConsole *con = scon ? scon->dcl.con : NULL;
+@@ -255,7 +291,7 @@
+     if (guest_cursor) {
+         SDL_SetCursor(guest_sprite);
+         if (!qemu_input_is_absolute(scon->dcl.con) && !absolute_enabled) {
+-            SDL_WarpMouseInWindow(scon->real_window, guest_x, guest_y);
++            sdl_pointer_align(scon, guest_x, guest_y);
+         }
+     } else {
+         sdl_hide_cursor(scon);
+@@ -267,6 +303,7 @@
+ 
+ static void sdl_grab_end(struct sdl2_console *scon)
+ {
++    scon->pointer_valid = scon->pointer_pending = false;
+     SDL_SetWindowGrab(scon->real_window, SDL_FALSE);
+     gui_grab = 0;
+     sdl_show_cursor(scon);
+@@ -325,12 +362,23 @@
+                              y, 0, surface_height(scon->surface));
+     } else {
+         if (guest_cursor) {
+-            x -= guest_x;
+-            y -= guest_y;
+-            guest_x += x;
+-            guest_y += y;
+-            dx = x;
+-            dy = y;
++            if (!scon->pointer_valid) {
++                scon->pointer_x = guest_x;
++                scon->pointer_y = guest_y;
++                scon->pointer_valid = true;
++            }
++            /* Absolute SDL coordinates retain fractional window scaling.
++             * Feedback never overwrites outstanding predicted movement. */
++            dx = x - scon->pointer_x;
++            dy = y - scon->pointer_y;
++            scon->pointer_x = x;
++            scon->pointer_y = y;
++            if (dx || dy) {
++                scon->pointer_pending = true;
++                scon->pointer_input_ticks = SDL_GetTicks();
++            }
++        } else {
++            scon->pointer_valid = scon->pointer_pending = false;
+         }
+         qemu_input_queue_rel(scon->dcl.con, INPUT_AXIS_X, dx);
+         qemu_input_queue_rel(scon->dcl.con, INPUT_AXIS_Y, dy);
+@@ -589,6 +637,13 @@
+     }
+ 
+     switch (ev->window.event) {
++    case SDL_WINDOWEVENT_SIZE_CHANGED:
++        if (gui_grab && guest_cursor &&
++            qemu_console_is_graphic(scon->dcl.con) &&
++            !qemu_input_is_absolute(scon->dcl.con) && !absolute_enabled) {
++            sdl_pointer_align(scon, guest_x, guest_y);
++        }
++        break;
+     case SDL_WINDOWEVENT_RESIZED:
+         {
+             QemuUIInfo info;
+@@ -598,6 +653,11 @@
+             dpy_set_ui_info(scon->dcl.con, &info, true);
+         }
+         sdl2_redraw(scon);
++        if (gui_grab && guest_cursor &&
++            qemu_console_is_graphic(scon->dcl.con) &&
++            !qemu_input_is_absolute(scon->dcl.con) && !absolute_enabled) {
++            sdl_pointer_align(scon, guest_x, guest_y);
++        }
+         break;
+     case SDL_WINDOWEVENT_EXPOSED:
+         sdl2_redraw(scon);
+@@ -706,6 +766,8 @@
+         }
+     }
+ 
++    sdl_pointer_feedback(scon, guest_x, guest_y);
++
+     if (idle) {
+         if (scon->idle_counter < SDL2_MAX_IDLE_COUNT) {
+             scon->idle_counter++;
+@@ -735,12 +797,20 @@
+         if (gui_grab || qemu_input_is_absolute(scon->dcl.con) || absolute_enabled) {
+             SDL_SetCursor(guest_sprite);
+             if (!qemu_input_is_absolute(scon->dcl.con) && !absolute_enabled) {
+-                SDL_WarpMouseInWindow(scon->real_window, x, y);
++                if (!guest_cursor) {
++                    sdl_pointer_align(scon, x, y);
++                } else {
++                    sdl_pointer_feedback(scon, x, y);
++                }
+             }
+         }
+     } else if (gui_grab) {
+         sdl_hide_cursor(scon);
+     }
++    if (!on) {
++        scon->pointer_valid = scon->pointer_pending = false;
++    }
++    scon->pointer_feedback_ticks = SDL_GetTicks();
+     guest_cursor = on;
+     guest_x = x, guest_y = y;
+ }
+--- a/include/ui/sdl2.h
++++ b/include/ui/sdl2.h
+@@ -43,6 +43,9 @@
+     int idle_counter;
+     int ignore_hotkeys;
+     bool gui_keysym;
++    bool pointer_valid, pointer_pending;
++    int pointer_x, pointer_y;
++    uint32_t pointer_input_ticks, pointer_feedback_ticks;
+     SDL_GLContext winctx;
+     QKbdState *kbd;
+ #ifdef CONFIG_OPENGL
